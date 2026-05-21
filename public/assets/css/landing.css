@@ -1,0 +1,175 @@
+/* ==========================================================================
+   landing.css - Spesifik Beranda Publik Utama (Landing Page)
+   Menggunakan font artistik Plus Jakarta Sans khusus promosi brand publik
+   ========================================================================== */
+
+:root {
+    --bg-main: #f8fafc;
+    --primary: #6366f1;
+    --primary-soft: #eef2ff;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    overflow-x: hidden;
+}
+
+/* --- Navbar --- */
+.navbar-custom {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e2e8f0;
+    padding: 15px 0;
+}
+
+.nav-link { 
+    font-weight: 600; 
+    color: var(--text-muted); 
+    transition: color 0.2s; 
+}
+
+.nav-link:hover { 
+    color: var(--primary); 
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    padding: 140px 0 80px;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: var(--text-dark);
+    margin-bottom: 24px;
+}
+
+.hero-title span { 
+    color: var(--primary); 
+}
+
+.hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    line-height: 1.7;
+    max-width: 95%;
+}
+
+.tech-badge {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+/* --- Buttons --- */
+.btn-modern { 
+    padding: 14px 32px; 
+    border-radius: 14px; 
+    font-weight: 700; 
+    font-size: 1rem; 
+    transition: all 0.3s; 
+    text-decoration: none; 
+    display: inline-block;
+}
+
+.btn-primary-custom { 
+    background: linear-gradient(135deg, #6366f1, #8b5cf6); 
+    color: white !important; 
+    border: none; 
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25); 
+}
+
+.btn-primary-custom:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4); 
+    color: white !important; 
+}
+
+.btn-outline-custom { 
+    background: white; 
+    color: var(--text-dark) !important; 
+    border: 2px solid #e2e8f0; 
+}
+
+.btn-outline-custom:hover { 
+    border-color: var(--primary); 
+    color: var(--primary) !important; 
+    background: var(--primary-soft); 
+}
+
+/* --- Bento Grid / Cards --- */
+.bento-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    height: 100%;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
+}
+
+.bento-card:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08); 
+    border-color: var(--primary-soft); 
+}
+
+.icon-box { 
+    width: 56px; 
+    height: 56px; 
+    border-radius: var(--radius-md); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 24px; 
+    margin-bottom: 24px; 
+}
+
+.step-number { 
+    width: 32px; 
+    height: 32px; 
+    background: var(--primary-soft); 
+    color: var(--primary); 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: 800; 
+    font-size: 0.9rem; 
+    flex-shrink: 0; 
+}
+
+.float-anim { 
+    animation: float 6s ease-in-out infinite; 
+}
+
+@keyframes float { 
+    0% { transform: translateY(0px); } 
+    50% { transform: translateY(-20px); } 
+    100% { transform: translateY(0px); } 
+}
+
+@media (max-width: 991px) {
+    .hero-title { font-size: 2.5rem; }
+    .hero-section { text-align: center; padding-top: 120px; }
+    .hero-subtitle { margin: 0 auto 30px; }
+    .btn-group-custom { display: flex; flex-direction: column; gap: 15px; justify-content: center; }
+    .hero-img-wrap { margin-top: 50px; }
+}

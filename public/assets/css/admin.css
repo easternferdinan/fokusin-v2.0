@@ -1,0 +1,220 @@
+/* ==========================================================================
+   admin.css - Spesifik Panel Manajemen Admin & Superadmin
+   Warna dasar body dan kemewahan card standar diwarisi dari global.css
+   ========================================================================== */
+
+/* ==================== HALAMAN LOGIN ADMIN ==================== */
+.login-wrapper { 
+    min-height: 100vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    background: linear-gradient(135deg, #2c3e50 0%, #000000 100%); 
+}
+
+.login-card { 
+    width: 100%; 
+    max-width: 400px; 
+    background: white; 
+    border-radius: 24px; 
+    padding: 40px; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+}
+
+.login-card .form-control { 
+    border-radius: 12px; 
+    border: 2px solid #e9ecef; 
+    padding: 12px 15px; 
+}
+
+.login-card .form-control:focus { 
+    border-color: #74b9ff; 
+    box-shadow: 0 0 0 0.2rem rgba(116, 185, 255, 0.15); 
+}
+
+/* ==================== DASHBOARD ADMIN ==================== */
+.admin-wrapper { 
+    display: none; 
+    min-height: 100vh; 
+}
+
+.admin-wrapper.active { 
+    display: flex; 
+}
+
+.sidebar-main { 
+    width: 260px; 
+    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%); 
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    transition: all 0.3s; 
+    position: fixed; 
+    height: 100vh; 
+    z-index: 100; 
+    left: 0; 
+}
+
+.brand { 
+    font-size: 1.4rem; 
+    font-weight: 800; 
+    padding: 20px; 
+    letter-spacing: 2px; 
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+}
+
+.role-indicator { 
+    font-size: 0.7rem; 
+    padding: 3px 10px; 
+    border-radius: 20px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+}
+
+.role-admin { 
+    background: #74b9ff; 
+    color: #003366; 
+}
+
+.role-superadmin { 
+    background: #ffeaa7; 
+    color: #6d4c00; 
+}
+
+.nav-menu { 
+    padding: 20px 10px; 
+    flex-grow: 1; 
+}
+
+.nav-link-admin { 
+    display: flex; 
+    align-items: center; 
+    padding: 12px 15px; 
+    color: #dfe6e9; 
+    text-decoration: none; 
+    border-radius: 10px; 
+    margin-bottom: 4px; 
+    font-size: 0.9rem; 
+    font-weight: 500; 
+    transition: all 0.2s; 
+    border-left: 3px solid transparent; 
+}
+
+.nav-link-admin:hover, .nav-link-admin.active { 
+    background: rgba(255,255,255,0.08); 
+    color: #fff; 
+    border-left-color: #fff; 
+}
+
+.nav-link-admin i { 
+    width: 20px; 
+    margin-right: 12px; 
+    text-align: center; 
+}
+
+.sidebar-footer { 
+    padding: 15px; 
+    border-top: 1px solid rgba(255,255,255,0.1); 
+}
+
+.sidebar-footer a { 
+    color: #ff7675; 
+    text-decoration: none; 
+    font-size: 0.9rem; 
+    font-weight: 500; 
+    display: block; 
+    padding: 10px; 
+    border-radius: 8px; 
+}
+
+.sidebar-footer a:hover { 
+    background: rgba(255, 118, 117, 0.1); 
+}
+
+.content-main { 
+    flex-grow: 1; 
+    padding: 30px; 
+    margin-left: 260px; 
+    transition: margin-left 0.3s; 
+}
+
+.topbar { 
+    background: white; 
+    padding: 15px 25px; 
+    border-radius: 16px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+    margin-bottom: 25px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.stat-card { 
+    padding: 20px; 
+    border-radius: 16px; 
+    background: #fff; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+}
+
+.stat-card h3 { 
+    margin: 0; 
+    font-weight: 800; 
+}
+
+.stat-card small { 
+    color: #636e72; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    font-size: 0.75rem; 
+    letter-spacing: 1px; 
+}
+
+.table { 
+    margin: 0; 
+}
+
+.table thead th { 
+    background: #f8f9fa; 
+    color: #636e72; 
+    font-size: 0.8rem; 
+    text-transform: uppercase; 
+    border-bottom: 0; 
+    padding: 15px; 
+}
+
+.table tbody td { 
+    padding: 15px; 
+    vertical-align: middle; 
+    border-color: #f1f2f6; 
+}
+
+.stress-badge { 
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    font-weight: 600; 
+}
+
+.panel-section { 
+    display: none; 
+}
+
+.panel-section.active { 
+    display: block; 
+    animation: fadeIn 0.3s ease; 
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+@media (max-width: 768px) {
+    .sidebar-main { left: -280px; }
+    .sidebar-main.show { left: 0; }
+    .content-main { margin-left: 0; }
+}

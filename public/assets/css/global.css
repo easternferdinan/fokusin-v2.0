@@ -1,0 +1,58 @@
+body { background-color: #f0f2f5; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+.sidebar { min-height: 100vh; background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%); color: white; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 260px; display: flex; flex-direction: column; }
+.sidebar-brand { font-size: 1.6rem; font-weight: 800; padding: 24px 20px; text-align: center; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+/* =========================================
+   STYLING LOGO KUSTOM FOKUSIN
+   ========================================= */
+.logo-fokusin {
+    width: 38px;           /* Lebar logo default */
+    height: 38px;          /* Tinggi logo default */
+    object-fit: cover;     /* Mencegah logo gepeng */
+    border-radius: 10px;   /* Lengkungan sudut logo */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* Efek bayangan elegan */
+    transition: transform 0.2s ease; /* Efek transisi jika nanti mau di-hover */
+}
+
+.logo-fokusin:hover {
+    transform: scale(1.05); /* Sedikit membesar saat disorot mouse */
+}
+.sidebar .menu-link { color: #a0aec0; text-decoration: none; padding: 14px 24px; display: flex; align-items: center; border-left: 4px solid transparent; font-weight: 500; transition: all 0.2s ease; margin: 4px 0; }
+.sidebar .menu-link:hover, .sidebar .menu-link.active { background-color: rgba(255,255,255,0.08); color: #fff; border-left: 4px solid #74b9ff; }
+.sidebar .menu-link i { margin-right: 14px; width: 20px; text-align: center; }
+
+.content-area { padding: 24px; width: 100%; }
+.card { border: none; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 24px; background: #ffffff; transition: transform 0.2s ease; }
+.card:hover { transform: translateY(-2px); }
+.top-navbar { background: white; padding: 16px 24px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+.dropdown-menu { border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-radius: 12px; padding: 8px; }
+.dropdown-item { border-radius: 8px; padding: 10px 16px; font-weight: 500; color: #555; }
+.dropdown-item:hover { background-color: #f8f9fa; color: #333; }
+
+.search-bar { background: #f8f9fa; border: 2px solid transparent; transition: all 0.2s; }
+.search-bar:focus { background: #fff; border-color: #74b9ff; box-shadow: 0 0 0 0.2rem rgba(116, 185, 255, 0.15); }
+.task-item { border: none; background: #fff; border-radius: 16px; padding: 16px 20px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; align-items: center; transition: all 0.2s ease; border-left: 6px solid #ccc; cursor: pointer; }
+.task-item:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
+.task-item.priority-tinggi { border-left-color: #ff7675; }
+.task-item.priority-sedang { border-left-color: #ffeaa7; }
+.task-item.priority-rendah { border-left-color: #55efc4; }
+.task-item.completed .task-title { text-decoration: line-through; color: #b2bec3; }
+.task-item.completed { opacity: 0.6; background: #fafafa; }
+.custom-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #dfe6e9; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.custom-check:hover { background: #dfe6e9; }
+.custom-check.checked { background: #00b894; border-color: #00b894; color: white; }
+.action-btns .btn { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; padding: 0; transition: all 0.2s; border: none; background: #f1f2f6; color: #636e72; }
+.action-btns .btn:hover { color: #2d3436; background: #dfe6e9; }
+.action-btns .btn-play:hover { background: #74b9ff; color: #fff; }
+.action-btns .btn-delete:hover { color: #ff7675; background: #ffeaea; }
+.mini-task-item { padding: 12px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+.mini-task-item:hover { background: #f8f9fa; border-color: #74b9ff; }
+
+@media (max-width: 768px) {
+    .sidebar { position: fixed; z-index: 1000; left: -280px; width: 260px; }
+    .sidebar.show { left: 0; }
+    .overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 999; backdrop-filter: blur(2px); }
+    .overlay.show { display: block; }
+    .task-item { flex-wrap: wrap; }
+    .task-meta { margin-top: 10px; margin-left: 36px; }
+}
