@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fokusin v2.0 - Login & Register</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/global.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/auth.css') ?>">
 </head>
+
 <body>
 
     <div class="auth-container">
@@ -30,12 +32,12 @@
         </div>
 
         <div class="auth-form-area">
-            
+
             <div id="form-login">
                 <h3 class="fw-bold text-dark mb-2">Selamat Datang di Fokusin</h3>
                 <p class="text-muted mb-4">Silakan masuk untuk melanjutkan fokus.</p>
-                
-                <form action="<?= base_url('auth/loginProcess') ?>" method="POST" id="loginForm" onsubmit="return handleLogin(event)">
+
+                <form action="<?= base_url('auth/loginProcess') ?>" method="POST" id="loginForm">
                     <div class="form-floating">
                         <input type="text" class="form-control" id="loginUsername" name="username" placeholder="Username" required>
                         <label for="loginUsername"><i class="fas fa-user me-2"></i>Username</label>
@@ -44,7 +46,7 @@
                         <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Password" required>
                         <label for="loginPassword"><i class="fas fa-lock me-2"></i>Password</label>
                     </div>
-                    
+
                     <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
@@ -66,7 +68,7 @@
             <div id="form-register" style="display: none;">
                 <h3 class="fw-bold text-dark mb-2">Buat Akun Baru</h3>
                 <p class="text-muted mb-4">Bergabunglah dan cegah burnout sekarang.</p>
-                
+
                 <form action="<?= base_url('auth/registerProcess') ?>" method="POST" id="registerForm" onsubmit="return handleRegister(event)">
                     <div class="form-floating">
                         <input type="text" class="form-control" id="regNama" name="nama_lengkap" placeholder="Nama Lengkap" required>
@@ -102,7 +104,7 @@
                             <option value="1">1 - Ada Riwayat</option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="regAkademik" style="color:#b2bec3;"><i class="fas fa-graduation-cap me-2"></i>Akademik Performance</label>
                         <select class="form-select" id="regAkademik" name="akademik_performa" required style="border-radius:12px; border:2px solid #e9ecef; font-size: 0.9rem;;">
@@ -143,8 +145,8 @@
         function toggleForm(target) {
             const formLogin = document.getElementById('form-login');
             const formRegister = document.getElementById('form-register');
-            
-            if(target === 'register') {
+
+            if (target === 'register') {
                 formLogin.style.display = 'none';
                 formRegister.style.display = 'block';
                 formRegister.style.animation = 'fadeIn 0.3s ease';
@@ -161,50 +163,62 @@
 
         // NANTI SAAT MODEL/DATABASE SIAP, FUNGSI INI AKAN KITA UBAH AGAR MENGIRIM DATA KE CI4 
         // Untuk saat ini, kita biarkan logic prototipe aslimu
-        function handleLogin(event) {
-            event.preventDefault(); 
-            const user = document.getElementById('loginUsername').value;
-            Swal.fire({
-                title: 'Login Berhasil! ✅',
-                text: `Halo ${user}, sedang mengalihkan ke dashboard...`,
-                icon: 'success',
-                confirmButtonColor: '#00b894'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '<?= base_url("mahasiswa") ?>';
-                }
-            });
-        }
 
         function handleRegister(event) {
             event.preventDefault();
+            const form = document.getElementById('registerForm');
             const pass = document.getElementById('regPassword').value;
             const confirmPass = document.getElementById('regConfirmPass').value;
-            const user = document.getElementById('regUsername').value;
 
-            if(pass !== confirmPass) {
-                Swal.fire({ title: 'Password Tidak Sama!', icon: 'error', confirmButtonColor: '#ff7675' });
+            if (pass !== confirmPass) {
+                Swal.fire({
+                    title: 'Password Tidak Sama!',
+                    icon: 'error',
+                    confirmButtonColor: '#ff7675'
+                });
                 return false;
             }
-            if(pass.length < 6) {
-                Swal.fire({ title: 'Password Terlalu Lemah!', text: 'Minimal 6 karakter.', icon: 'warning', confirmButtonColor: '#ffeaa7' });
+            if (pass.length < 8) {
+                Swal.fire({
+                    title: 'Password Terlalu Lemah!',
+                    text: 'Minimal 8 karakter.',
+                    icon: 'warning',
+                    confirmButtonColor: '#ffeaa7'
+                });
                 return false;
             }
 
+            form.submit();
+        }
+
+        function showAlertInfo(msg) {
             Swal.fire({
-                title: 'Akun Berhasil Dibuat! 🎉',
-                text: 'Silakan login menggunakan username dan password yang baru dibuat.',
-                icon: 'success',
-                confirmButtonColor: '#00b894'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    toggleForm('login'); 
-                    document.getElementById('loginUsername').value = user;
-                }
+                title: 'Info',
+                text: msg,
+                icon: 'info',
+                confirmButtonColor: '#74b9ff'
             });
         }
 
-        function showAlertInfo(msg) { Swal.fire({ title: 'Info', text: msg, icon: 'info', confirmButtonColor: '#74b9ff' }); }
+        if ('<?= session()->getFlashdata('success') ?>') {
+            const success = JSON.parse('<?= json_encode(session()->getFlashdata('success')) ?>');
+            Swal.fire({
+                title: success.title,
+                text: success.message,
+                icon: 'success',
+                confirmButtonColor: '#00b894'
+            })
+        }
+
+        if ('<?= session()->getFlashdata('error') ?>') {
+            Swal.fire({
+                title: 'Error!',
+                text: '<?= session()->getFlashdata('error') ?>',
+                icon: 'error',
+                confirmButtonColor: '#ff7675'
+            })
+        }
     </script>
 </body>
+
 </html>

@@ -2,8 +2,17 @@
 
 namespace App\Controllers;
 
+use App\Services\FastApiService;
+
 class Auth extends BaseController
 {
+    protected FastApiService $fastApiService;
+
+    public function __construct()
+    {
+        $this->fastApiService = new FastApiService();
+    }
+
     // Menampilkan halaman gabungan Login & Register
     public function login()
     {
@@ -14,10 +23,20 @@ class Auth extends BaseController
     public function loginProcess()
     {
         // Tangkap data dari form (name="username" dan name="password")
-        $username = $this->request->getPost('username');
-        $password = $this->request->getPost('password');
-        
-        // (Proses validasi database akan dibuat nanti)
+        $data = [
+            'username' => $this->request->getPost('username'),
+            'password' => $this->request->getPost('password'),
+        ];
+
+        $response = $this->fastApiService->loginUser($data);
+        if ($response->getStatusCode() == 200) {
+            return redirect()->to(base_url('mahasiswa'))->with('success', [
+                'title' => 'Login Berhasil!',
+                'message' => 'Selamat Datang ' . session()->get('fullname') . '!'
+            ]);
+        }
+
+        return redirect()->back()->with('error', $response->getBody());
     }
 
     // Nanti logika insert ke database ditaruh di sini
@@ -25,16 +44,25 @@ class Auth extends BaseController
     {
         // Tangkap semua data dari form registrasi
         $data = [
-            'nama_lengkap'    => $this->request->getPost('nama_lengkap'),
-            'username'        => $this->request->getPost('username'),
-            'email'           => $this->request->getPost('email'),
-            'password'        => $this->request->getPost('password'), // Nanti harus di hash
-            'riwayat_mental'  => $this->request->getPost('riwayat_mental'),
-            'ipk'             => $this->request->getPost('ipk'),
-            'dukungan_sosial' => $this->request->getPost('dukungan_sosial'),
+            'fullname'    => $this->request->getPost('nama_lengkap'),
+            'username'    => $this->request->getPost('username'),
+            'email'       => $this->request->getPost('email'),
+            'password'    => $this->request->getPost('password'),
+            'mental_health_history' => (bool) $this->request->getPost('riwayat_mental'),
+            'academic_performance'  => (int) $this->request->getPost('akademik_performa'),
+            'social_support'        => (int) $this->request->getPost('dukungan_sosial'),
         ];
-        
-        // (Proses simpan ke database akan dibuat nanti)
+
+        $response = $this->fastApiService->registerUser($data);
+
+        if ($response->getStatusCode() == 201) {
+            return redirect()->to(base_url('auth/login'))->with('success', [
+                'title' => 'Akun Berhasil Dibuat!',
+                'message' => 'Silakan login menggunakan username dan password yang baru dibuat.'
+            ]);
+        }
+
+        return redirect()->back()->with('error', $response->getBody());
     }
 
     public function adminLogin()
@@ -55,7 +83,7 @@ class Auth extends BaseController
 
         // Simulasi Cek Database (Prototype)
         if ($username === 'admin' || $username === 'superadmin') {
-            
+
             // Buat session
             session()->set([
                 'isLoggedIn' => true,
@@ -73,14 +101,14 @@ class Auth extends BaseController
     {
         // Cek dulu siapa yang logout untuk menentukan arah redirect
         $role = session()->get('role');
-        
+
         session()->destroy();
 
         // Jika yang logout admin, kembalikan ke form login admin
         if ($role === 'admin' || $role === 'superadmin') {
             return redirect()->to(base_url('auth/adminLogin'));
         }
-        
+
         // Jika mahasiswa, kembalikan ke landing page / login utama
         return redirect()->to(base_url('/'));
     }

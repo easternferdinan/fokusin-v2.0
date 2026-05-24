@@ -2,8 +2,17 @@
 
 namespace App\Controllers;
 
+use App\Services\FastApiService;
+
 class Mahasiswa extends BaseController
 {
+    protected $fastApiService;
+
+    public function __construct()
+    {
+        $this->fastApiService = new FastApiService();
+    }
+
     // Halaman Dashboard
     public function index()
     {
@@ -12,7 +21,7 @@ class Mahasiswa extends BaseController
             'highPriority' => 5,
             'deadlineBesok'=> 2,
             'waktuFokus'   => '8h',
-            'namaMahasiswa'=> 'Salma Pudjiati'
+            'namaMahasiswa'=> session()->get('fullname')
         ];
         return view('mahasiswa/dashboard', $data);
     }
@@ -21,19 +30,16 @@ class Mahasiswa extends BaseController
     public function tugas()
     {
         // Kita tetap perlu mengirim namaMahasiswa agar Navbar tidak error
-        $data = ['namaMahasiswa' => 'Salma Pudjiati'];
+        $data = ['namaMahasiswa' => session()->get('fullname') ?? 'Guest'];
         return view('mahasiswa/daftar_tugas', $data);
     }
 
     // Halaman Timer Pomodoro
     public function pomodoro()
     {
-        // Cek apakah user sudah login melalui session
-        $isLoggedIn = session()->get('isLoggedIn');
-        
         $data = [
             // Jika login, ambil nama dari session. Jika tidak, beri nama 'Guest'
-            'namaMahasiswa' => $isLoggedIn ? session()->get('nama') : 'Guest',
+            'namaMahasiswa' => session()->get('fullname') ?? 'Guest',
         ];
         
         return view('mahasiswa/pomodoro', $data);
@@ -51,7 +57,7 @@ class Mahasiswa extends BaseController
         // Ambil data nama seperti biasa
         $data = [
             'title'           => 'Report AI',
-            'namaMahasiswa'   => session()->get('nama') ?? 'Salma Pudjiati',
+            'namaMahasiswa'   => session()->get('fullname') ?? 'Guest',
             'hasTasks'        => $hasTasks,
             'hasPomodoro'     => $hasPomodoro,
             'hasFilledInputs' => $hasFilledInputs,
@@ -65,8 +71,30 @@ class Mahasiswa extends BaseController
     // Halaman Pengaturan
     public function pengaturan()
     {
-        $data = ['namaMahasiswa' => 'Salma Pudjiati'];
+        $data = ['namaMahasiswa' => session()->get('fullname')];
         return view('mahasiswa/pengaturan', $data);
+    }
+
+    public function saveProfileAI()
+    {
+        $data = [
+            'fullname' => $this->request->getPost('fullname'),
+            'email' => $this->request->getPost('email'),
+            'mental_health_history' => $this->request->getPost('mental_health_history'),
+            'academic_performance' => $this->request->getPost('academic_performance'),
+            'social_support' => $this->request->getPost('social_support')
+        ];
+
+        $response = $this->fastApiService->updateProfile($data);
+
+        if ($response->getStatusCode() == 200) {
+            return redirect()->to(base_url('mahasiswa/pengaturan'))->with('success', [
+                'title' => 'Profile Berhasil Diupdate!',
+                'message' => 'Profile Anda telah berhasil diperbarui.'
+            ]);
+        }
+
+        return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profile. Silahkan coba lagi.<br>' . $response->getBody());
     }
 
     public function saveCheckin()

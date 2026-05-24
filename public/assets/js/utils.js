@@ -77,6 +77,7 @@ function pickTaskFromOffcanvas(taskName) {
 
 // Profile & Logout
 function simpanProfileAI() { 
+    // TODO: Create API endpoint for updating profile and then handle profile update.
     Swal.fire({ title: 'Tersimpan & Diproses! ✅', html: 'Data profile dan parameter AI diperbarui.<br><small class="text-muted">Model Random Forest akan menyesuaikan prediksi.</small>', icon: 'success', confirmButtonColor: '#00b894', confirmButtonText: 'Mengerti', customClass: { popup: 'rounded-4', confirmButton: 'rounded-3 px-4' } }); 
 }
 function confirmLogout(event) { 
