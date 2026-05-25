@@ -36,7 +36,18 @@ class Auth extends BaseController
             ]);
         }
 
-        return redirect()->back()->with('error', $response->getBody());
+        $errorResponse = json_decode($response->getBody());
+        if ($response->getStatusCode() == 401) {
+            return redirect()->back()->with('error', [
+                'title' => 'Login Gagal!',
+                'message' => $errorResponse->detail
+            ]);
+        }
+
+        return redirect()->back()->with('error', [
+            'title' => 'Terjadi Kesalahan!',
+            'message' => 'Coba lagi nanti atau hubungi admin.'
+        ]);
     }
 
     // Nanti logika insert ke database ditaruh di sini

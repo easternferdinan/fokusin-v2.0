@@ -99,7 +99,7 @@
     <!-- MODAL: TAMBAH/EDIT TUGAS -->
     <div class="modal fade" id="modalTugas" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
+            <form action="mahasiswa/simpanTugas" method="post" class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold" id="modalTugasLabel">Tambah Tugas Baru</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -107,13 +107,13 @@
                 <div class="modal-body px-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Judul Tugas</label>
-                        <input type="text" name="judul" class="form-control rounded-3" id="inputJudul" placeholder="Contoh: Revisi Makalah PPL">
+                        <input type="text" name="title" class="form-control rounded-3" id="inputJudul" placeholder="Contoh: Revisi Makalah PPL">
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Kategori</label>
-                            <select name="kategori" class="form-select rounded-3">
+                            <select name="category" class="form-select rounded-3">
                                 <option value="Kuliah">Kuliah</option>
                                 <option value="Proyek">Proyek</option>
                                 <option value="Lainnya">Lainnya</option>
@@ -121,7 +121,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Prioritas</label>
-                            <select name="prioritas" class="form-select rounded-3">
+                            <select name="priority" class="form-select rounded-3">
                                 <option value="Tinggi">Tinggi</option>
                                 <option value="Sedang">Sedang</option>
                                 <option value="Rendah">Rendah</option>
@@ -142,16 +142,16 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Deskripsi Tugas</label>
-                        <textarea name="deskripsi" class="form-control rounded-3" rows="3" placeholder="Tulis detail tugas di sini..."></textarea>
+                        <textarea name="description" class="form-control rounded-3" rows="3" placeholder="Tulis detail tugas di sini..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0 px-4 pb-4">
                     <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary rounded-3 px-4 shadow-sm" onclick="simpanTugas()">
+                    <button type="submit" class="btn btn-primary rounded-3 px-4 shadow-sm">
                         <i class="fas fa-save me-1"></i> Simpan
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -243,20 +243,22 @@
     <script src="<?= base_url('assets/js/checkin.js') ?>"></script>
 
     <script>
-        <?php if (session()->getFlashdata('success') !== null): ?>
+        <?php $successFlash = session()->getFlashdata('success'); ?>
+        <?php if ($successFlash !== null): ?>
             Swal.fire({
                 icon: 'success',
-                title: '<?= session()->getFlashdata('success')['title'] ?>',
-                text: '<?= session()->getFlashdata('success')['message'] ?>',
+                title: <?= json_encode(is_array($successFlash) ? $successFlash['title'] : 'Berhasil') ?>,
+                text: <?= json_encode(is_array($successFlash) ? $successFlash['message'] : $successFlash) ?>,
                 confirmButtonColor: '#00b894'
             });
         <?php endif; ?>
 
-        <?php if (session()->getFlashdata('error') !== null): ?>
+        <?php $errorFlash = session()->getFlashdata('error'); ?>
+        <?php if ($errorFlash !== null): ?>
             Swal.fire({
                 icon: 'error',
-                title: '<?= session()->getFlashdata('error')['title'] ?>',
-                text: '<?= session()->getFlashdata('error')['message'] ?>',
+                title: <?= json_encode(is_array($errorFlash) ? $errorFlash['title'] : 'Terjadi Kesalahan') ?>,
+                text: <?= json_encode(is_array($errorFlash) ? $errorFlash['message'] : $errorFlash) ?>,
                 confirmButtonColor: '#ff7675'
             });
         <?php endif; ?>
