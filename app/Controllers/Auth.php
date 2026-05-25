@@ -40,13 +40,15 @@ class Auth extends BaseController
         if ($response->getStatusCode() == 401) {
             return redirect()->back()->with('error', [
                 'title' => 'Login Gagal!',
-                'message' => $errorResponse->detail
+                'message' => $errorResponse->detail,
+                'detail' => $response->getBody()
             ]);
         }
 
         return redirect()->back()->with('error', [
             'title' => 'Terjadi Kesalahan!',
-            'message' => 'Coba lagi nanti atau hubungi admin.'
+            'message' => 'Coba lagi nanti atau hubungi admin.',
+            'detail' => $response->getBody()
         ]);
     }
 
