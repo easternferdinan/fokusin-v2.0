@@ -247,8 +247,8 @@
         <?php if ($successFlash !== null): ?>
             Swal.fire({
                 icon: 'success',
-                title: <?= json_encode(is_array($successFlash) ? $successFlash['title'] : 'Berhasil') ?>,
-                text: <?= json_encode(is_array($successFlash) ? $successFlash['message'] : $successFlash) ?>,
+                title: <?= json_encode(is_array($successFlash) ? $successFlash['title'] : 'Sukses') ?>,
+                text: <?= json_encode(is_array($successFlash) ? $successFlash['message'] : 'Operasi Berhasil!') ?>,
                 confirmButtonColor: '#00b894'
             });
         <?php endif; ?>
@@ -258,7 +258,7 @@
             Swal.fire({
                 icon: 'error',
                 title: <?= json_encode(is_array($errorFlash) ? $errorFlash['title'] : 'Terjadi Kesalahan') ?>,
-                text: <?= json_encode(is_array($errorFlash) ? $errorFlash['message'] : $errorFlash) ?>,
+                text: <?= json_encode(is_array($errorFlash) ? $errorFlash['message'] : 'Hubungi Admin!') ?>,
                 confirmButtonColor: '#ff7675'
             });
         <?php endif; ?>
