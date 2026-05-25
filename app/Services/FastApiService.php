@@ -13,6 +13,8 @@ class FastApiService
         $this->client = new FastApiClient();
     }
 
+    // ==================== USER ====================
+
     public function registerUser(array $userData)
     {
         $response = $this->client->post('auth/register', [
@@ -26,6 +28,10 @@ class FastApiService
         $response = $this->client->post('auth/login', [
             'json' => $userData
         ]);
+
+        if ($response->getStatusCode() !== 200) {
+            return $response;
+        }
 
         // Simpan info user ke session agar bisa dipanggil di controller mahasiswa
         $responseData = json_decode($response->getBody(), true);
@@ -67,13 +73,42 @@ class FastApiService
         return $response;
     }
 
-    public function getTasks()
+    // ================================= DASHBOARD =============================
+
+    public function getDashboardData()
     {
-        $response = $this->client->get('tasks', [
+        // TODO: Create a single endpoint for retrieving all dashboard data in the backend
+        $response = $this->client->get('dashboard/', [
             'headers' => [
                 'Authorization' => 'Bearer ' . session()->get('access_token')
             ]
         ]);
+
+        return $response;
+    }
+
+    // =============================== TASK ==============================
+
+    public function getTasks()
+    {
+        $response = $this->client->get('task/', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function createTask(array $taskData)
+    {
+        $response = $this->client->post('tasks/', [
+            'json' => $taskData,
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
         return $response;
     }
 }

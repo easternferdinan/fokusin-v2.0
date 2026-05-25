@@ -16,14 +16,47 @@ class Mahasiswa extends BaseController
     // Halaman Dashboard
     public function index()
     {
-        $data = [
-            'totalTugas'   => 12,
-            'highPriority' => 5,
-            'deadlineBesok'=> 2,
-            'waktuFokus'   => '8h',
-            'namaMahasiswa'=> session()->get('fullname')
-        ];
-        return view('mahasiswa/dashboard', $data);
+        $response = $this->fastApiService->getDashboardData();
+                    
+        if (session()->get('email') == null || $response->getStatusCode() == 401) {
+            return redirect()->to(base_url('auth/login'))->with('error', [
+                'title' => 'Akses Ditolak!',
+                'message' => 'Silakan login.'
+            ]);
+        }
+
+        if ($response->getStatusCode() == 200) {
+            $dashboardData = json_decode($response->getBody());
+
+            // dummy prediction data for testing
+            // $dashboardData->latest_burnout_prediction: ['rendah', 'sedang', 'tinggi'] = null;
+    
+            $waktuFokus = $dashboardData->today_pomodoro_minutes;
+            if ($waktuFokus == 0) {
+                $waktuFokus = '0 Menit';
+            } elseif ($waktuFokus < 60) {
+                $waktuFokus = $waktuFokus . ' Menit';
+            } else {
+                $waktuFokus = ($waktuFokus / 60) . ' Jam';
+            }
+    
+            $data = [
+                    'statusBurnout' => $dashboardData->latest_burnout_prediction,
+                    'totalTugas'    => $dashboardData->incomplete_tasks_count,
+                    'highPriority'  => $dashboardData->high_priority_tasks_count,
+                    'deadlineBesok' => $dashboardData->deadline_is_tomorrow_tasks_count,
+                    'waktuFokus'    => $waktuFokus,
+                    'tugasMendesak' => $dashboardData->deadline_is_tomorrow_tasks,
+                    'namaMahasiswa' => session()->get('fullname')
+                ];
+                return view('mahasiswa/dashboard', $data);
+        } else {
+            return redirect()->to(base_url('auth/login'))->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Terjadi kesalahan tak terduga. Hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
     }
 
     // Halaman Daftar Tugas
@@ -32,6 +65,35 @@ class Mahasiswa extends BaseController
         // Kita tetap perlu mengirim namaMahasiswa agar Navbar tidak error
         $data = ['namaMahasiswa' => session()->get('fullname') ?? 'Guest'];
         return view('mahasiswa/daftar_tugas', $data);
+    }
+
+    // Simpan Tugas
+    public function simpanTugas()
+    {
+        
+        $data = [
+            'title'           => $this->request->getPost('title'),
+            'category'        => $this->request->getPost('category'),
+            'priority'        => $this->request->getPost('priority'),
+            'deadline'        => $this->request->getPost('deadline'),
+            'target_duration' => $this->request->getPost('target_duration'),
+            'description'     => $this->request->getPost('description'),
+        ];
+
+        $response = $this->fastApiService->createTask($data);
+
+        if ($response->getStatusCode() == 201) {
+            return redirect()->back()->with('success', [
+                'title' => 'Tugas Berhasil Ditambahkan!',
+                'message' => ''
+            ]);
+        } else {
+            return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
     }
 
     // Halaman Timer Pomodoro
