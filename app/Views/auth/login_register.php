@@ -219,7 +219,7 @@
                 confirmButtonColor: '#ff7675'
             });
 
-            <?php if ($errorFlash['detail'] !== null && ENVIRONMENT !== 'production'): ?>
+            <?php if (isset($errorFlash['detail']) && ENVIRONMENT !== 'production'): ?>
                 console.error(<?= json_encode($errorFlash['detail']) ?>);
             <?php endif; ?>
         <?php endif; ?>
