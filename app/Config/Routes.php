@@ -23,7 +23,6 @@ $routes->group('mahasiswa', function($routes) {
     $routes->get('pomodoro', 'Mahasiswa::pomodoro');    // Mengarah ke Timer Pomodoro
     $routes->get('report', 'Mahasiswa::report');        // Mengarah ke Report AI
     $routes->get('pengaturan', 'Mahasiswa::pengaturan');// Mengarah ke Pengaturan
-    $routes->post('pengaturan/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI
     $routes->post('saveCheckin', 'Mahasiswa::saveCheckin'); // Menangkap submit check-in harian
     $routes->post('simpanTugas', 'Mahasiswa::simpanTugas'); // Menangkap submit tambah tugas
     $routes->post('hapusTugas/(:any)', 'Mahasiswa::hapusTugas/$1'); // Menangkap aksi hapus tugas dengan ID dinamis

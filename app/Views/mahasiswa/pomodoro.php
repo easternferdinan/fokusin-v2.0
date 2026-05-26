@@ -10,7 +10,7 @@
 
 <?= $this->section('content') ?>
 
-<?php if (session()->get('namaMahasiswa') === 'Guest'): ?>
+<?php if (!session()->get('isLoggedIn')): ?>
 <div class="row mb-3 justify-content-center">
     <div class="col-lg-12 text-center">
         <div class="alert alert-info rounded-4 border-0 py-2 px-4 d-inline-block shadow-sm animate__animated animate__fadeInDown" style="background-color: #e3f2fd; color: #0056b3;">

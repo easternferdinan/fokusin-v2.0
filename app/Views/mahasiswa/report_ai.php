@@ -160,7 +160,22 @@
                     <tbody style="font-size: 0.9rem;">
                         <tr>
                             <td class="border-bottom-0 py-3 ps-3 text-center fw-bold text-muted">1</td>
-                            <td class="border-bottom-0 py-3"><i class="far fa-calendar-alt me-2 text-muted"></i>15/05/2026</td>
+                            <td class="border-bottom-0 py-3"></i>16/05/2026</td>
+                            <td class="border-bottom-0 py-3 text-center">7</td>
+                            <td class="border-bottom-0 py-3 text-center"><span class="badge bg-danger-subtle text-danger">Ada</span></td>
+                            <td class="border-bottom-0 py-3 text-center">24</td>
+                            <td class="border-bottom-0 py-3 text-center">5</td>
+                            <td class="border-bottom-0 py-3 text-center">1</td>
+                            <td class="border-bottom-0 py-3 text-center">2</td>
+                            <td class="border-bottom-0 py-3 text-center">5</td>
+                            <td class="border-bottom-0 py-3 text-center">1</td>
+                            <td class="border-bottom-0 py-3 text-center pe-3">
+                                <span class="badge bg-danger text-white rounded-pill px-3 py-2">Tinggi</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-bottom-0 py-3 ps-3 text-center fw-bold text-muted">1</td>
+                            <td class="border-bottom-0 py-3"></i>15/05/2026</td>
                             <td class="border-bottom-0 py-3 text-center">12</td>
                             <td class="border-bottom-0 py-3 text-center"><span class="badge bg-danger-subtle text-danger">Ada</span></td>
                             <td class="border-bottom-0 py-3 text-center">18</td>
@@ -170,12 +185,12 @@
                             <td class="border-bottom-0 py-3 text-center">4</td>
                             <td class="border-bottom-0 py-3 text-center">2</td>
                             <td class="border-bottom-0 py-3 text-center pe-3">
-                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">2 - Sedang</span>
+                                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Sedang</span>
                             </td>
                         </tr>
                         <tr>
                             <td class="border-bottom-0 py-3 ps-3 text-center fw-bold text-muted">2</td>
-                            <td class="border-bottom-0 py-3"><i class="far fa-calendar-alt me-2 text-muted"></i>14/05/2026</td>
+                            <td class="border-bottom-0 py-3"></i>14/05/2026</td>
                             <td class="border-bottom-0 py-3 text-center">26</td>
                             <td class="border-bottom-0 py-3 text-center"><span class="badge bg-success-subtle text-success">Tidak</span></td>
                             <td class="border-bottom-0 py-3 text-center">4</td>
@@ -185,7 +200,7 @@
                             <td class="border-bottom-0 py-3 text-center">2</td>
                             <td class="border-bottom-0 py-3 text-center">4</td>
                             <td class="border-bottom-0 py-3 text-center pe-3">
-                                <span class="badge bg-success rounded-pill px-3 py-2">1 - Rendah</span>
+                                <span class="badge bg-success rounded-pill px-3 py-2">Rendah</span>
                             </td>
                         </tr>
                     </tbody>

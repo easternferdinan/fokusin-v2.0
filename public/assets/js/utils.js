@@ -1,44 +1,101 @@
 const titles = {
-    'section-dashboard': ['Dashboard 🚀', 'Ringkasan aktivitas & analisis AI'],
-    'section-tugas': ['Daftar Tugas 📝', 'Kelola semua tugas kuliah dan proyekmu'],
-    'section-pomodoro': ['Timer Pomodoro 🍅', 'Tetap fokus, Raih mimpimu!'],
-    'section-report': ['Report AI 🧠', 'Hasil pemrosesan data oleh microservice'],
-    'section-pengaturan': ['Pengaturan ⚙️', 'Update informasi profile kamu']
+    'section-dashboard': ['Dashboard', 'Ringkasan aktivitas & analisis AI'],
+    'section-tugas': ['Daftar Tugas', 'Kelola semua tugas kuliah dan proyekmu'],
+    'section-pomodoro': ['Timer Pomodoro', 'Tetap fokus, Raih mimpimu!'],
+    'section-report': ['Report AI', 'Hasil pemrosesan data oleh microservice'],
+    'section-pengaturan': ['Pengaturan', 'Update informasi profile kamu']
 };
-
-// function showSection(event, sectionId) {
-//     event.preventDefault();
-//     document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-//     document.getElementById(sectionId).classList.add('active');
-//     document.querySelectorAll('.sidebar .menu-link').forEach(el => el.classList.remove('active'));
-//     event.currentTarget.classList.add('active');
-//     if(titles[sectionId]) { 
-//         document.getElementById('pageTitle').innerText = titles[sectionId][0]; 
-//         document.getElementById('pageSubtitle').innerText = titles[sectionId][1]; 
-//     }
-//     if(window.innerWidth < 768) toggleSidebar();
-// }
 
 function toggleSidebar() { 
     document.getElementById('sidebar').classList.toggle('show'); 
     document.getElementById('mobileOverlay').classList.toggle('show'); 
 }
 
-// CRUD Modal Tugas
-var modalTugasInstance = new bootstrap.Modal(document.getElementById('modalTugas'));
-function openTugasModal(judul = null) { 
-    document.getElementById('modalTugasLabel').innerText = judul ? 'Edit Tugas' : 'Tambah Tugas Baru'; 
-    document.getElementById('inputJudul').value = judul || ''; 
-    modalTugasInstance.show(); 
+// ==========================================
+// CRUD MODAL TUGAS (UPDATED)
+// ==========================================
+let modalTugasInstance = null;
+
+// Inisialisasi aman: Hanya buat instance modal jika elemennya ada di halaman tersebut
+document.addEventListener('DOMContentLoaded', function() {
+    const modalEl = document.getElementById('modalTugas');
+    if (modalEl) {
+        modalTugasInstance = new bootstrap.Modal(modalEl);
+    }
+});
+
+function openTugasModal() { 
+    document.getElementById('modalTugasTitle').innerText = 'Tambah Tugas Baru';
+    document.getElementById('btnSimpanTugas').innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
+    document.getElementById('formTugas').reset(); // Kosongkan form
+    if(modalTugasInstance) modalTugasInstance.show(); 
 }
-function simpanTugas() { 
-    modalTugasInstance.hide(); 
-    setTimeout(() => Swal.fire({ title: 'Berhasil Disimpan! ✅', icon: 'success', confirmButtonColor: '#00b894', customClass: { popup: 'rounded-4', confirmButton: 'rounded-3' } }), 300); 
+
+function editTugas(id, judul, kategori, prioritas, deadline, target, deskripsi) {
+    document.getElementById('modalTugasTitle').innerText = 'Edit Detail Tugas';
+    document.getElementById('btnSimpanTugas').innerHTML = '<i class="fas fa-check me-2"></i>Update Tugas';
+    
+    // Isi form otomatis
+    document.getElementById('inputJudul').value = judul;
+    document.getElementById('inputKategori').value = kategori;
+    document.getElementById('inputPrioritas').value = prioritas;
+    document.getElementById('inputDeadline').value = deadline;
+    document.getElementById('inputTarget').value = target;
+    document.getElementById('inputDeskripsi').value = deskripsi;
+
+    if(modalTugasInstance) modalTugasInstance.show();
 }
-function hapusTugas(nama) { 
-    Swal.fire({ title: 'Hapus Tugas?', html: `Hapus <strong>${nama}</strong>?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#ff7675', cancelButtonColor: '#dfe6e9', confirmButtonText: 'Hapus', cancelButtonText: 'Batal', customClass: { popup: 'rounded-4', confirmButton: 'rounded-3', cancelButton: 'rounded-3' } 
-    }).then((r) => { if(r.isConfirmed) Swal.fire({title:'Dihapus!', icon:'success', customClass:{popup:'rounded-4'}}) }); 
+
+function simpanTugas() {
+    const judul = document.getElementById('inputJudul').value.trim();
+    const isEdit = document.getElementById('modalTugasTitle').innerText.includes('Edit');
+    
+    if(!judul) {
+        Swal.fire({icon: 'warning', title: 'Oops!', text: 'Judul tugas tidak boleh kosong!', customClass: { popup: 'rounded-4' }});
+        return;
+    }
+
+    Swal.fire({
+        title: isEdit ? 'Memperbarui Tugas...' : 'Menyimpan Tugas...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); },
+        customClass: { popup: 'rounded-4' }
+    });
+
+    setTimeout(() => {
+        if(modalTugasInstance) modalTugasInstance.hide();
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: isEdit ? 'Tugas berhasil diperbarui.' : 'Tugas baru berhasil ditambahkan.',
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+    }, 1000);
 }
+
+function hapusTugas(id) { 
+    Swal.fire({ 
+        title: 'Hapus Tugas?', 
+        text: "Tugas ini akan dihapus permanen dari daftarmu.", 
+        icon: 'warning', 
+        showCancelButton: true, 
+        confirmButtonColor: '#d33', 
+        cancelButtonColor: '#b2bec3', 
+        confirmButtonText: '<i class="fas fa-trash-alt me-2"></i>Ya, Hapus!', 
+        cancelButtonText: 'Batal', 
+        customClass: { popup: 'rounded-4' } 
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Hapus elemen dari UI
+            const taskEl = document.getElementById('task-' + id);
+            if (taskEl) taskEl.remove();
+            
+            Swal.fire({icon: 'success', title: 'Terhapus!', text: 'Tugas berhasil dihapus.', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-4' }});
+        }
+    }); 
+}
+
 function toggleComplete(id, name) { 
     const el = document.getElementById(id); 
     const isDone = el.classList.toggle('completed'); 
@@ -48,7 +105,9 @@ function toggleComplete(id, name) {
     if(isDone) Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'success', title: `"${name}" selesai ✅` }); 
 }
 
-// Integrasi Timer & Tugas
+// ==========================================
+// INTEGRASI TIMER & TUGAS
+// ==========================================
 function goToPomodoro(taskName) {
     Swal.fire({ 
         title: 'Mulai Fokus?', 
@@ -62,11 +121,11 @@ function goToPomodoro(taskName) {
         customClass: { popup: 'rounded-4', confirmButton: 'rounded-3 px-4', cancelButton: 'rounded-3 px-4' } 
     }).then((result) => {
         if (result.isConfirmed) { 
-            // Mengarahkan ke halaman pomodoro dan membawa nama tugas via parameter URL
             window.location.href = '/mahasiswa/pomodoro?task=' + encodeURIComponent(taskName);
         }
     });
 }
+
 function pickTaskFromOffcanvas(taskName) { 
     document.getElementById('taskInput').value = taskName; 
     const offcanvasEl = document.getElementById('offcanvasTaskList'); 
@@ -75,15 +134,17 @@ function pickTaskFromOffcanvas(taskName) {
     Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'info', title: `Tugas: ${taskName}` }); 
 }
 
-// Profile & Logout
+// ==========================================
+// PROFILE & LOGOUT
+// ==========================================
 function simpanProfileAI() { 
-    // TODO: Create API endpoint for updating profile and then handle profile update.
     Swal.fire({ title: 'Tersimpan & Diproses! ✅', html: 'Data profile dan parameter AI diperbarui.<br><small class="text-muted">Model Random Forest akan menyesuaikan prediksi.</small>', icon: 'success', confirmButtonColor: '#00b894', confirmButtonText: 'Mengerti', customClass: { popup: 'rounded-4', confirmButton: 'rounded-3 px-4' } }); 
 }
+
 function confirmLogout(event) { 
     if(event) event.preventDefault(); 
     Swal.fire({ 
-        title: 'Yakin mau Logout? 👋', 
+        title: 'Yakin mau Logout?', 
         text: 'Sesi fokus kamu akan terputus.', 
         icon: 'question', 
         showCancelButton: true, 
@@ -94,33 +155,7 @@ function confirmLogout(event) {
         customClass: { popup: 'rounded-4', confirmButton: 'rounded-3', cancelButton: 'rounded-3' } 
     }).then((r) => { 
         if(r.isConfirmed) {
-            // Mengarahkan ke halaman logout CI4
             window.location.href = '/auth/logout'; 
         }
     }); 
 }
-
-// function submitCheckin(event) { 
-//     event.preventDefault(); 
-    
-//     // Contoh cara mengambil data form di CI4 menggunakan FormData
-//     const formData = new FormData(event.target);
-//     const data = {
-//         sleep: formData.get('sleep_quality'),
-//         esteem: formData.get('self_esteem'),
-//         depression: formData.get('depression'),
-//         headache: formData.get('headache')
-//     };
-
-//     console.log("Mengirim data check-in ke AI:", data);
-
-//     Swal.fire({ 
-//         title: 'Check-in Berhasil! 🌙', 
-//         text: 'Data kesehatanmu sudah tercatat dalam sistem AI.', 
-//         icon: 'success', 
-//         confirmButtonColor: '#6c5ce7' 
-//     }).then(() => {
-//         const modal = bootstrap.Modal.getInstance(document.getElementById('modalCheckin'));
-//         modal.hide();
-//     });
-// }

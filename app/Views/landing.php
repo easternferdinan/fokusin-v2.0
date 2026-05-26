@@ -168,7 +168,7 @@ from sklearn.ensemble import RandomForestClassifier
 def predict_stress(data: InputData):
     features = [
         data.mental_history, # (0: Tidak, 1: Ada)
-        data.academic_perf,   # (Skala 1-4)
+        data.academic_perf,   # (Skala 1-5)
         data.social_support,  # (Skala 1-3)
         data.sleep_quality,   # (Skala 1-3 Check-in)
         data.deadline_count   # (Integer)
@@ -195,7 +195,7 @@ def predict_stress(data: InputData):
                         <div class="d-flex align-items-start gap-3 p-3 bg-light rounded-4">
                             <i class="bi bi-emoji-dizzy fs-4 text-danger"></i>
                             <div>
-                                <h6 class="fw-bold mb-1 small">75% Mengalami Burnout</h6>
+                                <h6 class="fw-bold mb-1 small">60% Mengalami Burnout</h6>
                                 <p class="text-muted small mb-0">Berdasarkan survei, mayoritas mahasiswa pernah mengalami kelelahan akademik yang berkepanjangan.</p>
                             </div>
                         </div>
