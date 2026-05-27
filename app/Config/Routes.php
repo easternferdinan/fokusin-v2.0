@@ -20,13 +20,15 @@ $routes->group('auth', function($routes) {
 $routes->group('mahasiswa', function($routes) {
     $routes->get('/', 'Mahasiswa::index');              // Mengarah ke Dashboard
     $routes->get('tugas', 'Mahasiswa::tugas');          // Mengarah ke Daftar Tugas
+    $routes->post('simpanTugas', 'Mahasiswa::simpanTugas'); // Menangkap submit tambah tugas
+    $routes->post('updateTugas/(:any)', 'Mahasiswa::updateTugas/$1'); // Menangkap aksi update tugas dengan ID dinamis
+    $routes->post('hapusTugas/(:any)', 'Mahasiswa::hapusTugas/$1'); // Menangkap aksi hapus tugas dengan ID dinamis
+    $routes->post('toggleCompleteTugas/(:any)', 'Mahasiswa::toggleCompleteTugas/$1'); // Menangkap aksi toggle complete tugas dengan ID dinamis
     $routes->get('pomodoro', 'Mahasiswa::pomodoro');    // Mengarah ke Timer Pomodoro
     $routes->get('report', 'Mahasiswa::report');        // Mengarah ke Report AI
     $routes->get('pengaturan', 'Mahasiswa::pengaturan');// Mengarah ke Pengaturan
     $routes->post('pengaturan/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI
     $routes->post('saveCheckin', 'Mahasiswa::saveCheckin'); // Menangkap submit check-in harian
-    $routes->post('simpanTugas', 'Mahasiswa::simpanTugas'); // Menangkap submit tambah tugas
-    $routes->post('hapusTugas/(:any)', 'Mahasiswa::hapusTugas/$1'); // Menangkap aksi hapus tugas dengan ID dinamis
 });
 
 $routes->group('admin', function($routes) {

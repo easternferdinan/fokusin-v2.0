@@ -62,15 +62,44 @@ class Mahasiswa extends BaseController
     // Halaman Daftar Tugas
     public function tugas()
     {
-        // Kita tetap perlu mengirim namaMahasiswa agar Navbar tidak error
-        $data = ['namaMahasiswa' => session()->get('fullname') ?? 'Guest'];
-        return view('mahasiswa/daftar_tugas', $data);
+        $response = $this->fastApiService->getTasks();
+
+        if (session()->get('email') == null || $response->getStatusCode() == 401) {
+            return redirect()->to(base_url('auth/login'))->with('error', [
+                'title' => 'Akses Ditolak!',
+                'message' => 'Silakan login.'
+            ]);
+        }
+
+        if ($response->getStatusCode() == 200) {
+            $tasks = json_decode($response->getBody());
+
+            $data = [
+                'tasks' => $tasks,
+                'namaMahasiswa' => session()->get('fullname')
+            ];
+
+            return view('mahasiswa/daftar_tugas', $data);
+        } else {
+            log_message('error', 'Error API Tugas: ' . $response->getBody());
+            return redirect()->to(base_url('mahasiswa'))->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Terjadi kesalahan saat mengambil data tugas. Hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
     }
 
     // Simpan Tugas
     public function simpanTugas()
     {
-        
+        if (session()->get('email') == null) {
+        return redirect()->to(base_url('auth/login'))->with('error', [
+            'title' => 'Akses Ditolak!',
+            'message' => 'Silakan login terlebih dahulu.',
+        ]);
+    }
+
         $data = [
             'title'           => $this->request->getPost('title'),
             'category'        => $this->request->getPost('category'),
@@ -88,7 +117,70 @@ class Mahasiswa extends BaseController
                 'message' => ''
             ]);
         } else {
+            log_message('error', 'Error API Tugas: ' . $response->getBody());
             return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
+    }
+
+    public function updateTugas($id = null)
+    {
+        $data = [
+            'id'              => $id,
+            'title'           => $this->request->getPost('title'),
+            'category'        => $this->request->getPost('category'),
+            'priority'        => $this->request->getPost('priority'),
+            'deadline'        => $this->request->getPost('deadline'),
+            'target_duration' => $this->request->getPost('target_duration'),
+            'description'     => $this->request->getPost('description'),
+        ];
+
+        $response = $this->fastApiService->updateTask($data);
+
+        if ($response->getStatusCode() == 200) {
+            return redirect()->back()->with('success', [
+                'title' => 'Tugas Berhasil Diupdate!',
+                'message' => ''
+            ]);
+        } else {
+            log_message('error', 'Error API Tugas: ' . $response->getBody());
+            return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
+    }
+
+    public function toggleCompleteTugas($id = null)
+    {
+        $response = $this->fastApiService->toggleCompleteTask([
+            'id' => $id,
+            'completed' => (bool) $this->request->getJSON()->completed
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Tugas: ' . $response->getBody());
+        }
+        
+        return $response;
+    }
+
+    public function hapusTugas($id = null)
+    {
+        $response = $this->fastApiService->deleteTask($id);
+
+        if ($response->getStatusCode() == 200 || $response->getStatusCode() == 204) {
+            return redirect()->to('/mahasiswa/tugas')->with('success', [
+                'title' => 'Tugas Berhasil Dihapus!',
+                'message' => ''
+            ]);
+        } else {
+            log_message('error', 'Error API Tugas: ' . $response->getBody());
+            return redirect()->to('/mahasiswa/tugas')->with('error', [
                 'title' => 'Terjadi Kesalahan!',
                 'message' => 'Coba lagi nanti atau hubungi admin.',
                 'detail' => $response->getBody()

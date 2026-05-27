@@ -77,7 +77,6 @@ class FastApiService
 
     public function getDashboardData()
     {
-        // TODO: Create a single endpoint for retrieving all dashboard data in the backend
         $response = $this->client->get('dashboard/', [
             'headers' => [
                 'Authorization' => 'Bearer ' . session()->get('access_token')
@@ -91,7 +90,7 @@ class FastApiService
 
     public function getTasks()
     {
-        $response = $this->client->get('task/', [
+        $response = $this->client->get('tasks/', [
             'headers' => [
                 'Authorization' => 'Bearer ' . session()->get('access_token')
             ]
@@ -104,6 +103,41 @@ class FastApiService
     {
         $response = $this->client->post('tasks/', [
             'json' => $taskData,
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function updateTask(array $taskData)
+    {
+        $response = $this->client->put('tasks/' . $taskData['id'], [
+            'json' => $taskData,
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function toggleCompleteTask(array $taskData)
+    {
+        $response = $this->client->patch('tasks/' . $taskData['id'] . '/complete', [
+            'json' => ['completed' => (bool)$taskData['completed']],
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function deleteTask($id)
+    {
+        $response = $this->client->delete('tasks/' . $id, [
             'headers' => [
                 'Authorization' => 'Bearer ' . session()->get('access_token')
             ]

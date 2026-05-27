@@ -25,15 +25,20 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function openTugasModal() { 
+    // Modal for creating task
     document.getElementById('modalTugasTitle').innerText = 'Tambah Tugas Baru';
     document.getElementById('btnSimpanTugas').innerHTML = '<i class="fas fa-save me-2"></i>Simpan';
     document.getElementById('formTugas').reset(); // Kosongkan form
+    document.getElementById('formTugas').action = '/mahasiswa/simpanTugas';
+    document.getElementById('formTugas').method = 'POST';
     if(modalTugasInstance) modalTugasInstance.show(); 
 }
 
 function editTugas(id, judul, kategori, prioritas, deadline, target, deskripsi) {
     document.getElementById('modalTugasTitle').innerText = 'Edit Detail Tugas';
     document.getElementById('btnSimpanTugas').innerHTML = '<i class="fas fa-check me-2"></i>Update Tugas';
+    document.getElementById('formTugas').action = '/mahasiswa/updateTugas/'+id;
+    document.getElementById('formTugas').method = 'POST';
     
     // Isi form otomatis
     document.getElementById('inputJudul').value = judul;
@@ -47,34 +52,33 @@ function editTugas(id, judul, kategori, prioritas, deadline, target, deskripsi) 
 }
 
 function simpanTugas() {
+    const form = document.getElementById('formTugas');
     const judul = document.getElementById('inputJudul').value.trim();
-    const isEdit = document.getElementById('modalTugasTitle').innerText.includes('Edit');
+    const deadline = document.getElementById('inputDeadline').value;
+    const targetDuration = document.getElementById('inputTarget').value;
+    
     
     if(!judul) {
         Swal.fire({icon: 'warning', title: 'Oops!', text: 'Judul tugas tidak boleh kosong!', customClass: { popup: 'rounded-4' }});
         return;
     }
 
-    Swal.fire({
-        title: isEdit ? 'Memperbarui Tugas...' : 'Menyimpan Tugas...',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); },
-        customClass: { popup: 'rounded-4' }
-    });
+    if (!deadline) {
+        Swal.fire({icon: 'warning', title: 'Oops!', text: 'Deadline tugas tidak boleh kosong!', customClass: { popup: 'rounded-4' }});
+        return;
+    }
 
-    setTimeout(() => {
-        if(modalTugasInstance) modalTugasInstance.hide();
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: isEdit ? 'Tugas berhasil diperbarui.' : 'Tugas baru berhasil ditambahkan.',
-            confirmButtonColor: '#6366f1',
-            customClass: { popup: 'rounded-4' }
-        });
-    }, 1000);
+    if (!targetDuration) {
+        Swal.fire({icon: 'warning', title: 'Oops!', text: 'Target durasi tugas tidak boleh kosong!', customClass: { popup: 'rounded-4' }});
+        return;
+    }
+
+    form.submit();
 }
 
-function hapusTugas(id) { 
+function hapusTugas(event, id) { 
+    event.preventDefault();
+    
     Swal.fire({ 
         title: 'Hapus Tugas?', 
         text: "Tugas ini akan dihapus permanen dari daftarmu.", 
@@ -87,11 +91,7 @@ function hapusTugas(id) {
         customClass: { popup: 'rounded-4' } 
     }).then((result) => {
         if (result.isConfirmed) {
-            // Hapus elemen dari UI
-            const taskEl = document.getElementById('task-' + id);
-            if (taskEl) taskEl.remove();
-            
-            Swal.fire({icon: 'success', title: 'Terhapus!', text: 'Tugas berhasil dihapus.', confirmButtonColor: '#6366f1', customClass: { popup: 'rounded-4' }});
+            document.getElementById('form-hapus-tugas-' + id).submit();
         }
     }); 
 }
@@ -101,8 +101,25 @@ function toggleComplete(id, name) {
     const isDone = el.classList.toggle('completed'); 
     const icon = el.querySelector('.custom-check'); 
     icon.classList.toggle('checked', isDone); 
-    icon.querySelector('i').classList.toggle('d-none', !isDone); 
-    if(isDone) Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'success', title: `"${name}" selesai ✅` }); 
+    icon.querySelector('i').classList.toggle('d-none', !isDone);
+
+    console.log()
+
+    fetch('/mahasiswa/toggleCompleteTugas/' + id, {
+        method: 'POST',
+        body: JSON.stringify({ completed: isDone }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (response.ok) {
+            if(isDone) Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'success', title: `"${name}" selesai ✅` }); 
+        } else {
+            Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'error', title: `"${name}" gagal diselesaikan` });
+        }
+    }).catch(error => {
+        Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'error', title: `Terjadi Kesalahan` });
+    });
 }
 
 // ==========================================
