@@ -83,7 +83,6 @@
     <div class="card p-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold m-0">Tugas Mendesak</h5>
-            <button class="btn btn-primary btn-sm px-3 rounded-3 shadow-sm" onclick="openTugasModal()"><i class="fas fa-plus me-1"></i> Tambah</button>
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
