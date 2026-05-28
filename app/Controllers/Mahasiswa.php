@@ -19,9 +19,9 @@ class Mahasiswa extends BaseController
         $response = $this->fastApiService->getDashboardData();
                     
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
-            return redirect()->to(base_url('auth/login'))->with('error', [
-                'title' => 'Akses Ditolak!',
-                'message' => 'Silakan login.'
+            return redirect()->back()->with('error', [
+                'title' => 'Akses Ditolak',
+                'message' => 'Login untuk menggunakan fitur ini.'
             ]);
         }
 
@@ -65,9 +65,9 @@ class Mahasiswa extends BaseController
         $response = $this->fastApiService->getTasks();
 
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
-            return redirect()->to(base_url('auth/login'))->with('error', [
-                'title' => 'Akses Ditolak!',
-                'message' => 'Silakan login.'
+            return redirect()->back()->with('error', [
+                'title' => 'Akses Ditolak',
+                'message' => 'Login untuk menggunakan fitur ini.'
             ]);
         }
 
@@ -94,9 +94,9 @@ class Mahasiswa extends BaseController
     public function simpanTugas()
     {
         if (session()->get('email') == null) {
-        return redirect()->to(base_url('auth/login'))->with('error', [
-            'title' => 'Akses Ditolak!',
-            'message' => 'Silakan login terlebih dahulu.',
+        return redirect()->back()->with('error', [
+            'title' => 'Akses Ditolak',
+            'message' => 'Login untuk menggunakan fitur ini.',
         ]);
     }
 
@@ -128,6 +128,13 @@ class Mahasiswa extends BaseController
 
     public function updateTugas($id = null)
     {
+        if (session()->get('email') == null) {
+            return redirect()->back()->with('error', [
+                'title' => 'Akses Ditolak',
+                'message' => 'Login untuk menggunakan fitur ini.'
+            ]);
+        }
+
         $data = [
             'id'              => $id,
             'title'           => $this->request->getPost('title'),
@@ -157,6 +164,13 @@ class Mahasiswa extends BaseController
 
     public function toggleCompleteTugas($id = null)
     {
+        if (session()->get('email') == null) {
+            return redirect()->back()->with('error', [
+                'title' => 'Akses Ditolak',
+                'message' => 'Login untuk menggunakan fitur ini.'
+            ]);
+        }
+
         $response = $this->fastApiService->toggleCompleteTask([
             'id' => $id,
             'completed' => (bool) $this->request->getJSON()->completed
@@ -171,6 +185,13 @@ class Mahasiswa extends BaseController
 
     public function hapusTugas($id = null)
     {
+        if (session()->get('email') == null) {
+            return redirect()->back()->with('error', [
+                'title' => 'Akses Ditolak',
+                'message' => 'Login untuk menggunakan fitur ini.'
+            ]);
+        }
+
         $response = $this->fastApiService->deleteTask($id);
 
         if ($response->getStatusCode() == 200 || $response->getStatusCode() == 204) {
