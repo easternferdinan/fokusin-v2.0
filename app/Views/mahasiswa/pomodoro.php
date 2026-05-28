@@ -10,7 +10,9 @@
 
 <?= $this->section('content') ?>
 
-<?php if (session()->get('namaMahasiswa') === 'Guest'): ?>
+<?php if ($namaMahasiswa === 'Guest'): ?>
+    <!-- TODO: Tambahkan logic untuk menghitung sisa sesi -->
+    <!-- NOTE: Logic untuk guest trial berada di file pomodoro.js, method startTimer() dan kunciTimerGuest() -->
 <div class="row mb-3 justify-content-center">
     <div class="col-lg-12 text-center">
         <div class="alert alert-info rounded-4 border-0 py-2 px-4 d-inline-block shadow-sm animate__animated animate__fadeInDown" style="background-color: #e3f2fd; color: #0056b3;">
@@ -42,6 +44,15 @@
                 </div>
             </div>
             
+            <!-- NOTE: Completed cycles might be broken. Scenario: -->
+            <!-- * User open the page -->
+            <!-- * User click mulai (focus mode) -->
+            <!-- * User click skip -->
+            <!-- * User click mulai (break mode) -->
+            <!-- * User click skip -->
+            <!-- |-> Completed cycles stays 0, but it should be 1. Unless, by design it doesn't count skip as a cycle. -->
+            <!-- NOTE: After further testing, turns out the cycle count doesn't count skip as a cycle. -->
+            <!-- TODO: UNIMPORTANT but neat, sync with db state on reload and handle cycles -->
             <h5 class="text-muted mb-4">Completed Cycles: <span id="cycleCount" class="fw-bold text-dark">0</span></h5>
             
             <div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
@@ -54,7 +65,7 @@
             <div class="px-md-5 d-flex gap-2 align-items-center">
                 <input type="text" id="taskInput" class="task-input-pomodoro" placeholder="Sedang mengerjakan apa? (Bebas diisi)">
                 
-                <?php if (session()->get('isLoggedIn')): ?>
+                <?php if (session()->get('email')): ?>
                 <button class="btn btn-outline-secondary rounded-3 flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTaskList" title="Pilih dari daftar tugas">
                     <i class="fas fa-list"></i>
                 </button>

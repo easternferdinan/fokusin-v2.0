@@ -25,6 +25,10 @@ $routes->group('mahasiswa', function($routes) {
     $routes->post('hapusTugas/(:any)', 'Mahasiswa::hapusTugas/$1'); // Menangkap aksi hapus tugas dengan ID dinamis
     $routes->post('toggleCompleteTugas/(:any)', 'Mahasiswa::toggleCompleteTugas/$1'); // Menangkap aksi toggle complete tugas dengan ID dinamis
     $routes->get('pomodoro', 'Mahasiswa::pomodoro');    // Mengarah ke Timer Pomodoro
+    $routes->post('createPomodoro', 'Mahasiswa::createPomodoro'); // Menangkap aksi create pomodoro
+    $routes->post('pausePomodoro/(:any)', 'Mahasiswa::pausePomodoro/$1');
+    $routes->post('resumePomodoro/(:any)', 'Mahasiswa::resumePomodoro/$1');
+    $routes->post('completePomodoro/(:any)', 'Mahasiswa::completePomodoro/$1');
     $routes->get('report', 'Mahasiswa::report');        // Mengarah ke Report AI
     $routes->get('pengaturan', 'Mahasiswa::pengaturan');// Mengarah ke Pengaturan
     $routes->post('pengaturan/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI

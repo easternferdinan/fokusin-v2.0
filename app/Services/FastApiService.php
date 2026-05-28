@@ -145,4 +145,51 @@ class FastApiService
 
         return $response;
     }
+
+    // =============================== POMODORO =============================
+
+    public function createPomodoro(array $pomodoroData)
+    {
+        $response = $this->client->post('pomodoro/', [
+            'json' => $pomodoroData,
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function pausePomodoro($id)
+    {
+        $response = $this->client->patch('pomodoro/' . $id . '/pause', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function resumePomodoro($id)
+    {
+        $response = $this->client->patch('pomodoro/' . $id . '/resume', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function completePomodoro($id)
+    {
+        $response = $this->client->patch('pomodoro/' . $id . '/complete', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
 }

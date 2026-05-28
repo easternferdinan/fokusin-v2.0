@@ -220,6 +220,55 @@ class Mahasiswa extends BaseController
         return view('mahasiswa/pomodoro', $data);
     }
 
+    public function createPomodoro()
+    {
+        $response = $this->fastApiService->createPomodoro([
+            'title' => $this->request->getJSON()->title,
+            'status' => 'active',
+            'duration' => (int) $this->request->getJSON()->duration,
+            'break_duration' => (int) $this->request->getJSON()->break_duration
+        ]);
+
+        if ($response->getStatusCode() !== 201) {
+            log_message('error', 'Error API Pomodoro: ' . $response->getBody());
+        }
+
+        return $response;
+    }
+
+    public function pausePomodoro($id = null)
+    {
+        $response = $this->fastApiService->pausePomodoro($id);
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Pomodoro: ' . $response->getBody());
+        }
+
+        return $response;
+    }
+
+    public function resumePomodoro($id = null)
+    {
+        $response = $this->fastApiService->resumePomodoro($id);
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Pomodoro: ' . $response->getBody());
+        }
+
+        return $response;
+    }
+
+    public function completePomodoro($id = null)
+    {
+        $response = $this->fastApiService->completePomodoro($id);
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Pomodoro: ' . $response->getBody());
+        }
+
+        return $response;
+    }
+
     // Halaman Report AI
     public function report()
     {
