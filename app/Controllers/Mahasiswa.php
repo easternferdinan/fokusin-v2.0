@@ -13,7 +13,9 @@ class Mahasiswa extends BaseController
         $this->fastApiService = new FastApiService();
     }
 
-    // Halaman Dashboard
+    // ====================================================================================================
+    // DASHBOARD
+    // ====================================================================================================
     public function index()
     {
         $response = $this->fastApiService->getDashboardData();
@@ -27,9 +29,6 @@ class Mahasiswa extends BaseController
 
         if ($response->getStatusCode() == 200) {
             $dashboardData = json_decode($response->getBody());
-
-            // dummy prediction data for testing
-            // $dashboardData->latest_burnout_prediction: ['rendah', 'sedang', 'tinggi'] = null;
     
             $waktuFokus = $dashboardData->today_pomodoro_minutes;
             if ($waktuFokus == 0) {
@@ -59,7 +58,9 @@ class Mahasiswa extends BaseController
         }
     }
 
-    // Halaman Daftar Tugas
+    // ====================================================================================================
+    // TUGAS
+    // ====================================================================================================
     public function tugas()
     {
         $response = $this->fastApiService->getTasks();
@@ -90,7 +91,6 @@ class Mahasiswa extends BaseController
         }
     }
 
-    // Simpan Tugas
     public function simpanTugas()
     {
         if (session()->get('email') == null) {
@@ -209,7 +209,9 @@ class Mahasiswa extends BaseController
         }
     }
 
-    // Halaman Timer Pomodoro
+    // ====================================================================================================
+    // POMODORO
+    // ====================================================================================================
     public function pomodoro()
     {
         $data = [
@@ -269,7 +271,9 @@ class Mahasiswa extends BaseController
         return $response;
     }
 
-    // Halaman Report AI
+    // ====================================================================================================
+    // REPORT
+    // ====================================================================================================
     public function report()
     {
         // --- VARIABEL KONTROL UNTUK TESTING (Ubah true/false di sini untuk tes tampilan) ---
@@ -292,7 +296,9 @@ class Mahasiswa extends BaseController
         return view('mahasiswa/report_ai', $data);
     }
 
-    // Halaman Pengaturan
+    // ====================================================================================================
+    // PENGATURAN
+    // ====================================================================================================
     public function pengaturan()
     {
         $data = ['namaMahasiswa' => session()->get('fullname')];
