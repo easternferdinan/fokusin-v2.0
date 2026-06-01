@@ -12,6 +12,7 @@ class Mahasiswa extends BaseController
 
     public function __construct()
     {
+        helper('auth');
         $this->fastApiService = new FastApiService();
         $this->assesmentDataConverter = new AssesmentDataConverter();
     }
@@ -24,10 +25,7 @@ class Mahasiswa extends BaseController
         $response = $this->fastApiService->getDashboardData();
                     
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
-            return redirect()->back()->with('error', [
-                'title' => 'Akses Ditolak',
-                'message' => 'Login untuk menggunakan fitur ini.'
-            ]);
+            return denyAccess();
         }
 
         if ($response->getStatusCode() == 200) {
@@ -69,10 +67,7 @@ class Mahasiswa extends BaseController
         $response = $this->fastApiService->getTasks();
 
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
-            return redirect()->back()->with('error', [
-                'title' => 'Akses Ditolak',
-                'message' => 'Login untuk menggunakan fitur ini.'
-            ]);
+            return denyAccess();
         }
 
         if ($response->getStatusCode() == 200) {
@@ -97,10 +92,7 @@ class Mahasiswa extends BaseController
     public function simpanTugas()
     {
         if (session()->get('email') == null) {
-        return redirect()->back()->with('error', [
-            'title' => 'Akses Ditolak',
-            'message' => 'Login untuk menggunakan fitur ini.',
-        ]);
+        return denyAccess();
     }
 
         $data = [
@@ -132,10 +124,7 @@ class Mahasiswa extends BaseController
     public function updateTugas($id = null)
     {
         if (session()->get('email') == null) {
-            return redirect()->back()->with('error', [
-                'title' => 'Akses Ditolak',
-                'message' => 'Login untuk menggunakan fitur ini.'
-            ]);
+            return denyAccess();
         }
 
         $data = [
@@ -168,10 +157,7 @@ class Mahasiswa extends BaseController
     public function toggleCompleteTugas($id = null)
     {
         if (session()->get('email') == null) {
-            return redirect()->back()->with('error', [
-                'title' => 'Akses Ditolak',
-                'message' => 'Login untuk menggunakan fitur ini.'
-            ]);
+            return denyAccess();
         }
 
         $response = $this->fastApiService->toggleCompleteTask([
@@ -189,10 +175,7 @@ class Mahasiswa extends BaseController
     public function hapusTugas($id = null)
     {
         if (session()->get('email') == null) {
-            return redirect()->back()->with('error', [
-                'title' => 'Akses Ditolak',
-                'message' => 'Login untuk menggunakan fitur ini.'
-            ]);
+            return denyAccess();
         }
 
         $response = $this->fastApiService->deleteTask($id);
@@ -280,10 +263,7 @@ class Mahasiswa extends BaseController
     public function report()
     {
         if (session()->get('email') == null) {
-            return redirect()->back()->with('error', [
-                'title' => 'Akses Ditolak',
-                'message' => 'Login untuk menggunakan fitur ini.'
-            ]);
+            return denyAccess();
         }
 
         $requirementsResponse = $this->fastApiService->checkAnalysisRequirementsStatus();
