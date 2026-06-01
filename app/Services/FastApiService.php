@@ -192,4 +192,40 @@ class FastApiService
 
         return $response;
     }
+
+    // =============================== AI ANALYSIS =============================
+
+    public function getAllAnalysisData()
+    {
+        $response = $this->client->get('analysis/', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function checkAnalysisRequirementsStatus()
+    {
+        $response = $this->client->get('analysis/requirements-status', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function createStressAnalysis(array $analysisData)
+    {
+        $response = $this->client->post('analysis/', [
+            'json' => $analysisData,
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
 }

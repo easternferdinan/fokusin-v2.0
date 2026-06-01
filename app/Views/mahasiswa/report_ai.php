@@ -17,8 +17,8 @@
     <div class="col-md-4">
         <?php 
         $bgGradient = 'linear-gradient(135deg, #ff7675 0%, #fab1a0 100%)'; 
-        if ($stressCategory == 'Sedang') $bgGradient = 'linear-gradient(135deg, #fdcb6e 0%, #ffeaa7 100%)';
-        if ($stressCategory == 'Rendah') $bgGradient = 'linear-gradient(135deg, #00b894 0%, #55efc4 100%)';
+        if ($hasFilledInputs && $stressCategory == 'Sedang') $bgGradient = 'linear-gradient(135deg, #fdcb6e 0%, #ffeaa7 100%)';
+        if ($hasFilledInputs && $stressCategory == 'Rendah') $bgGradient = 'linear-gradient(135deg, #00b894 0%, #55efc4 100%)';
         ?>
         
         <div class="card p-4 text-center h-100 d-flex flex-column align-items-center border-0 shadow-sm" style="background: <?= $bgGradient ?>; color: white; border-radius: 1rem;">
@@ -46,11 +46,11 @@
                 <div class="d-flex flex-column justify-content-center align-items-center flex-grow-1 w-100">
                     <div class="p-3 rounded-4 w-100 animate__animated animate__fadeIn" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);">
                         <p class="small m-0 opacity-90 mb-1">Prediksi Stress Level</p>
-                        <h1 class="fw-bolder m-0" style="font-size: 3rem;"><?= $stressScore ?></h1>
-                        <h5 class="fw-bold m-0"><?= $stressCategory ?></h5>
+                        <h1 class="fw-bolder m-0" style="font-size: 3rem;"><?= $stressCategory ?></h1>
                         <p class="small m-0 opacity-75 mt-1">
                             <?= $stressCategory == 'Tinggi' ? 'High Risk Zone' : ($stressCategory == 'Sedang' ? 'Warning Zone' : 'Safe Zone') ?>
                         </p>
+                        <p class="small mb-0 mt-2 opacity-90">Dianalisis pada pukul <?= (new DateTime($latestAnalysis['created_at']))->setTimezone(new DateTimeZone('Asia/Jakarta'))->format('H:i:s') ?> WIB</p>
                     </div>
                 </div>
             <?php endif; ?>
@@ -62,7 +62,7 @@
             
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                 <div>
-                    <h6 class="fw-bold text-dark m-0"><i class="fas fa-chart-area me-2 text-primary"></i>Tren Tingkat Stres Kamu</h6>
+                    <h6 class="fw-bold text-dark m-0"><i class="fas fa-chart-area me-2 text-primary"></i>Tren Tingkat Stres Kamu !UNIMPLEMENTED!</h6>
                     <small class="text-muted">Pantau fluktuasi kondisi mentalmu dari waktu ke waktu.</small>
                 </div>
                 
@@ -87,7 +87,7 @@
 
     <div class="col-md-5">
         <div class="card p-4 h-100 border-0 shadow-sm" style="border-radius: 1rem;">
-            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-chart-pie me-2 text-danger"></i>Feature Importance</h6>
+            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-chart-pie me-2 text-danger"></i>Feature Importance !UNIMPLEMENTED!</h6>
             
             <div class="mb-3">
                 <div class="d-flex justify-content-between mb-1">
@@ -123,7 +123,7 @@
 
     <div class="col-md-7">
         <div class="card p-4 h-100 border-0 shadow-sm" style="border-radius: 1rem; border-left: 5px solid #6c5ce7 !important; background: linear-gradient(to right, #f8f7ff, #ffffff);">
-            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-robot me-2" style="color: #6c5ce7;"></i>Rekomendasi</h6>
+            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-robot me-2" style="color: #6c5ce7;"></i>Rekomendasi !UNIMPLEMENTED!</h6>
             <ul class="list-unstyled mb-0">
                 <li class="d-flex mb-3"><span class="me-3 mt-1"><i class="fas fa-exclamation-circle text-danger fa-lg"></i></span><div><strong style="color:#d63031">Delegasi Tugas.</strong><p class="text-muted small mb-0">Ada 2 tugas high-priority bertabrakan. Segera kerjakan yang paling mendekati deadline.</p></div></li>
                 <li class="d-flex"><span class="me-3 mt-1"><i class="fas fa-bed text-success fa-lg"></i></span><div><strong style="color:#00b894">Perbaiki Tidur.</strong><p class="text-muted small mb-0">Kualitas tidurmu menurun drastis 3 hari terakhir, ini pemicu stres utamamu.</p></div></li>
@@ -151,29 +151,70 @@
                             <th class="fw-semibold border-0 py-3 text-center">Depresi</th>
                             <th class="fw-semibold border-0 py-3 text-center">Sakit Kepala</th>
                             <th class="fw-semibold border-0 py-3 text-center">Kualitas Tidur</th>
-                            <th class="fw-semibold border-0 py-3 text-center">Akademik Performa</th>
+                            <th class="fw-semibold border-0 py-3 text-center">Performa Akademik</th>
                             <th class="fw-semibold border-0 py-3 text-center">Beban Belajar</th>
                             <th class="fw-semibold border-0 py-3 text-center">Dukungan Sosial</th>
                             <th class="fw-semibold rounded-end-3 border-0 py-3 text-center pe-3">Stres Level</th>
                         </tr>
                     </thead>
                     <tbody style="font-size: 0.9rem;">
-                        <tr>
-                            <td class="border-bottom-0 py-3 ps-3 text-center fw-bold text-muted">1</td>
-                            <td class="border-bottom-0 py-3"></i>16/05/2026</td>
-                            <td class="border-bottom-0 py-3 text-center">7</td>
-                            <td class="border-bottom-0 py-3 text-center"><span class="badge bg-danger-subtle text-danger">Ada</span></td>
-                            <td class="border-bottom-0 py-3 text-center">24</td>
-                            <td class="border-bottom-0 py-3 text-center">5</td>
-                            <td class="border-bottom-0 py-3 text-center">1</td>
-                            <td class="border-bottom-0 py-3 text-center">2</td>
-                            <td class="border-bottom-0 py-3 text-center">5</td>
-                            <td class="border-bottom-0 py-3 text-center">1</td>
-                            <td class="border-bottom-0 py-3 text-center pe-3">
-                                <span class="badge bg-danger text-white rounded-pill px-3 py-2">Tinggi</span>
-                            </td>
-                        </tr>
-                        <tr>
+                        <?php if (count($allStressData) > 0) { ?>
+                            <?php 
+                                // Definisikan warna badge berdasarkan stress level
+                                $stressLevelColorMap = [
+                                    'Tinggi' => 'danger',
+                                    'Sedang' => 'warning',
+                                    'Rendah' => 'success'
+                                ];
+
+                                // Definisikan warna badge berdasarkan riwayat mental health
+                                $mentalHealthColorMap = [
+                                    true => 'danger',
+                                    false => 'success'
+                                ];
+                            ?>
+                            <?php for ($i = 0; $i < (count($allStressData) >= 7 ? 7 : count($allStressData)); $i++) { ?>
+                            <tr>
+                                <td class="border-bottom-0 py-3 ps-3 text-center fw-bold text-muted"><?= $i + 1 ?></td>
+                                <td class="border-bottom-0 py-3"></i><?= date('d/m/Y', strtotime($allStressData[$i]['created_at'])) ?></td>
+                                <td class="border-bottom-0 py-3 text-center"><?= $allStressData[$i]['self_esteem'] ?></td>
+                                <td class="border-bottom-0 py-3 text-center">
+                                    <?php 
+                                        // Ambil warna badge, default 'secondary' jika tidak ditemukan
+                                        $mentalHealthBadgeColor = $mentalHealthColorMap[$allStressData[$i]['mental_health_history']] ?? 'secondary';
+                                    ?>
+
+                                    <span class="badge bg-<?= $mentalHealthBadgeColor ?> text-white rounded-pill px-3 py-2"><?= $allStressData[$i]['mental_health_history'] ? 'Ada' : 'Tidak Ada' ?></span>
+                                </td>
+                                <td class="border-bottom-0 py-3 text-center"><?= $allStressData[$i]['depression'] ?></td>
+                                <td class="border-bottom-0 py-3 text-center"><?= $allStressData[$i]['headache'] ?></td>
+                                <td class="border-bottom-0 py-3 text-center"><?= $allStressData[$i]['sleep_quality'] ?></td>
+                                <td class="border-bottom-0 py-3 text-center"><?= $allStressData[$i]['academic_performance'] ?></td>
+                                <td class="border-bottom-0 py-3 text-center"><?= $allStressData[$i]['study_load'] ?></td>
+                                <td class="border-bottom-0 py-3 text-center"><?= $allStressData[$i]['social_support'] ?></td>
+                                <td class="border-bottom-0 py-3 text-center pe-3">
+                                    <?php 
+                                        // Ambil warna badge, default 'secondary' jika tidak ditemukan
+                                        $stressLevelBadgeColor = $stressLevelColorMap[$allStressData[$i]['stress_level']] ?? 'secondary';
+                                    ?>
+
+                                    <span class="badge bg-<?= $stressLevelBadgeColor ?> text-white rounded-pill px-3 py-2"><?= $allStressData[$i]['stress_level'] ?></span>
+                                </td>
+                            </tr>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <tr>
+                                <td colspan="10" class="text-center py-3">
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-chart-pie fa-2x text-muted mb-3"></i>
+                                        <h6 class="text-muted fw-semibold">Belum Ada Riwayat Prediksi</h6>
+                                        <p class="text-muted small">Lakukan aktivitas untuk menghasilkan prediksi AI.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php } ?>
+
+                        <!-- <tr>
                             <td class="border-bottom-0 py-3 ps-3 text-center fw-bold text-muted">1</td>
                             <td class="border-bottom-0 py-3"></i>15/05/2026</td>
                             <td class="border-bottom-0 py-3 text-center">12</td>
@@ -202,7 +243,7 @@
                             <td class="border-bottom-0 py-3 text-center pe-3">
                                 <span class="badge bg-success rounded-pill px-3 py-2">Rendah</span>
                             </td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
             </div>
@@ -237,14 +278,41 @@
                                 <th class="fw-semibold py-3 text-center">Depresi</th>
                                 <th class="fw-semibold py-3 text-center">Sakit Kepala</th>
                                 <th class="fw-semibold py-3 text-center">Kualitas Tidur</th>
-                                <th class="fw-semibold py-3 text-center">Akademik Performa</th>
+                                <th class="fw-semibold py-3 text-center">Performa Akademik</th>
                                 <th class="fw-semibold py-3 text-center">Beban Belajar</th>
                                 <th class="fw-semibold py-3 text-center">Dukungan Sosial</th>
                                 <th class="fw-semibold py-3 text-center pe-3">Stres Level</th>
                             </tr>
                         </thead>
                         <tbody style="font-size: 0.9rem;">
-                            <tr>
+                            <?php if (count($allStressData) > 0) { ?>
+                                <?php foreach ($allStressData as $key => $value) { ?>
+                                <tr>
+                                    <td class="py-3 ps-3 text-center fw-bold text-muted"><?= $key + 1 ?></td>
+                                    <td class="py-3"><?= date('d/m/Y', strtotime($value['created_at'])) ?></td>
+                                    <td class="py-3 text-center"><?= $value['self_esteem'] ?></td>
+                                    <td class="py-3 text-center"><?= $value['mental_health_history'] ? 'Ada' : 'Tidak Ada' ?></td>
+                                    <td class="py-3 text-center"><?= $value['depression'] ?></td>
+                                    <td class="py-3 text-center"><?= $value['headache'] ?></td>
+                                    <td class="py-3 text-center"><?= $value['sleep_quality'] ?></td>
+                                    <td class="py-3 text-center"><?= $value['academic_performance'] ?></td>
+                                    <td class="py-3 text-center"><?= $value['study_load'] ?></td>
+                                    <td class="py-3 text-center"><?= $value['social_support'] ?></td>
+                                    <td class="py-3 text-center pe-3"><?= $value['stress_level'] ?></td>
+                                </tr>
+                                <?php } ?>
+                            <?php } else { ?>
+                                <tr>
+                                    <td colspan="11" class="text-center py-3">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-chart-pie fa-2x text-muted mb-3"></i>
+                                            <h6 class="text-muted fw-semibold">Belum Ada Riwayat Prediksi</h6>
+                                            <p class="text-muted small">Lakukan aktivitas untuk menghasilkan prediksi AI.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                            <!-- <tr>
                                 <td class="py-3 ps-3 text-center fw-bold text-muted">1</td>
                                 <td class="py-3">15/05/2026</td>
                                 <td class="py-3 text-center">12</td>
@@ -269,7 +337,7 @@
                                 <td class="py-3 text-center">2</td>
                                 <td class="py-3 text-center">4</td>
                                 <td class="py-3 text-center pe-3">1 - Rendah</td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>

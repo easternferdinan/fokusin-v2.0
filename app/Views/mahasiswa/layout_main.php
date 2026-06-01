@@ -170,7 +170,7 @@
                     <h5 class="fw-bold text-dark mb-1 text-center">Daily Check-in 🌙</h5>
                     <p class="text-muted small mb-4 text-center">Bagaimana kondisi belajarmu hari ini?</p>
 
-                    <form id="formCheckin" onsubmit="return submitCheckin(event)">
+                    <form action="<?= base_url('mahasiswa/saveCheckin') ?>" method="post" id="formCheckin" onsubmit="return submitCheckin(event)">
                         <label class="form-label fw-bold small text-muted text-uppercase mb-3">Kualitas Istirahat Semalam</label>
                         <div class="d-flex justify-content-around mb-4">
                             <div class="text-center">

@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Services\FastApiService;
+use App\Services\AssesmentDataConverter;
 
 class Mahasiswa extends BaseController
 {
     protected $fastApiService;
+    protected $assesmentDataConverter;
 
     public function __construct()
     {
         $this->fastApiService = new FastApiService();
+        $this->assesmentDataConverter = new AssesmentDataConverter();
     }
 
     // ====================================================================================================
@@ -276,24 +279,92 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function report()
     {
-        // --- VARIABEL KONTROL UNTUK TESTING (Ubah true/false di sini untuk tes tampilan) ---
-        $hasTasks        = false;  // Apakah mahasiswa punya tugas?
-        $hasPomodoro     = false;  // Apakah mahasiswa sudah pernah pakai sesi pomodoro?
-        $hasFilledInputs = false; // Apakah hari ini sudah input data prediksi stres?
-        $stressCategory  = 'Tinggi'; // Kategori hasil AI kelak: 'Rendah', 'Sedang', 'Tinggi'
+        if (session()->get('email') == null) {
+            return redirect()->back()->with('error', [
+                'title' => 'Akses Ditolak',
+                'message' => 'Login untuk menggunakan fitur ini.'
+            ]);
+        }
 
-        // Ambil data nama seperti biasa
+        $requirementsResponse = $this->fastApiService->checkAnalysisRequirementsStatus();
+
+        if ($requirementsResponse->getStatusCode() !== 200) {
+            log_message('error', 'Error API Requirements Status: ' . $requirementsResponse->getBody());
+            return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $requirementsResponse->getBody()
+            ]);
+        }
+
+        $allAnalysisResponse = $this->fastApiService->getAllAnalysisData();
+
+        if ($allAnalysisResponse->getStatusCode() !== 200) {
+            log_message('error', 'Error API All Analysis Data: ' . $allAnalysisResponse->getBody());
+            return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $allAnalysisResponse->getBody()
+            ]);
+        }
+
+        $analysisRequirements = json_decode($requirementsResponse->getBody(), true);
+        $allAnalysisData = json_decode($allAnalysisResponse->getBody(), true);
+
+        // TODO: Add option for user to retake the stress assesment, if already taken.
+        // TODO: Add update stress analysis endpoint (in case user wants to retake the stress analysis)
+
+        // TODO: Add endpoints to retrieve 'feature importance'
+
+        // TODO: Add recommendation algorithm based on user's data (tasks, pomodoro, sleep quality, etc.)
+
         $data = [
             'title'           => 'Report AI',
             'namaMahasiswa'   => session()->get('fullname') ?? 'Guest',
-            'hasTasks'        => $hasTasks,
-            'hasPomodoro'     => $hasPomodoro,
-            'hasFilledInputs' => $hasFilledInputs,
-            'stressScore'     => 3, // Contoh skor stres yang diprediksi AI
-            'stressCategory'  => $stressCategory
+            'hasTasks'        => $analysisRequirements['task_done_today'],
+            'hasPomodoro'     => $analysisRequirements['pomodoro_done_today'],
+            'hasFilledInputs' => $analysisRequirements['stress_assesment_done_today'],
+            'allStressData'   => $allAnalysisData,
+            'latestAnalysis'  => $allAnalysisData[0] ?? null,
+            'stressCategory'  => $allAnalysisData[0]['stress_level'] ?? null, // Give latest stress level analysis to be presented
         ];
 
         return view('mahasiswa/report_ai', $data);
+    }
+
+    public function saveCheckin()
+    {
+        // Tangkap data dari JS
+        $sleep      = $this->request->getPost('sleep_quality');
+        $esteem     = $this->request->getPost('self_esteem_pct');
+        $depression = $this->request->getPost('depression_pct');
+        $headache   = $this->request->getPost('headache');
+
+        // (Proses simpan ke database di sini...)
+
+        $selfEsteemScore = $this->assesmentDataConverter->convertSelfEsteem($esteem);
+        $depressionScore = $this->assesmentDataConverter->convertDepression($depression);
+
+        $data = [
+            'sleep_quality' => $sleep,
+            'self_esteem' => $selfEsteemScore,
+            'depression' => $depressionScore,
+            'headache' => $headache
+        ];
+
+        $response = $this->fastApiService->createStressAnalysis($data);
+
+        if ($response->getStatusCode() !== 201) {
+            log_message('error', 'Error API Stress Analysis: ' . $response->getBody());
+            return redirect()->to(base_url('mahasiswa/report'))->with('error', [
+                'title' => 'Gagal menyimpan check-in',
+                'message' => 'Analisis stres Anda gagal disimpan.',
+                'detail' => $response->getBody()
+            ]);
+        }
+
+        // Beri balasan ke JS bahwa data sudah aman
+        return redirect()->to(base_url('mahasiswa/report'));
     }
 
     // ====================================================================================================
@@ -325,19 +396,5 @@ class Mahasiswa extends BaseController
         }
 
         return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profile. Silahkan coba lagi.<br>' . $response->getBody());
-    }
-
-    public function saveCheckin()
-    {
-        // Tangkap data dari JS
-        $sleep      = $this->request->getPost('sleep_quality');
-        $esteem     = $this->request->getPost('self_esteem');
-        $depression = $this->request->getPost('depression');
-        $headache   = $this->request->getPost('headache');
-
-        // (Proses simpan ke database di sini...)
-
-        // Beri balasan ke JS bahwa data sudah aman
-        return $this->response->setJSON(['status' => 'success']);
     }
 }
