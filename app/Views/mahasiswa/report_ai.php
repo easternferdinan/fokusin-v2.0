@@ -28,7 +28,7 @@
                 <div class="d-flex flex-column justify-content-center align-items-center flex-grow-1 w-100 gap-3">
                     
                     <div class="p-3 w-100 rounded-4" style="background: rgba(255, 255, 255, 0.1); border: 1.5px dashed rgba(255, 255, 255, 0.5);">
-                        <p class="mb-1 fw-bold text-white" style="font-size: 0.95rem;">Belum ada prediksi siap tampil</p>
+                        <p class="mb-1 fw-bold text-white" style="font-size: 0.95rem;">Belum ada prediksi untuk hari ini</p>
                         <p class="small m-0 text-white opacity-75">Klik tombol untuk menampilkan hasil prediksi.</p>
                     </div>
                     
