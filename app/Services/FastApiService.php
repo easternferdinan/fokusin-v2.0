@@ -244,7 +244,10 @@ class FastApiService
 
     public function getStressTrend(string $period)
     {
-        $response = $this->client->get('report/stress-trend?period=' . $period, [
+        $response = $this->client->get('report/stress-trend', [
+            'query' => [
+                'period' => $period
+            ],
             'headers' => [
                 'Authorization' => 'Bearer ' . session()->get('access_token')
             ]
