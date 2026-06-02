@@ -78,7 +78,7 @@
                 
                 <span id="chartPlaceholder" class="text-muted small fw-semibold position-absolute text-center ps-3" style="z-index: 1;">
                     <i class="fas fa-chart-line fa-2x mb-2 opacity-50"></i><br>
-                    Grafik akan muncul di sini
+                    Memuat grafik...
                 </span>
             </div>
             
@@ -87,35 +87,59 @@
 
     <div class="col-md-5">
         <div class="card p-4 h-100 border-0 shadow-sm" style="border-radius: 1rem;">
-            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-chart-pie me-2 text-danger"></i>Feature Importance !UNIMPLEMENTED!</h6>
+            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-chart-pie me-2 text-danger"></i>Level Pemicu Stres</h6>
             
+            <?php
+            if (isset($potentialStressFactors)) {
+                $propertyMap = [
+                    'tinggi' => [ 'color' => 'danger', 'color_bg' => '#ffeaea', 'progress' => '100%' ],
+                    'buruk' => [ 'color' => 'danger', 'color_bg' => '#ffeaea', 'progress' => '100%' ], // Specifically for sleep_quality
+                    'sedang' => [ 'color' => 'warning', 'color_bg' => '#fff9e6', 'progress' => '50%' ],
+                    'rendah' => [ 'color' => 'info', 'color_bg' => '#e3f2fd', 'progress' => '5%' ],
+                    'baik' => [ 'color' => 'info', 'color_bg' => '#e3f2fd', 'progress' => '5%' ], // Specifically for sleep_quality
+                ];
+
+                $deadlineColor = $propertyMap[$potentialStressFactors['deadline_is_tomorrow_tasks']]['color'];
+                $deadlineBgColor = $propertyMap[$potentialStressFactors['deadline_is_tomorrow_tasks']]['color_bg'];
+                $deadlineProgress = $propertyMap[$potentialStressFactors['deadline_is_tomorrow_tasks']]['progress'];
+
+                $pilingUpTasksColor = $propertyMap[$potentialStressFactors['piling_up_tasks']]['color'];
+                $pilingUpTasksBgColor = $propertyMap[$potentialStressFactors['piling_up_tasks']]['color_bg'];
+                $pilingUpTasksProgress = $propertyMap[$potentialStressFactors['piling_up_tasks']]['progress'];
+
+                $sleepColor = $propertyMap[$potentialStressFactors['sleep_quality']]['color'];
+                $sleepBgColor = $propertyMap[$potentialStressFactors['sleep_quality']]['color_bg'];
+                $sleepProgress = $propertyMap[$potentialStressFactors['sleep_quality']]['progress'];
+            }
+            ?>
+
             <div class="mb-3">
                 <div class="d-flex justify-content-between mb-1">
                     <small class="fw-semibold">Deadline Mepet</small>
-                    <small class="text-danger fw-bold text-uppercase" style="font-size: 0.75rem;">Tinggi</small>
+                    <small class="text-<?= $deadlineColor ?> fw-bold text-uppercase" style="font-size: 0.75rem;"><?= $potentialStressFactors['deadline_is_tomorrow_tasks'] ?></small>
                 </div>
-                <div class="progress rounded-pill" style="height: 10px; background: #ffeaea;">
-                    <div class="progress-bar rounded-pill" style="width: 80%; background-color: #ff7675;"></div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $deadlineBgColor ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $deadlineColor ?>" style="width: <?= $deadlineProgress ?>;"></div>
                 </div>
             </div>
             
             <div class="mb-3">
                 <div class="d-flex justify-content-between mb-1">
                     <small class="fw-semibold">Tugas Menumpuk</small>
-                    <small class="text-warning fw-bold text-uppercase" style="font-size: 0.75rem;">Sedang</small>
+                    <small class="text-<?= $pilingUpTasksColor ?> fw-bold text-uppercase" style="font-size: 0.75rem;"><?= $potentialStressFactors['piling_up_tasks'] ?></small>
                 </div>
-                <div class="progress rounded-pill" style="height: 10px; background: #fff9e6;">
-                    <div class="progress-bar rounded-pill" style="width: 65%; background-color: #ffeaa7;"></div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $pilingUpTasksBgColor ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $pilingUpTasksColor ?>" style="width: <?= $pilingUpTasksProgress ?>;"></div>
                 </div>
             </div>
             
             <div>
                 <div class="d-flex justify-content-between mb-1">
                     <small class="fw-semibold">Kualitas Tidur</small>
-                    <small class="text-info fw-bold text-uppercase" style="font-size: 0.75rem;">Rendah</small>
+                    <small class="text-<?= $sleepColor ?> fw-bold text-uppercase" style="font-size: 0.75rem;"><?= $potentialStressFactors['sleep_quality'] ?></small>
                 </div>
-                <div class="progress rounded-pill" style="height: 10px; background: #e3f2fd;">
-                    <div class="progress-bar rounded-pill" style="width: 40%; background-color: #74b9ff;"></div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $sleepBgColor ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $sleepColor ?>" style="width: <?= $sleepProgress ?>;"></div>
                 </div>
             </div>
         </div>

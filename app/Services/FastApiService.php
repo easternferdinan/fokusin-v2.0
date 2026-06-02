@@ -229,9 +229,22 @@ class FastApiService
         return $response;
     }
 
+    // =============================== REPORT =============================
+
+    public function getReportData()
+    {
+        $response = $this->client->get('report/', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
     public function getStressTrend(string $period)
     {
-        $response = $this->client->get('analysis/stress-trend?period=' . $period, [
+        $response = $this->client->get('report/stress-trend?period=' . $period, [
             'headers' => [
                 'Authorization' => 'Bearer ' . session()->get('access_token')
             ]

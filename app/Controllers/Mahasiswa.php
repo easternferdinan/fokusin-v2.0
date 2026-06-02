@@ -277,19 +277,31 @@ class Mahasiswa extends BaseController
             ]);
         }
 
-        $allAnalysisResponse = $this->fastApiService->getAllAnalysisData();
+        // $allAnalysisResponse = $this->fastApiService->getAllAnalysisData();
 
-        if ($allAnalysisResponse->getStatusCode() !== 200) {
-            log_message('error', 'Error API All Analysis Data: ' . $allAnalysisResponse->getBody());
+        // if ($allAnalysisResponse->getStatusCode() !== 200) {
+        //     log_message('error', 'Error API All Analysis Data: ' . $allAnalysisResponse->getBody());
+        //     return redirect()->back()->with('error', [
+        //         'title' => 'Terjadi Kesalahan!',
+        //         'message' => 'Coba lagi nanti atau hubungi admin.',
+        //         'detail' => $allAnalysisResponse->getBody()
+        //     ]);
+        // }
+
+        $reportResponse = $this->fastApiService->getReportData();
+
+        if ($reportResponse->getStatusCode() !== 200) {
+            log_message('error', 'Error API Report Data: ' . $reportResponse->getBody());
             return redirect()->back()->with('error', [
                 'title' => 'Terjadi Kesalahan!',
                 'message' => 'Coba lagi nanti atau hubungi admin.',
-                'detail' => $allAnalysisResponse->getBody()
+                'detail' => $reportResponse->getBody()
             ]);
         }
 
         $analysisRequirements = json_decode($requirementsResponse->getBody(), true);
-        $allAnalysisData = json_decode($allAnalysisResponse->getBody(), true);
+        // $allAnalysisData = json_decode($allAnalysisResponse->getBody(), true);
+        $reportData = json_decode($reportResponse->getBody(), true);
 
         // TODO: Add option for user to retake the stress assesment, if already taken.
         // TODO: Add update stress analysis endpoint (in case user wants to retake the stress analysis)
@@ -304,12 +316,30 @@ class Mahasiswa extends BaseController
             'hasTasks'        => $analysisRequirements['task_done_today'],
             'hasPomodoro'     => $analysisRequirements['pomodoro_done_today'],
             'hasFilledInputs' => $analysisRequirements['stress_assesment_done_today'],
-            'allStressData'   => $allAnalysisData,
-            'latestAnalysis'  => $allAnalysisData[0] ?? null,
-            'stressCategory'  => $allAnalysisData[0]['stress_level'] ?? null, // Give latest stress level analysis to be presented
+            'allStressData'   => $reportData['all_stress_analysis'] ?? null,
+            'potentialStressFactors' => $reportData['potential_stress_factors'] ?? null,
+            'latestAnalysis'  => $reportData['all_stress_analysis'][0] ?? null,
+            'stressCategory'  => $reportData['all_stress_analysis'][0]['stress_level'] ?? null, // Give latest stress level analysis to be presented
         ];
-
+        
         return view('mahasiswa/report_ai', $data);
+    }
+    
+    public function getStressTrend()
+    {
+        if (session()->get('email') == null) {
+            return $this->response->setStatusCode(401)->setJSON(['message' => 'Unauthorized']);
+        }
+
+        $period = $this->request->getGet('period') ?? 'harian';
+        $response = $this->fastApiService->getStressTrend($period);
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Stress Trend: ' . $response->getBody());
+            return $this->response->setStatusCode($response->getStatusCode())->setJSON(json_decode($response->getBody()));
+        }
+
+        return $this->response->setJSON(json_decode($response->getBody()));
     }
 
     public function saveCheckin()
@@ -345,23 +375,6 @@ class Mahasiswa extends BaseController
 
         // Beri balasan ke JS bahwa data sudah aman
         return redirect()->to(base_url('mahasiswa/report'));
-    }
-
-    public function getStressTrend()
-    {
-        if (session()->get('email') == null) {
-            return $this->response->setStatusCode(401)->setJSON(['message' => 'Unauthorized']);
-        }
-
-        $period = $this->request->getGet('period') ?? 'harian';
-        $response = $this->fastApiService->getStressTrend($period);
-
-        if ($response->getStatusCode() !== 200) {
-            log_message('error', 'Error API Stress Trend: ' . $response->getBody());
-            return $this->response->setStatusCode($response->getStatusCode())->setJSON(json_decode($response->getBody()));
-        }
-
-        return $this->response->setJSON(json_decode($response->getBody()));
     }
 
     // ====================================================================================================
