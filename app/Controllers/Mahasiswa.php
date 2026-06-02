@@ -347,6 +347,23 @@ class Mahasiswa extends BaseController
         return redirect()->to(base_url('mahasiswa/report'));
     }
 
+    public function getStressTrend()
+    {
+        if (session()->get('email') == null) {
+            return $this->response->setStatusCode(401)->setJSON(['message' => 'Unauthorized']);
+        }
+
+        $period = $this->request->getGet('period') ?? 'harian';
+        $response = $this->fastApiService->getStressTrend($period);
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Stress Trend: ' . $response->getBody());
+            return $this->response->setStatusCode($response->getStatusCode())->setJSON(json_decode($response->getBody()));
+        }
+
+        return $this->response->setJSON(json_decode($response->getBody()));
+    }
+
     // ====================================================================================================
     // PENGATURAN
     // ====================================================================================================

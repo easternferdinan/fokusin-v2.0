@@ -228,4 +228,15 @@ class FastApiService
 
         return $response;
     }
+
+    public function getStressTrend(string $period)
+    {
+        $response = $this->client->get('analysis/stress-trend?period=' . $period, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
 }

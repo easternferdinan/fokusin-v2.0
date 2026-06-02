@@ -88,3 +88,151 @@ function downloadCSV(csv, filename) {
     downloadLink.click();
     document.body.removeChild(downloadLink);
 }
+
+// =========================================================
+// LOGIC CHART TREN STRES
+// =========================================================
+
+let studentStressChartInstance = null;
+
+async function loadStressTrend(period = 'harian') {
+    try {
+        const response = await fetch(`/mahasiswa/stress-trend?period=${period}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data || !data.labels || !data.values || data.labels.length === 0) {
+            showChartPlaceholder(true);
+            if (studentStressChartInstance) {
+                studentStressChartInstance.destroy();
+                studentStressChartInstance = null;
+            }
+            return;
+        }
+
+        showChartPlaceholder(false);
+        renderStressChart(data.labels, data.values);
+
+    } catch (error) {
+        console.error("Gagal mengambil data tren stres:", error);
+        showChartPlaceholder(true);
+        if (studentStressChartInstance) {
+            studentStressChartInstance.destroy();
+            studentStressChartInstance = null;
+        }
+    }
+}
+
+function showChartPlaceholder(show) {
+    const placeholder = document.getElementById('chartPlaceholder');
+    const canvas = document.getElementById('studentStressChart');
+    if (show) {
+        if(placeholder) placeholder.style.display = 'block';
+        if(canvas) canvas.style.display = 'none';
+    } else {
+        if(placeholder) placeholder.style.display = 'none';
+        if(canvas) canvas.style.display = 'block';
+    }
+}
+
+function renderStressChart(labels, data) {
+    const ctx = document.getElementById('studentStressChart').getContext('2d');
+    
+    if (studentStressChartInstance) {
+        studentStressChartInstance.data.labels = labels;
+        studentStressChartInstance.data.datasets[0].data = data;
+        studentStressChartInstance.update();
+        return;
+    }
+
+    // Buat gradien untuk background chart
+    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(108, 92, 231, 0.4)');
+    gradient.addColorStop(1, 'rgba(108, 92, 231, 0.0)');
+
+    studentStressChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Tingkat Stres',
+                data: data,
+                borderColor: '#6c5ce7',
+                backgroundColor: gradient,
+                borderWidth: 2,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#6c5ce7',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    padding: 10,
+                    cornerRadius: 8,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            let val = context.parsed.y;
+                            if (val === 1) return 'Tingkat Stres: Rendah';
+                            if (val === 2) return 'Tingkat Stres: Sedang';
+                            if (val === 3) return 'Tingkat Stres: Tinggi';
+                            return 'Tingkat Stres: ' + val;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 3, // Misal maksimal tingkat stres 3
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        callback: function(value, index, ticks) {
+                            if (value === 1) return 'Rendah';
+                            if (value === 2) return 'Sedang';
+                            if (value === 3) return 'Tinggi';
+                            return '';
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Inisialisasi saat halaman dimuat
+document.addEventListener('DOMContentLoaded', () => {
+    // Jalankan pertama kali dengan default "harian"
+    loadStressTrend('harian');
+
+    // Listener untuk dropdown filter
+    const filterSelect = document.getElementById('filterTrenStres');
+    if (filterSelect) {
+        filterSelect.addEventListener('change', (e) => {
+            loadStressTrend(e.target.value);
+        });
+    }
+});

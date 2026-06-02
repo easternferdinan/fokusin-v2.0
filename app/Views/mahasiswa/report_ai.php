@@ -62,13 +62,13 @@
             
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                 <div>
-                    <h6 class="fw-bold text-dark m-0"><i class="fas fa-chart-area me-2 text-primary"></i>Tren Tingkat Stres Kamu !UNIMPLEMENTED!</h6>
+                    <h6 class="fw-bold text-dark m-0"><i class="fas fa-chart-area me-2 text-primary"></i>Tren Tingkat Stres Kamu</h6>
                     <small class="text-muted">Pantau fluktuasi kondisi mentalmu dari waktu ke waktu.</small>
                 </div>
                 
                 <select class="form-select form-select-sm w-auto rounded-pill border-0 bg-light fw-semibold text-muted shadow-none ps-3" id="filterTrenStres" style="min-width: 165px; cursor: pointer;">
-                    <option value="harian">7 Hari Terakhir</option>
-                    <option value="mingguan" selected>4 Minggu Terakhir</option>
+                    <option value="harian" selected>7 Hari Terakhir</option>
+                    <option value="mingguan">4 Minggu Terakhir</option>
                     <option value="bulanan">6 Bulan Terakhir</option>
                 </select>
             </div>
