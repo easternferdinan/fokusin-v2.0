@@ -147,10 +147,19 @@
 
     <div class="col-md-7">
         <div class="card p-4 h-100 border-0 shadow-sm" style="border-radius: 1rem; border-left: 5px solid #6c5ce7 !important; background: linear-gradient(to right, #f8f7ff, #ffffff);">
-            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-robot me-2" style="color: #6c5ce7;"></i>Rekomendasi !UNIMPLEMENTED!</h6>
+            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-robot me-2" style="color: #6c5ce7;"></i>Rekomendasi</h6>
             <ul class="list-unstyled mb-0">
-                <li class="d-flex mb-3"><span class="me-3 mt-1"><i class="fas fa-exclamation-circle text-danger fa-lg"></i></span><div><strong style="color:#d63031">Delegasi Tugas.</strong><p class="text-muted small mb-0">Ada 2 tugas high-priority bertabrakan. Segera kerjakan yang paling mendekati deadline.</p></div></li>
-                <li class="d-flex"><span class="me-3 mt-1"><i class="fas fa-bed text-success fa-lg"></i></span><div><strong style="color:#00b894">Perbaiki Tidur.</strong><p class="text-muted small mb-0">Kualitas tidurmu menurun drastis 3 hari terakhir, ini pemicu stres utamamu.</p></div></li>
+                <?php foreach ($recommendations as $recommendation) : ?>
+                    <?php
+                        $iconMap = [
+                            'deadline_is_tomorrow_tasks' => '<i class="fas fa-solid fa-clock text-'.$recommendation['color_label'].' fa-lg"></i>',
+                            'piling_up_tasks' => '<i class="fas fa-solid fa-tasks text-'.$recommendation['color_label'].' fa-lg"></i>',
+                            'sleep_quality' => '<i class="fas fa-solid fa-bed text-'.$recommendation['color_label'].' fa-lg"></i>',
+                            'other' => '<i class="fas fa-solid fa-lightbulb text-'.$recommendation['color_label'].' fa-lg"></i>'
+                        ]
+                    ?>
+                    <li class="d-flex mb-3"><span class="me-3 mt-1"><?= $iconMap[$recommendation['subject']] ?></span><div><strong class="text-<?= $recommendation['color_label'] ?>"><?= $recommendation['messages'][0] ?></strong><p class="text-muted small mb-0"><?= $recommendation['messages'][1] ?></p></div></li>
+                <?php endforeach ?>
             </ul>
         </div>
     </div>

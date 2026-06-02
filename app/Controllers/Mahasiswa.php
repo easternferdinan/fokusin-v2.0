@@ -277,17 +277,6 @@ class Mahasiswa extends BaseController
             ]);
         }
 
-        // $allAnalysisResponse = $this->fastApiService->getAllAnalysisData();
-
-        // if ($allAnalysisResponse->getStatusCode() !== 200) {
-        //     log_message('error', 'Error API All Analysis Data: ' . $allAnalysisResponse->getBody());
-        //     return redirect()->back()->with('error', [
-        //         'title' => 'Terjadi Kesalahan!',
-        //         'message' => 'Coba lagi nanti atau hubungi admin.',
-        //         'detail' => $allAnalysisResponse->getBody()
-        //     ]);
-        // }
-
         $reportResponse = $this->fastApiService->getReportData();
 
         if ($reportResponse->getStatusCode() !== 200) {
@@ -300,13 +289,10 @@ class Mahasiswa extends BaseController
         }
 
         $analysisRequirements = json_decode($requirementsResponse->getBody(), true);
-        // $allAnalysisData = json_decode($allAnalysisResponse->getBody(), true);
         $reportData = json_decode($reportResponse->getBody(), true);
 
         // TODO: Add option for user to retake the stress assesment, if already taken.
         // TODO: Add update stress analysis endpoint (in case user wants to retake the stress analysis)
-
-        // TODO: Add endpoints to retrieve 'feature importance'
 
         // TODO: Add recommendation algorithm based on user's data (tasks, pomodoro, sleep quality, etc.)
 
@@ -316,10 +302,11 @@ class Mahasiswa extends BaseController
             'hasTasks'        => $analysisRequirements['task_done_today'],
             'hasPomodoro'     => $analysisRequirements['pomodoro_done_today'],
             'hasFilledInputs' => $analysisRequirements['stress_assesment_done_today'],
-            'allStressData'   => $reportData['all_stress_analysis'] ?? null,
-            'potentialStressFactors' => $reportData['potential_stress_factors'] ?? null,
             'latestAnalysis'  => $reportData['all_stress_analysis'][0] ?? null,
             'stressCategory'  => $reportData['all_stress_analysis'][0]['stress_level'] ?? null, // Give latest stress level analysis to be presented
+            'potentialStressFactors' => $reportData['potential_stress_factors'] ?? null,
+            'recommendations' => $reportData['recommendations'] ?? null,
+            'allStressData'   => $reportData['all_stress_analysis'] ?? null,
         ];
         
         return view('mahasiswa/report_ai', $data);
