@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin - Fokusin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="<?= base_url('assets/css/global.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/admin.css') ?>">
 </head>
+
 <body>
     <div class="login-wrapper">
         <div class="login-card text-center">
@@ -39,4 +42,31 @@
         </div>
     </div>
 </body>
+
+<script>
+    <?php $successFlash = session()->getFlashdata('success'); ?>
+    <?php if ($successFlash !== null): ?>
+        Swal.fire({
+            icon: 'success',
+            title: <?= json_encode($successFlash['title'] ?? 'Sukses') ?>,
+            text: <?= json_encode($successFlash['message'] ?? 'Operasi Berhasil!') ?>,
+            confirmButtonColor: '#00b894'
+        });
+    <?php endif; ?>
+
+    <?php $errorFlash = session()->getFlashdata('error'); ?>
+    <?php if ($errorFlash !== null): ?>
+        Swal.fire({
+            icon: 'error',
+            title: <?= json_encode($errorFlash['title'] ?? 'Terjadi Kesalahan') ?>,
+            text: <?= json_encode($errorFlash['message'] ?? 'Hubungi Admin!') ?>,
+            confirmButtonColor: '#ff7675'
+        });
+
+        <?php if (isset($errorFlash['detail']) && ENVIRONMENT !== 'production'): ?>
+            console.error(<?= json_encode($errorFlash['detail']) ?>);
+        <?php endif; ?>
+    <?php endif; ?>
+</script>
+
 </html>
