@@ -39,6 +39,7 @@ $routes->group('mahasiswa', function($routes) {
 $routes->group('admin', function($routes) {
     // Menu Admin Biasa
     $routes->get('/', 'Admin::index');
+    $routes->get('stress-analysis/(:any)', 'Admin::stressAnalysis/$1');
     $routes->get('stress', 'Admin::stress');
     $routes->get('alert', 'Admin::alert');
 

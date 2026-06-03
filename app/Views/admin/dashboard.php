@@ -58,7 +58,7 @@
                         <span class="badge <?= $color ?> text-white rounded-pill px-3 py-2"><i class="fas fa-<?= $icon ?> me-1"></i> <?= $mahasiswa['latest_stress_level'] ?></span>
                     </td>
                     <td class="px-4 text-center">
-                        <button class="btn btn-sm btn-info text-white rounded-3 px-3 shadow-sm" onclick="lihatDetail('<?= $mahasiswa['fullname'] ?>', '<?= $mahasiswa['username'] ?>', '<?= $mahasiswa['latest_stress_level'] ?>')">
+                        <button class="btn btn-sm btn-info text-white rounded-3 px-3 shadow-sm" onclick="lihatDetail('<?= $mahasiswa['user_id'] ?>','<?= $mahasiswa['fullname'] ?>', '<?= $mahasiswa['username'] ?>', '<?= $mahasiswa['latest_stress_level'] ?>')">
                             <i class="fas fa-eye me-1"></i> Detail
                         </button>
                     </td>
@@ -155,7 +155,6 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h6 class="fw-bold text-dark m-0"><i class="fas fa-history me-2 text-primary"></i>Riwayat Prediksi AI</h6>
-                    <a href="#" class="btn btn-sm btn-outline-primary rounded-pill px-3">Lihat Semua</a>
                 </div>
 
                 <div class="table-responsive border rounded-3">
@@ -175,45 +174,9 @@
                                 <th class="py-3">Stres Level</th>
                             </tr>
                         </thead>
-                        <tbody class="small">
-                            <tr class="border-bottom">
-                                <td class="fw-bold text-muted py-3">1</td>
-                                <td>16/05/2026</td>
-                                <td>7</td>
-                                <td><span class="badge bg-danger-subtle text-danger">Ada</span></td>
-                                <td>24</td>
-                                <td>5</td>
-                                <td>1</td>
-                                <td>2</td>
-                                <td>5</td>
-                                <td>1</td>
-                                <td><span class="badge bg-danger text-white rounded-pill px-3">Tinggi</span></td>
-                            </tr>
-                            <tr class="border-bottom">
-                                <td class="fw-bold text-muted py-3">2</td>
-                                <td>15/05/2026</td>
-                                <td>12</td>
-                                <td><span class="badge bg-danger-subtle text-danger">Ada</span></td>
-                                <td>18</td>
-                                <td>3</td>
-                                <td>2</td>
-                                <td>3</td>
-                                <td>4</td>
-                                <td>2</td>
-                                <td><span class="badge bg-warning text-dark rounded-pill px-3">Sedang</span></td>
-                            </tr>
+                        <tbody id="riwayatBody" class="small">
                             <tr>
-                                <td class="fw-bold text-muted py-3">3</td>
-                                <td>14/05/2026</td>
-                                <td>26</td>
-                                <td><span class="badge bg-success-subtle text-success">Tidak</span></td>
-                                <td>4</td>
-                                <td>1</td>
-                                <td>4</td>
-                                <td>4</td>
-                                <td>2</td>
-                                <td>4</td>
-                                <td><span class="badge bg-success text-white rounded-pill px-3">Rendah</span></td>
+                                <td colspan="11" class="py-4 text-muted">Klik tombol Detail untuk memuat data.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -221,8 +184,16 @@
             </div>
 
             <div class="modal-footer border-top-0 pt-0 px-4 pb-4 justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-sm btn-outline-secondary rounded-3" onclick="gantiHalaman(-1)" id="btnPrev" disabled>
+                        <i class="fas fa-chevron-left me-1"></i> Sebelumnya
+                    </button>
+                    <small class="text-muted mx-1" id="infoHalaman">Halaman 1 dari 1</small>
+                    <button class="btn btn-sm btn-outline-secondary rounded-3" onclick="gantiHalaman(1)" id="btnNext" disabled>
+                        Selanjutnya <i class="fas fa-chevron-right ms-1"></i>
+                    </button>
+                </div>
                 <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Tutup</button>
-                <button type="button" class="btn btn-primary rounded-3 px-4" onclick="catatIntervensi()"><i class="fas fa-notes-medical me-2"></i>Catat Intervensi</button>
             </div>
 
         </div>

@@ -23,4 +23,17 @@ class AdminService
 
         return $response;
     }
+
+    public function getMahasiswaStressAnalysis($userId, $page = 1, $size = 10)
+    {
+        return $this->client->get("admin/stress-analysis/{$userId}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ],
+            'query' => [
+                'page' => (int) $page,
+                'size' => (int) $size,
+            ]
+        ]);
+    }
 }

@@ -59,6 +59,26 @@ class Admin extends BaseController
         return view('admin/stress', $data);
     }
 
+    public function stressAnalysis($userId)
+    {
+        $role = session()->get('role');
+        if ($role !== 'admin' && $role !== 'superadmin') {
+            return $this->response->setJSON([
+                'error' => 'Unauthorized'
+            ])->setStatusCode(401);
+        }
+
+        $page = $this->request->getGet('page') ?? 1;
+        $size = $this->request->getGet('size') ?? 10;
+
+        $response = $this->adminService->getMahasiswaStressAnalysis($userId, $page, $size);
+
+        return $this->response->setJSON([
+            'status'  => $response->getStatusCode(),
+            'data'    => json_decode($response->getBody(), true),
+        ])->setStatusCode($response->getStatusCode());
+    }
+
     public function alert()
     {
         $role = session()->get('role');
