@@ -13,7 +13,7 @@ class Admin extends BaseController
     {
         // Cek Keamanan: Jika tidak ada session login atau bukan admin, tendang ke login admin
         $role = session()->get('role');
-        if (!session()->get('isLoggedIn') || ($role !== 'admin' && $role !== 'superadmin')) {
+        if (($role !== 'admin' && $role !== 'superadmin')) {
             return redirect()->to(base_url('auth/adminLogin'));
         }
 
@@ -29,7 +29,7 @@ class Admin extends BaseController
     public function stress()
     {
         $role = session()->get('role');
-        if (!session()->get('isLoggedIn') || ($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
+        if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
 
         $data = ['title' => 'Pantau Stres Global', 'role' => $role];
         return view('admin/stress', $data);
@@ -38,7 +38,7 @@ class Admin extends BaseController
     public function alert()
     {
         $role = session()->get('role');
-        if (!session()->get('isLoggedIn') || ($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
+        if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
 
         $data = ['title' => 'Tindak Lanjut Kritis', 'role' => $role];
         return view('admin/alert', $data);
