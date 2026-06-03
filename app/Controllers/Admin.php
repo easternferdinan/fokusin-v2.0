@@ -2,13 +2,23 @@
 
 namespace App\Controllers;
 
+use App\Services\AdminService;
+
 class Admin extends BaseController
 {
+    protected $adminService;
+
+    public function __construct()
+    {
+        helper('auth');
+        $this->adminService = new AdminService();
+    }
+
     // ==================================================================
     // ADMIN
     // ==================================================================
 
-    // Fungsi utama dashboard admin (menggantikan fungsi dashboard() sebelumnya agar URL lebih bersih)
+    // Fungsi utama halaman data pengguna
     public function index()
     {
         // Cek Keamanan: Jika tidak ada session login atau bukan admin, tendang ke login admin
@@ -17,10 +27,24 @@ class Admin extends BaseController
             return redirect()->to(base_url('auth/adminLogin'));
         }
 
+        $response = $this->adminService->getMahasiswaData();
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Admin: ' . $response->getBody());
+            return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
+
+        $mahasiswaData = json_decode($response->getBody(), true);
+
         // Kirim data role ke view agar badge dan menu bisa dinamis
         $data = [
             'title' => 'Dashboard',
-            'role'  => $role
+            'role'  => $role,
+            'mahasiswaData' => $mahasiswaData
         ];
 
         return view('admin/dashboard', $data);

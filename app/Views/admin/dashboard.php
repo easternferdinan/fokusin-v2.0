@@ -1,3 +1,10 @@
+<?php
+
+/**
+ * @var array $mahasiswaData
+ */
+?>
+
 <?= $this->extend('admin/layout_main') ?>
 
 <?= $this->section('content') ?>
@@ -23,7 +30,42 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <?php
+            $colorMap = [
+                'Rendah' => 'bg-success',
+                'Sedang' => 'bg-warning',
+                'Tinggi' => 'bg-danger'
+            ];
+
+            $iconMap = [
+                'Rendah' => 'fas fa-check-circle',
+                'Sedang' => 'fas fa-exclamation-circle',
+                'Tinggi' => 'fas fa-exclamation-triangle'
+            ];
+            ?>
+            <?php foreach ($mahasiswaData as $mahasiswa) : ?>
+                <tr>
+                    <td class="px-4 py-3 d-flex align-items-center gap-3">
+                        <img src="https://ui-avatars.com/api/?name=<?= $mahasiswa['fullname'] ?>&background=74b9ff&color=fff&size=40" class="rounded-circle shadow-sm" alt="Avatar">
+                        <span class="fw-bold text-dark"><?= $mahasiswa['fullname'] ?></span>
+                    </td>
+                    <td class="text-muted"><?= $mahasiswa['username'] ?></td>
+                    <td class="text-center">
+                        <?php
+                        $color = $colorMap[$mahasiswa['latest_stress_level']];
+                        $icon = $iconMap[$mahasiswa['latest_stress_level']];
+                        ?>
+                        <span class="badge <?= $color ?> text-white rounded-pill px-3 py-2"><i class="fas fa-<?= $icon ?> me-1"></i> <?= $mahasiswa['latest_stress_level'] ?></span>
+                    </td>
+                    <td class="px-4 text-center">
+                        <button class="btn btn-sm btn-info text-white rounded-3 px-3 shadow-sm" onclick="lihatDetail('<?= $mahasiswa['fullname'] ?>', '<?= $mahasiswa['username'] ?>', '<?= $mahasiswa['latest_stress_level'] ?>')">
+                            <i class="fas fa-eye me-1"></i> Detail
+                        </button>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            <!-- TODO: Remove these after confirmed that the final UI is as designed -->
+            <!-- <tr>
                 <td class="px-4 py-3 d-flex align-items-center gap-3">
                     <img src="https://ui-avatars.com/api/?name=Salma+Pudjiati&background=74b9ff&color=fff&size=40" class="rounded-circle shadow-sm" alt="Avatar">
                     <span class="fw-bold text-dark">Salma Pudjiati</span>
@@ -53,7 +95,7 @@
                         <i class="fas fa-eye me-1"></i> Detail
                     </button>
                 </td>
-            </tr>
+            </tr> -->
         </tbody>
     </table>
 </div>
