@@ -94,20 +94,45 @@ class Auth extends BaseController
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
 
-        // Simulasi Cek Database (Prototype)
-        if ($username === 'admin' || $username === 'superadmin') {
+        $response = $this->fastApiService->loginUser([
+            'username' => $username,
+            'password' => $password
+        ]);
 
-            // Buat session
-            session()->set([
-                'isLoggedIn' => true,
-                'role'       => $username // 'admin' atau 'superadmin'
+        if ($response->getStatusCode() == 401) {
+            return redirect()->back()->with('error', [
+                'title' => 'Login Gagal!',
+                'message' => 'Username atau password salah.',
             ]);
-
-            return redirect()->to(base_url('admin'));
         }
 
-        // Jika gagal, kembalikan ke form login admin
-        return redirect()->to(base_url('auth/adminLogin'))->with('error', 'Username atau password salah');
+        if ($response->getStatusCode() !== 200) {
+            return redirect()->back()->with('error', [
+                'title' => 'Login Gagal!',
+                'message' => 'Terjadi kesalahan saat login. Silakan coba lagi.',
+                'detail' => $response->getBody()
+            ]);
+        }
+
+        if (session()->get('role') === 'admin') {
+            return redirect()->to(base_url('admin'))->with('success', [
+                'title' => 'Login Berhasil!',
+                'message' => 'Selamat Datang Admin!'
+            ]);
+        }
+
+        if (session()->get('role') === 'superadmin') {
+            return redirect()->to(base_url('admin/roles'))->with('success', [
+                'title' => 'Login Berhasil!',
+                'message' => 'Selamat Datang Super Admin!'
+            ]);
+        }
+
+        return redirect()->back()->with('error', [
+            'title' => 'Login Gagal!',
+            'message' => 'Terjadi kesalahan saat login. Silakan coba lagi.',
+            'detail' => $response->getBody()
+        ]);
     }
 
     public function logout()

@@ -44,7 +44,7 @@ class FastApiService
             'academic_performance' => $responseData['academic_performance'],
             'social_support' => $responseData['social_support'],
             'access_token' => $responseData['access_token'] ?? null,
-            'role' => 'mahasiswa' // TODO: Adjust role's value according to backend enums
+            'role' => $responseData['role']
         ]);
         return $response;
     }
