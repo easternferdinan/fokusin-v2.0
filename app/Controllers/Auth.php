@@ -80,11 +80,6 @@ class Auth extends BaseController
 
     public function adminLogin()
     {
-        // Jika sudah login sebagai admin/superadmin, langsung lempar ke dashboard
-        if (session()->get('role') === 'admin' || session()->get('role') === 'superadmin') {
-            return redirect()->to(base_url('admin'));
-        }
-
         return view('auth/login_admin');
     }
 
