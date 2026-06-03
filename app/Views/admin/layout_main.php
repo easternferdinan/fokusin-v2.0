@@ -1,5 +1,11 @@
+<?php
+
+/** @var string $role */
+?>
+
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,23 +16,24 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/global.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/admin.css') ?>">
 </head>
+
 <body>
     <div class="overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
-    
+
     <div class="admin-wrapper active">
         <aside class="sidebar-main" id="sidebarMain">
             <div class="brand d-flex align-items-center gap-2">
                 <img src="<?= base_url('assets/img/logo-fokusin.png') ?>" alt="Logo Fokusin" class="logo-fokusin">
                 <span>
-                    FOKUSIN 
+                    FOKUSIN
                     <span class="role-indicator <?= ($role === 'superadmin') ? 'role-superadmin' : 'role-admin' ?>">
                         <?= strtoupper($role) ?>
                     </span>
                 </span>
             </div>
-            
+
             <div class="nav-menu">
-                <?php if($role === 'superadmin'): ?>
+                <?php if ($role === 'superadmin'): ?>
                     <a href="<?= base_url('admin/roles') ?>" class="nav-link-admin <?= url_is('admin/roles') ? 'active' : '' ?>"><i class="fas fa-key"></i> Role Management</a>
                     <a href="<?= base_url('admin/config') ?>" class="nav-link-admin <?= url_is('admin/config') ? 'active' : '' ?>"><i class="fas fa-cogs"></i> Konfigurasi Sistem</a>
                     <a href="<?= base_url('admin/audit') ?>" class="nav-link-admin <?= url_is('admin/audit') ? 'active' : '' ?>"><i class="fas fa-history"></i> Audit Log</a>
@@ -36,7 +43,7 @@
                     <a href="<?= base_url('admin/alert') ?>" class="nav-link-admin <?= url_is('admin/alert') ? 'active' : '' ?>"><i class="fas fa-exclamation-triangle"></i> Tindak Lanjut Kritis</a>
                 <?php endif; ?>
             </div>
-            
+
             <div class="sidebar-footer">
                 <a href="<?= base_url('auth/logout') ?>"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
             </div>
@@ -60,7 +67,35 @@
             document.getElementById('mobileOverlay').classList.toggle('show');
         }
     </script>
+
+    <script>
+        <?php $successFlash = session()->getFlashdata('success'); ?>
+        <?php if ($successFlash !== null): ?>
+            Swal.fire({
+                icon: 'success',
+                title: <?= json_encode($successFlash['title'] ?? 'Sukses') ?>,
+                text: <?= json_encode($successFlash['message'] ?? 'Operasi Berhasil!') ?>,
+                confirmButtonColor: '#00b894'
+            });
+        <?php endif; ?>
+
+        <?php $errorFlash = session()->getFlashdata('error'); ?>
+        <?php if ($errorFlash !== null): ?>
+            Swal.fire({
+                icon: 'error',
+                title: <?= json_encode($errorFlash['title'] ?? 'Terjadi Kesalahan') ?>,
+                text: <?= json_encode($errorFlash['message'] ?? 'Hubungi Admin!') ?>,
+                confirmButtonColor: '#ff7675'
+            });
+
+            <?php if (isset($errorFlash['detail']) && ENVIRONMENT !== 'production'): ?>
+                console.error(<?= json_encode($errorFlash['detail']) ?>);
+            <?php endif; ?>
+        <?php endif; ?>
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?= $this->renderSection('js') ?>
 </body>
+
 </html>
