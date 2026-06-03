@@ -24,6 +24,17 @@ class AdminService
         return $response;
     }
 
+    public function createMahasiswa(array $data)
+    {
+        return $this->client->post('admin/mahasiswa', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token'),
+                'Content-Type' => 'application/json',
+            ],
+            'json' => $data
+        ]);
+    }
+
     public function getMahasiswaStressAnalysis($userId, $page = 1, $size = 10)
     {
         return $this->client->get("admin/stress-analysis/{$userId}", [

@@ -42,6 +42,7 @@ $routes->group('admin', function($routes) {
     $routes->get('stress-analysis/(:any)', 'Admin::stressAnalysis/$1');
     $routes->get('stress', 'Admin::stress');
     $routes->get('alert', 'Admin::alert');
+    $routes->post('store-mahasiswa', 'Admin::storeMahasiswa');
 
     // Menu Khusus Superadmin
     $routes->get('roles', 'Admin::roles');

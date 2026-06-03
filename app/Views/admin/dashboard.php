@@ -34,13 +34,15 @@
             $colorMap = [
                 'Rendah' => 'bg-success',
                 'Sedang' => 'bg-warning',
-                'Tinggi' => 'bg-danger'
+                'Tinggi' => 'bg-danger',
+                null => 'bg-secondary'
             ];
 
             $iconMap = [
                 'Rendah' => 'fas fa-check-circle',
                 'Sedang' => 'fas fa-exclamation-circle',
-                'Tinggi' => 'fas fa-exclamation-triangle'
+                'Tinggi' => 'fas fa-exclamation-triangle',
+                null => 'fas fa-question-circle'
             ];
             ?>
             <?php foreach ($mahasiswaData as $mahasiswa) : ?>
@@ -52,13 +54,13 @@
                     <td class="text-muted"><?= $mahasiswa['username'] ?></td>
                     <td class="text-center">
                         <?php
-                        $color = $colorMap[$mahasiswa['latest_stress_level']];
-                        $icon = $iconMap[$mahasiswa['latest_stress_level']];
+                        $color = $colorMap[$mahasiswa['latest_stress_level'] ?? null];
+                        $icon = $iconMap[$mahasiswa['latest_stress_level'] ?? null];
                         ?>
-                        <span class="badge <?= $color ?> text-white rounded-pill px-3 py-2"><i class="fas fa-<?= $icon ?> me-1"></i> <?= $mahasiswa['latest_stress_level'] ?></span>
+                        <span class="badge <?= $color ?> text-white rounded-pill px-3 py-2"><i class="fas fa-<?= $icon ?> me-1"></i> <?= $mahasiswa['latest_stress_level'] ?? 'Belum ada' ?></span>
                     </td>
                     <td class="px-4 text-center">
-                        <button class="btn btn-sm btn-info text-white rounded-3 px-3 shadow-sm" onclick="lihatDetail('<?= $mahasiswa['user_id'] ?>','<?= $mahasiswa['fullname'] ?>', '<?= $mahasiswa['username'] ?>', '<?= $mahasiswa['latest_stress_level'] ?>')">
+                        <button class="btn btn-sm btn-info text-white rounded-3 px-3 shadow-sm" onclick="lihatDetail('<?= $mahasiswa['user_id'] ?>','<?= $mahasiswa['fullname'] ?>', '<?= $mahasiswa['username'] ?>', '<?= $mahasiswa['latest_stress_level'] ?? 'Belum ada' ?>')">
                             <i class="fas fa-eye me-1"></i> Detail
                         </button>
                     </td>
@@ -120,15 +122,55 @@
                         <input type="text" class="form-control rounded-3" id="inputUsername" placeholder="Masukkan username..." required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">Password Sementara</label>
+                        <label class="form-label text-muted small fw-bold">Email Kampus</label>
+                        <input type="email" class="form-control rounded-3" id="regEmail" name="email" placeholder="Masukkan email..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">Password</label>
                         <input type="password" class="form-control rounded-3" id="inputPassword" placeholder="Masukkan password..." required>
+                    </div>
+
+                    <div class="my-4">
+                        <hr class="text-muted">
+                        <p class="text-muted small mb-3"><i class="fas fa-brain text-danger me-1"></i> <strong>Data Awal untuk Prediksi AI</strong></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regMental" style="color:#b2bec3;"><i class="fas fa-heartbeat me-2"></i>Riwayat Kesehatan Mental</label>
+                        <select class="form-select" id="regMental" name="riwayat_mental" required style="border-radius:12px; border:2px solid #e9ecef; font-size: 0.9rem;">
+                            <option value="" disabled selected></option>
+                            <option value="0">0 - Tidak Ada Riwayat</option>
+                            <option value="1">1 - Ada Riwayat</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regAkademik" style="color:#b2bec3;"><i class="fas fa-graduation-cap me-2"></i>Akademik Performance</label>
+                        <select class="form-select" id="regAkademik" name="akademik_performa" required style="border-radius:12px; border:2px solid #e9ecef; font-size: 0.9rem;;">
+                            <option value="" disabled selected></option>
+                            <option value="1">1 - Sangat Rendah</option>
+                            <option value="2">2 - Rendah</option>
+                            <option value="3">3 - Cukup</option>
+                            <option value="4">4 - Tinggi</option>
+                            <option value="5">5 - Sangat Tinggi</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="regSocial" style="color:#b2bec3;"><i class="fas fa-users me-2"></i>Dukungan Sosial Lingkungan</label>
+                        <select class="form-select" id="regSocial" name="dukungan_sosial" required style="border-radius:12px; border:2px solid #e9ecef; font-size: 0.9rem;">
+                            <option value="" disabled selected></option>
+                            <option value="1">1 - Rendah</option>
+                            <option value="2">2 - Cukup</option>
+                            <option value="3">3 - Tinggi</option>
+                        </select>
                     </div>
                 </form>
             </div>
 
             <div class="modal-footer border-top-0 pt-0 px-4 pb-4 justify-content-between">
                 <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary rounded-3 px-4" onclick="simpanUserBaru()"><i class="fas fa-save me-2"></i>Simpan Data</button>
+                <button type="button" id="btnSimpanUser" class="btn btn-primary rounded-3 px-4" onclick="simpanUserBaru()"><i class="fas fa-save me-2"></i>Simpan Data</button>
             </div>
 
         </div>

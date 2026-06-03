@@ -31,9 +31,12 @@ function lihatDetail(userId, nama, username, status) {
     } else if (status === 'Sedang') {
         avatarUrl += '&background=fdcb6e';
         badgeEl.className = 'badge bg-warning text-dark';
-    } else {
+    } else if (status === 'Rendah') {
         avatarUrl += '&background=55efc4';
         badgeEl.className = 'badge bg-success text-white';
+    } else {
+        avatarUrl += '&background=grey';
+        badgeEl.className = 'badge bg-secondary text-white';
     }
 
     badgeEl.innerText = status;
@@ -156,43 +159,107 @@ function catatIntervensi() {
     });
 }
 
-// Fungsi untuk memproses penambahan user baru
-function simpanUserBaru() {
-    // 1. Ambil data dari form
-    const nama = document.getElementById('inputNama').value.trim();
+// Fungsi untuk memproses penambahan user baru via API
+async function simpanUserBaru() {
+    const fullname = document.getElementById('inputNama').value.trim();
     const username = document.getElementById('inputUsername').value.trim();
-    const role = document.getElementById('inputRole').value;
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('inputPassword').value.trim();
+    const mentalHealth = document.getElementById('regMental').value;
+    const academicPerf = document.getElementById('regAkademik').value;
+    const socialSupport = document.getElementById('regSocial').value;
 
-    // 2. Validasi sederhana (jangan biarkan kosong)
-    if (!nama || !username) {
+    const errors = [];
+    if (!fullname) errors.push('Nama lengkap wajib diisi');
+    if (!username) errors.push('Username wajib diisi');
+    if (!email) errors.push('Email wajib diisi');
+    if (!password) errors.push('Password wajib diisi');
+    if (password && password.length < 6) errors.push('Password minimal 6 karakter');
+    if (!mentalHealth) errors.push('Riwayat kesehatan mental wajib dipilih');
+    if (!academicPerf) errors.push('Akademik performance wajib dipilih');
+    if (!socialSupport) errors.push('Dukungan sosial wajib dipilih');
+
+    if (errors.length > 0) {
         Swal.fire({
             icon: 'warning',
-            title: 'Oops...',
-            text: 'Nama dan Username wajib diisi!',
+            title: 'Validasi Gagal',
+            html: errors.map(e => `<div class="text-start">${e}</div>`).join(''),
             confirmButtonColor: '#6366f1',
             customClass: { popup: 'rounded-4' }
         });
         return;
     }
 
-    // 3. Sembunyikan Modal Tambah User
-    const modalEl = document.getElementById('modalTambahUser');
-    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-    if (modalInstance) {
-        modalInstance.hide();
-    }
+    const btn = document.getElementById('btnSimpanUser');
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Menyimpan...';
 
-    // 4. Tampilkan Notifikasi Sukses
-    Swal.fire({
-        title: 'Berhasil!',
-        text: `Pengguna baru "${nama}" dengan role ${role.toUpperCase()} berhasil ditambahkan ke sistem.`,
-        icon: 'success',
-        confirmButtonColor: '#6366f1',
-        customClass: { popup: 'rounded-4' }
-    }).then(() => {
-        // Reset (kosongkan) isian form setelah notifikasi ditutup
-        document.getElementById('formTambahUser').reset();
-    });
+    try {
+        const res = await fetch('/admin/store-mahasiswa', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fullname,
+                username,
+                email,
+                password,
+                mental_health_history: mentalHealth === '1',
+                academic_performance: parseInt(academicPerf),
+                social_support: parseInt(socialSupport)
+            })
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+            const modalEl = document.getElementById('modalTambahUser');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+
+            Swal.fire({
+                title: 'Berhasil!',
+                text: `Pengguna baru "${fullname}" berhasil ditambahkan.`,
+                icon: 'success',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            }).then(() => {
+                document.getElementById('formTambahUser').reset();
+                location.reload();
+            });
+        } else if (res.status === 422) {
+            const detail = json.detail || [];
+            const messages = detail.map(d => d.msg);
+            Swal.fire({
+                icon: 'error',
+                title: 'Validasi Server Gagal',
+                html: messages.map(m => `<div class="text-start">${m}</div>`).join(''),
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: 'Terjadi kesalahan saat menambahkan pengguna.',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            });
+        }
+    } catch {
+        Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Tidak dapat terhubung ke server.',
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
 }
 
 // ==========================================

@@ -79,6 +79,32 @@ class Admin extends BaseController
         ])->setStatusCode($response->getStatusCode());
     }
 
+    public function storeMahasiswa()
+    {
+        $role = session()->get('role');
+        if ($role !== 'admin' && $role !== 'superadmin') {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $json = $this->request->getJSON();
+
+        $data = [
+            'fullname'              => $json->fullname ?? '',
+            'username'              => $json->username ?? '',
+            'email'                 => $json->email ?? '',
+            'password'              => $json->password ?? '',
+            'mental_health_history' => (bool) ($json->mental_health_history ?? false),
+            'academic_performance'  => (int) ($json->academic_performance ?? 0),
+            'social_support'        => (int) ($json->social_support ?? 0),
+        ];
+
+        $response = $this->adminService->createMahasiswa($data);
+        $statusCode = $response->getStatusCode();
+        $body = json_decode($response->getBody(), true);
+
+        return $this->response->setJSON($body)->setStatusCode($statusCode);
+    }
+
     public function alert()
     {
         $role = session()->get('role');
