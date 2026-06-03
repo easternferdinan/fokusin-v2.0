@@ -4,14 +4,7 @@ namespace App\Services;
 
 use App\Libraries\FastApiClient;
 
-/**
- * This service is no longer used. Replaced by MahasiswaService and AdminService.
- * It will be kept just in case some function still depends on it.
- * 
- * @deprecated
- */
-// TODO: Remove this service after checking that no functions depends on it.
-class FastApiService
+class MahasiswaService
 {
     protected $client;
 
@@ -19,68 +12,6 @@ class FastApiService
     {
         $this->client = new FastApiClient();
     }
-
-    // ==================== USER ====================
-
-    public function registerUser(array $userData)
-    {
-        $response = $this->client->post('auth/register', [
-            'json' => $userData
-        ]);
-        return $response;
-    }
-
-    public function loginUser(array $userData)
-    {
-        $response = $this->client->post('auth/login', [
-            'json' => $userData
-        ]);
-
-        if ($response->getStatusCode() !== 200) {
-            return $response;
-        }
-
-        // Simpan info user ke session agar bisa dipanggil di controller mahasiswa
-        $responseData = json_decode($response->getBody(), true);
-
-        session()->set([
-            'fullname' => $responseData['fullname'],
-            'username' => $responseData['username'],
-            'email' => $responseData['email'],
-            'mental_health_history' => $responseData['mental_health_history'],
-            'academic_performance' => $responseData['academic_performance'],
-            'social_support' => $responseData['social_support'],
-            'access_token' => $responseData['access_token'] ?? null,
-            'role' => $responseData['role']
-        ]);
-        return $response;
-    }
-
-    public function updateProfile(array $userData)
-    {
-        $response = $this->client->put('auth/update', [
-            'json' => $userData,
-            'headers' => [
-                'Authorization' => 'Bearer ' . session()->get('access_token')
-            ]
-        ]);
-
-        if ($response->getStatusCode() == 200) {
-            $responseData = json_decode($response->getBody(), true);
-            session()->set([
-                'fullname' => $responseData['fullname'],
-                'username' => $responseData['username'],
-                'email' => $responseData['email'],
-                'mental_health_history' => $responseData['mental_health_history'],
-                'academic_performance' => $responseData['academic_performance'],
-                'social_support' => $responseData['social_support']
-            ]);
-        }
-
-        return $response;
-    }
-
-    // ================================= DASHBOARD =============================
 
     public function getDashboardData()
     {
@@ -92,8 +23,6 @@ class FastApiService
 
         return $response;
     }
-
-    // =============================== TASK ==============================
 
     public function getTasks()
     {
@@ -153,8 +82,6 @@ class FastApiService
         return $response;
     }
 
-    // =============================== POMODORO =============================
-
     public function createPomodoro(array $pomodoroData)
     {
         $response = $this->client->post('pomodoro/', [
@@ -200,8 +127,6 @@ class FastApiService
         return $response;
     }
 
-    // =============================== AI ANALYSIS =============================
-
     public function getAllAnalysisData()
     {
         $response = $this->client->get('analysis/', [
@@ -235,8 +160,6 @@ class FastApiService
 
         return $response;
     }
-
-    // =============================== REPORT =============================
 
     public function getReportData()
     {

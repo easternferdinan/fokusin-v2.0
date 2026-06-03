@@ -2,15 +2,15 @@
 
 namespace App\Controllers;
 
-use App\Services\FastApiService;
+use App\Services\AuthService;
 
 class Auth extends BaseController
 {
-    protected FastApiService $fastApiService;
+    protected AuthService $authService;
 
     public function __construct()
     {
-        $this->fastApiService = new FastApiService();
+        $this->authService = new AuthService();
     }
 
     // Menampilkan halaman gabungan Login & Register
@@ -28,7 +28,7 @@ class Auth extends BaseController
             'password' => $this->request->getPost('password'),
         ];
 
-        $response = $this->fastApiService->loginUser($data);
+        $response = $this->authService->loginUser($data);
         if ($response->getStatusCode() == 200) {
             return redirect()->to(base_url('mahasiswa'))->with('success', [
                 'title' => 'Login Berhasil!',
@@ -66,7 +66,7 @@ class Auth extends BaseController
             'social_support'        => (int) $this->request->getPost('dukungan_sosial'),
         ];
 
-        $response = $this->fastApiService->registerUser($data);
+        $response = $this->authService->registerUser($data);
 
         if ($response->getStatusCode() == 201) {
             return redirect()->to(base_url('auth/login'))->with('success', [
@@ -89,7 +89,7 @@ class Auth extends BaseController
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
 
-        $response = $this->fastApiService->loginUser([
+        $response = $this->authService->loginUser([
             'username' => $username,
             'password' => $password
         ]);

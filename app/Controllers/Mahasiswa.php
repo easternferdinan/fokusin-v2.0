@@ -2,18 +2,21 @@
 
 namespace App\Controllers;
 
-use App\Services\FastApiService;
+use App\Services\MahasiswaService;
+use App\Services\AuthService;
 use App\Services\AssesmentDataConverter;
 
 class Mahasiswa extends BaseController
 {
-    protected $fastApiService;
+    protected $mahasiswaService;
+    protected $authService;
     protected $assesmentDataConverter;
 
     public function __construct()
     {
         helper('auth');
-        $this->fastApiService = new FastApiService();
+        $this->mahasiswaService = new MahasiswaService();
+        $this->authService = new AuthService();
         $this->assesmentDataConverter = new AssesmentDataConverter();
     }
 
@@ -22,7 +25,7 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function index()
     {
-        $response = $this->fastApiService->getDashboardData();
+        $response = $this->mahasiswaService->getDashboardData();
                     
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
             return denyAccess();
@@ -64,7 +67,7 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function tugas()
     {
-        $response = $this->fastApiService->getTasks();
+        $response = $this->mahasiswaService->getTasks();
 
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
             return denyAccess();
@@ -104,7 +107,7 @@ class Mahasiswa extends BaseController
             'description'     => $this->request->getPost('description'),
         ];
 
-        $response = $this->fastApiService->createTask($data);
+        $response = $this->mahasiswaService->createTask($data);
 
         if ($response->getStatusCode() == 201) {
             return redirect()->back()->with('success', [
@@ -137,7 +140,7 @@ class Mahasiswa extends BaseController
             'description'     => $this->request->getPost('description'),
         ];
 
-        $response = $this->fastApiService->updateTask($data);
+        $response = $this->mahasiswaService->updateTask($data);
 
         if ($response->getStatusCode() == 200) {
             return redirect()->back()->with('success', [
@@ -160,7 +163,7 @@ class Mahasiswa extends BaseController
             return denyAccess();
         }
 
-        $response = $this->fastApiService->toggleCompleteTask([
+        $response = $this->mahasiswaService->toggleCompleteTask([
             'id' => $id,
             'completed' => (bool) $this->request->getJSON()->completed
         ]);
@@ -178,7 +181,7 @@ class Mahasiswa extends BaseController
             return denyAccess();
         }
 
-        $response = $this->fastApiService->deleteTask($id);
+        $response = $this->mahasiswaService->deleteTask($id);
 
         if ($response->getStatusCode() == 200 || $response->getStatusCode() == 204) {
             return redirect()->to('/mahasiswa/tugas')->with('success', [
@@ -210,7 +213,7 @@ class Mahasiswa extends BaseController
 
     public function createPomodoro()
     {
-        $response = $this->fastApiService->createPomodoro([
+        $response = $this->mahasiswaService->createPomodoro([
             'title' => $this->request->getJSON()->title,
             'status' => 'active',
             'duration' => (int) $this->request->getJSON()->duration,
@@ -226,7 +229,7 @@ class Mahasiswa extends BaseController
 
     public function pausePomodoro($id = null)
     {
-        $response = $this->fastApiService->pausePomodoro($id);
+        $response = $this->mahasiswaService->pausePomodoro($id);
 
         if ($response->getStatusCode() !== 200) {
             log_message('error', 'Error API Pomodoro: ' . $response->getBody());
@@ -237,7 +240,7 @@ class Mahasiswa extends BaseController
 
     public function resumePomodoro($id = null)
     {
-        $response = $this->fastApiService->resumePomodoro($id);
+        $response = $this->mahasiswaService->resumePomodoro($id);
 
         if ($response->getStatusCode() !== 200) {
             log_message('error', 'Error API Pomodoro: ' . $response->getBody());
@@ -248,7 +251,7 @@ class Mahasiswa extends BaseController
 
     public function completePomodoro($id = null)
     {
-        $response = $this->fastApiService->completePomodoro($id);
+        $response = $this->mahasiswaService->completePomodoro($id);
 
         if ($response->getStatusCode() !== 200) {
             log_message('error', 'Error API Pomodoro: ' . $response->getBody());
@@ -266,7 +269,7 @@ class Mahasiswa extends BaseController
             return denyAccess();
         }
 
-        $requirementsResponse = $this->fastApiService->checkAnalysisRequirementsStatus();
+        $requirementsResponse = $this->mahasiswaService->checkAnalysisRequirementsStatus();
 
         if ($requirementsResponse->getStatusCode() !== 200) {
             log_message('error', 'Error API Requirements Status: ' . $requirementsResponse->getBody());
@@ -277,7 +280,7 @@ class Mahasiswa extends BaseController
             ]);
         }
 
-        $reportResponse = $this->fastApiService->getReportData();
+        $reportResponse = $this->mahasiswaService->getReportData();
 
         if ($reportResponse->getStatusCode() !== 200) {
             log_message('error', 'Error API Report Data: ' . $reportResponse->getBody());
@@ -319,7 +322,7 @@ class Mahasiswa extends BaseController
         }
 
         $period = $this->request->getGet('period') ?? 'harian';
-        $response = $this->fastApiService->getStressTrend($period);
+        $response = $this->mahasiswaService->getStressTrend($period);
 
         if ($response->getStatusCode() !== 200) {
             log_message('error', 'Error API Stress Trend: ' . $response->getBody());
@@ -349,7 +352,7 @@ class Mahasiswa extends BaseController
             'headache' => $headache
         ];
 
-        $response = $this->fastApiService->createStressAnalysis($data);
+        $response = $this->mahasiswaService->createStressAnalysis($data);
 
         if ($response->getStatusCode() !== 201) {
             log_message('error', 'Error API Stress Analysis: ' . $response->getBody());
@@ -383,7 +386,7 @@ class Mahasiswa extends BaseController
             'social_support' => $this->request->getPost('social_support')
         ];
 
-        $response = $this->fastApiService->updateProfile($data);
+        $response = $this->authService->updateProfile($data);
 
         if ($response->getStatusCode() == 200) {
             return redirect()->to(base_url('mahasiswa/pengaturan'))->with('success', [
