@@ -42,7 +42,7 @@ class Admin extends BaseController
 
         // Kirim data role ke view agar badge dan menu bisa dinamis
         $data = [
-            'title' => 'Dashboard',
+            'title' => 'Data Pengguna',
             'role'  => $role,
             'mahasiswaData' => $mahasiswaData
         ];
