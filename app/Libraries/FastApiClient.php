@@ -10,15 +10,23 @@ use Config\FastApi;
  */
 class FastApiClient
 {
+    private FastApi $fastApiConfig;
     protected string $baseUrl;
     protected \CodeIgniter\HTTP\CURLRequest $client;
 
     public function __construct()
     {
-        $this->baseUrl = config(FastApi::class)->baseUrl;
+        $this->fastApiConfig = config(FastApi::class);
+        $this->baseUrl = $this->fastApiConfig->getBaseUrl();
         $this->client = \Config\Services::curlrequest([
             'http_errors' => false,
         ]);
+    }
+
+    public function setBaseUrl(string $baseUrl): void
+    {
+        $this->fastApiConfig->setBaseUrl($baseUrl);
+        $this->baseUrl = $this->fastApiConfig->getBaseUrl();
     }
 
     public function get(string $endpoint, array $params = [])
