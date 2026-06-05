@@ -23,6 +23,11 @@ class FastApiClient
         ]);
     }
 
+    public function getBaseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
     public function setBaseUrl(string $baseUrl): void
     {
         $this->fastApiConfig->setBaseUrl($baseUrl);
