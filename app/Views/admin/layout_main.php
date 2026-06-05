@@ -26,9 +26,9 @@
                 <img src="<?= base_url('assets/img/logo-fokusin.png') ?>" alt="Logo Fokusin" class="logo-fokusin">
                 <span>
                     FOKUSIN
-                    <span class="role-indicator <?= ($role === 'superadmin') ? 'role-superadmin' : 'role-admin' ?>">
+                    <div class="role-indicator <?= ($role === 'superadmin') ? 'role-superadmin' : 'role-admin' ?> text-center">
                         <?= strtoupper($role) ?>
-                    </span>
+                    </div>
                 </span>
             </div>
 
