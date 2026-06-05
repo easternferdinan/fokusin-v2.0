@@ -144,15 +144,15 @@ class Admin extends BaseController
     // SUPER ADMIN
     // ==================================================================
 
-    public function roles()
+    public function adminManagement()
     {
         if (session()->get('role') !== 'superadmin') return redirect()->to(base_url('admin'));
 
         $data = [
-            'title' => 'Role Management',
+            'title' => 'Admin Management',
             'role'  => 'superadmin'
         ];
-        return view('admin/roles', $data);
+        return view('admin/admin_management', $data);
     }
 
     public function config()

@@ -46,7 +46,7 @@ $routes->group('admin', function ($routes) {
     $routes->post('store-mahasiswa', 'Admin::storeMahasiswa');
 
     // Menu Khusus Superadmin
-    $routes->get('roles', 'Admin::roles');
+    $routes->get('admin-management', 'Admin::adminManagement');
     $routes->get('config', 'Admin::config');
     $routes->get('audit', 'Admin::audit');
 });

@@ -34,7 +34,7 @@
 
             <div class="nav-menu">
                 <?php if ($role === 'superadmin'): ?>
-                    <a href="<?= base_url('admin/roles') ?>" class="nav-link-admin <?= url_is('admin/roles') ? 'active' : '' ?>"><i class="fas fa-key"></i> Role Management</a>
+                    <a href="<?= base_url('admin/admin-management') ?>" class="nav-link-admin <?= url_is('admin/admin-management') ? 'active' : '' ?>"><i class="fas fa-key"></i> Admin Management</a>
                     <a href="<?= base_url('admin/config') ?>" class="nav-link-admin <?= url_is('admin/config') ? 'active' : '' ?>"><i class="fas fa-cogs"></i> Konfigurasi Sistem</a>
                     <a href="<?= base_url('admin/audit') ?>" class="nav-link-admin <?= url_is('admin/audit') ? 'active' : '' ?>"><i class="fas fa-history"></i> Audit Log</a>
                 <?php else: ?>
