@@ -95,14 +95,14 @@ class Auth extends BaseController
         ]);
 
         if ($response->getStatusCode() == 401) {
-            return redirect()->back()->with('error', [
+            return redirect()->to(base_url('auth/adminLogin'))->with('error', [
                 'title' => 'Login Gagal!',
                 'message' => 'Username atau password salah.',
             ]);
         }
 
         if ($response->getStatusCode() !== 200) {
-            return redirect()->back()->with('error', [
+            return redirect()->to(base_url('auth/adminLogin'))->with('error', [
                 'title' => 'Login Gagal!',
                 'message' => 'Terjadi kesalahan saat login. Silakan coba lagi.',
                 'detail' => $response->getBody()

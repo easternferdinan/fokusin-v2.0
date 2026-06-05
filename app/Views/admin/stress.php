@@ -4,25 +4,25 @@
 <div class="row g-3 mb-4">
     <div class="col-md-3">
         <div class="stat-card p-3 border-start border-danger border-4">
-            <h3 class="text-danger fw-bold">18%</h3>
+            <h3 class="text-danger fw-bold"><?= esc($dashboardData['stress_level_percentages']['tinggi'] ?? 0) ?>%</h3>
             <small class="text-muted">Mahasiswa Burnout</small>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card p-3 border-start border-warning border-4">
-            <h3 class="text-warning fw-bold">42%</h3>
+            <h3 class="text-warning fw-bold"><?= esc($dashboardData['stress_level_percentages']['sedang'] ?? 0) ?>%</h3>
             <small class="text-muted">Status Warning</small>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card p-3 border-start border-success border-4">
-            <h3 class="text-success fw-bold">40%</h3>
+            <h3 class="text-success fw-bold"><?= esc($dashboardData['stress_level_percentages']['rendah'] ?? 0) ?>%</h3>
             <small class="text-muted">Kondisi Sehat</small>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card p-3 border-start border-primary border-4">
-            <h3 class="text-primary fw-bold">120</h3>
+            <h3 class="text-primary fw-bold"><?= esc($dashboardData['total_mahasiswa'] ?? 0) ?></h3>
             <small class="text-muted">Total Mahasiswa</small>
         </div>
     </div>
@@ -36,23 +36,46 @@
         <div class="col-md-6">
             <h6 class="fw-bold text-muted small text-uppercase mb-3">Berdasarkan Performa Akademik</h6>
 
+            <?php
+            $progressBarMap = [
+                'Tinggi' => '100%',
+                'Sedang' => '50%',
+                'Rendah' => '10%',
+                null => '0%'
+            ];
+
+            $colorMap = [
+                'Tinggi' => 'danger',
+                'Sedang' => 'warning',
+                'Rendah' => 'info',
+                null => 'info'
+            ];
+
+            $bgMap = [
+                'Tinggi' => '#ffeaea',
+                'Sedang' => '#fff8e1',
+                'Rendah' => '#e3f2fd',
+                null => '#e3f2fd'
+            ];
+            ?>
+
             <div class="mb-3">
                 <div class="d-flex justify-content-between mb-1">
                     <small class="fw-semibold">Performa Kurang (Skala 1-2)</small>
-                    <small class="text-danger fw-bold text-uppercase" style="font-size: 0.75rem;">Risiko Tinggi</small>
+                    <small class="fw-bold text-uppercase text-<?= $colorMap[$dashboardData['correlated_academic_stress_stats']['academic_1_2_high_stress'] ?? 'Rendah'] ?>" style="font-size: 0.75rem;">Level <?= $dashboardData['correlated_academic_stress_stats']['academic_1_2_high_stress'] ?? 'Rendah' ?></small>
                 </div>
-                <div class="progress rounded-pill" style="height: 10px; background: #ffeaea;">
-                    <div class="progress-bar rounded-pill" style="width: 82%; background-color: #e63946;"></div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $bgMap[$dashboardData['correlated_academic_stress_stats']['academic_1_2_high_stress'] ?? 'Rendah'] ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $colorMap[$dashboardData['correlated_academic_stress_stats']['academic_1_2_high_stress'] ?? 'Rendah'] ?>" style="width: <?= $progressBarMap[$dashboardData['correlated_academic_stress_stats']['academic_1_2_high_stress'] ?? 'Rendah'] ?>;"></div>
                 </div>
             </div>
 
             <div class="mb-3">
                 <div class="d-flex justify-content-between mb-1">
                     <small class="fw-semibold">Performa Cukup/Baik (Skala 3-5)</small>
-                    <small class="text-success fw-bold text-uppercase" style="font-size: 0.75rem;">Risiko Rendah</small>
+                    <small class="fw-bold text-uppercase text-<?= $colorMap[$dashboardData['correlated_academic_stress_stats']['mode_academic_3_5'] ?? 'Rendah'] ?>" style="font-size: 0.75rem;">Level <?= $dashboardData['correlated_academic_stress_stats']['mode_academic_3_5'] ?? 'Rendah' ?></small>
                 </div>
-                <div class="progress rounded-pill" style="height: 10px; background: #e3f2fd;">
-                    <div class="progress-bar rounded-pill" style="width: 25%; background-color: #2a9d8f;"></div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $bgMap[$dashboardData['correlated_academic_stress_stats']['mode_academic_3_5'] ?? 'Rendah'] ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $colorMap[$dashboardData['correlated_academic_stress_stats']['mode_academic_3_5'] ?? 'Rendah'] ?>" style="width: <?= $progressBarMap[$dashboardData['correlated_academic_stress_stats']['mode_academic_3_5'] ?? 'Rendah'] ?>;"></div>
                 </div>
             </div>
         </div>
@@ -63,90 +86,107 @@
             <div class="mb-3">
                 <div class="d-flex justify-content-between mb-1">
                     <small class="fw-semibold">Dukungan Rendah (Skala 1)</small>
-                    <small class="text-danger fw-bold text-uppercase" style="font-size: 0.75rem;">Risiko Tinggi</small>
+                    <small class="fw-bold text-uppercase text-<?= $colorMap[$dashboardData['correlated_social_stress_stats']['mode_social_1'] ?? 'Rendah'] ?>" style="font-size: 0.75rem;">Level <?= $dashboardData['correlated_social_stress_stats']['mode_social_1'] ?? 'Rendah' ?></small>
                 </div>
-                <div class="progress rounded-pill" style="height: 10px; background: #ffeaea;">
-                    <div class="progress-bar rounded-pill" style="width: 70%; background-color: #e63946;"></div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $bgMap[$dashboardData['correlated_social_stress_stats']['mode_social_1'] ?? 'Rendah'] ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $colorMap[$dashboardData['correlated_social_stress_stats']['mode_social_1'] ?? 'Rendah'] ?>" style="width: <?= $progressBarMap[$dashboardData['correlated_social_stress_stats']['mode_social_1'] ?? 'Rendah'] ?>;"></div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <small class="fw-semibold">Dukungan Sedang (Skala 2)</small>
+                    <small class="fw-bold text-uppercase text-<?= $colorMap[$dashboardData['correlated_social_stress_stats']['mode_social_2'] ?? 'Rendah'] ?>" style="font-size: 0.75rem;">Level <?= $dashboardData['correlated_social_stress_stats']['mode_social_2'] ?? 'Rendah' ?></small>
+                </div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $bgMap[$dashboardData['correlated_social_stress_stats']['mode_social_2'] ?? 'Rendah'] ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $colorMap[$dashboardData['correlated_social_stress_stats']['mode_social_2'] ?? 'Rendah'] ?>" style="width: <?= $progressBarMap[$dashboardData['correlated_social_stress_stats']['mode_social_2'] ?? 'Rendah'] ?>;"></div>
                 </div>
             </div>
 
             <div class="mb-3">
                 <div class="d-flex justify-content-between mb-1">
                     <small class="fw-semibold">Dukungan Tinggi (Skala 3)</small>
-                    <small class="text-info fw-bold text-uppercase" style="font-size: 0.75rem;">Risiko Rendah</small>
+                    <small class="fw-bold text-uppercase text-<?= $colorMap[$dashboardData['correlated_social_stress_stats']['mode_social_3'] ?? 'Rendah'] ?>" style="font-size: 0.75rem;">Level <?= $dashboardData['correlated_social_stress_stats']['mode_social_3'] ?? 'Rendah' ?></small>
                 </div>
-                <div class="progress rounded-pill" style="height: 10px; background: #e3f2fd;">
-                    <div class="progress-bar rounded-pill" style="width: 15%; background-color: #48cae4;"></div>
+                <div class="progress rounded-pill" style="height: 10px; background: <?= $bgMap[$dashboardData['correlated_social_stress_stats']['mode_social_3'] ?? 'Rendah'] ?>;">
+                    <div class="progress-bar rounded-pill bg-<?= $colorMap[$dashboardData['correlated_social_stress_stats']['mode_social_3'] ?? 'Rendah'] ?>" style="width: <?= $progressBarMap[$dashboardData['correlated_social_stress_stats']['mode_social_3'] ?? 'Rendah'] ?>;"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-4 mb-4">
-    
-    <div class="col-md-8">
-        <div class="card p-4 border-0 shadow-sm h-100" style="border-radius: 1rem;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h6 class="fw-bold text-dark m-0"><i class="fas fa-chart-line me-2 text-primary"></i>Tren Tingkat Stres (30 Hari Terakhir)</h6>
-                <select class="form-select form-select-sm w-auto rounded-pill border-0 bg-light fw-semibold text-muted">
-                    <option>Bulan Ini</option>
-                    <option>Bulan Lalu</option>
-                </select>
-            </div>
-            
-            <div class="bg-light rounded-4 d-flex flex-column align-items-center justify-content-center" style="height: 250px; border: 2px dashed #e2e8f0;">
-                <i class="fas fa-chart-area fa-3x text-muted opacity-25 mb-2"></i>
-                <span class="text-muted small fw-semibold">Area Visualisasi Grafik (Misal: Chart.js)</span>
-            </div>
-        </div>
-    </div>
+        <div class="col-md-12">
+            <div class="card p-4 border-0 shadow-sm h-100" style="border-radius: 1rem;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h6 class="fw-bold text-dark m-0"><i class="fas fa-chart-line me-2 text-primary"></i>Tren Tingkat Stres</h6>
+                    <select id="trendPeriodSelect" class="form-select form-select-sm w-auto rounded-pill border-0 bg-light fw-semibold text-muted">
+                        <option value="this_month">Bulan Ini</option>
+                        <option value="last_month">Bulan Lalu</option>
+                    </select>
+                </div>
 
-    <div class="col-md-4">
-        <div class="card p-4 border-0 shadow-sm h-100" style="border-radius: 1rem;">
-            <h6 class="fw-bold text-dark mb-4"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Top 3 Pemicu Utama</h6>
-            
-            <p class="text-muted small mb-4">Faktor yang paling dominan memicu stres mahasiswa berdasarkan akumulasi data AI.</p>
-
-            <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-end mb-1">
-                    <small class="fw-bold text-dark">1. Beban Belajar <br><span class="text-muted fw-normal" style="font-size: 0.75rem;">Terdeteksi pada 150 kasus</span></small>
-                    <small class="text-danger fw-bolder text-uppercase" style="font-size: 0.75rem;">Sangat Signifikan</small>
-                </div>
-                <div class="progress rounded-pill shadow-sm" style="height: 8px; background: #ffeaea;">
-                    <div class="progress-bar bg-danger rounded-pill" style="width: 80%;"></div>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <div class="d-flex justify-content-between align-items-end mb-1">
-                    <small class="fw-bold text-dark">2. Kualitas Tidur <br><span class="text-muted fw-normal" style="font-size: 0.75rem;">Terdeteksi pada 98 kasus</span></small>
-                    <small class="text-warning fw-bolder text-uppercase" style="font-size: 0.75rem;">Signifikan</small>
-                </div>
-                <div class="progress rounded-pill shadow-sm" style="height: 8px; background: #fff9e6;">
-                    <div class="progress-bar bg-warning rounded-pill" style="width: 55%;"></div>
-                </div>
-            </div>
-
-            <div class="mb-0">
-                <div class="d-flex justify-content-between align-items-end mb-1">
-                    <small class="fw-bold text-dark">3. Deadline Mepet <br><span class="text-muted fw-normal" style="font-size: 0.75rem;">Terdeteksi pada 45 kasus</span></small>
-                    <small class="text-info fw-bolder text-uppercase" style="font-size: 0.75rem;">Cukup Signifikan</small>
-                </div>
-                <div class="progress rounded-pill shadow-sm" style="height: 8px; background: #e3f2fd;">
-                    <div class="progress-bar bg-info rounded-pill" style="width: 30%;"></div>
+                <div class="bg-light rounded-4 d-flex flex-column align-items-center justify-content-center p-3" style="height: 350px; border: 2px dashed #e2e8f0; width: 100%;">
+                    <canvas id="stressTrendChart" style="display: none; width: 100%; height: 100%;"></canvas>
+                    <div id="chartLoadingIndicator" class="text-center">
+                        <i class="fas fa-chart-area fa-3x text-muted opacity-25 mb-2"></i>
+                        <br>
+                        <span class="text-muted small fw-semibold">Memuat data...</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
+        <!-- <div class="col-md-4">
+            <div class="card p-4 border-0 shadow-sm h-100" style="border-radius: 1rem;">
+                <h6 class="fw-bold text-dark mb-4"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Top 3 Pemicu Utama</h6>
 
-    <div class="mt-4 p-3 rounded-3" style="background-color: #f8f9fa; border-left: 4px solid #e63946;">
-        <h6 class="fw-bold text-muted small text-uppercase mb-2">Pengaruh Riwayat Kesehatan Mental</h6>
-        <div class="d-flex align-items-center">
-            <i class="fas fa-heartbeat text-danger fa-2x me-3"></i>
-            <p class="m-0 small text-muted">Sistem mendeteksi bahwa mahasiswa dengan <strong>Riwayat Kesehatan Mental</strong> memiliki kecenderungan tingkat stres <strong>signifikan lebih tinggi</strong> dibandingkan yang tidak memiliki riwayat.</p>
+                <p class="text-muted small mb-4">Faktor yang paling dominan memicu stres mahasiswa berdasarkan akumulasi data AI.</p>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-end mb-1">
+                        <small class="fw-bold text-dark">1. Beban Belajar <br><span class="text-muted fw-normal" style="font-size: 0.75rem;">Terdeteksi pada 150 kasus</span></small>
+                        <small class="text-danger fw-bolder text-uppercase" style="font-size: 0.75rem;">Sangat Signifikan</small>
+                    </div>
+                    <div class="progress rounded-pill shadow-sm" style="height: 8px; background: #ffeaea;">
+                        <div class="progress-bar bg-danger rounded-pill" style="width: 80%;"></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-end mb-1">
+                        <small class="fw-bold text-dark">2. Kualitas Tidur <br><span class="text-muted fw-normal" style="font-size: 0.75rem;">Terdeteksi pada 98 kasus</span></small>
+                        <small class="text-warning fw-bolder text-uppercase" style="font-size: 0.75rem;">Signifikan</small>
+                    </div>
+                    <div class="progress rounded-pill shadow-sm" style="height: 8px; background: #fff9e6;">
+                        <div class="progress-bar bg-warning rounded-pill" style="width: 55%;"></div>
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <div class="d-flex justify-content-between align-items-end mb-1">
+                        <small class="fw-bold text-dark">3. Deadline Mepet <br><span class="text-muted fw-normal" style="font-size: 0.75rem;">Terdeteksi pada 45 kasus</span></small>
+                        <small class="text-info fw-bolder text-uppercase" style="font-size: 0.75rem;">Cukup Signifikan</small>
+                    </div>
+                    <div class="progress rounded-pill shadow-sm" style="height: 8px; background: #e3f2fd;">
+                        <div class="progress-bar bg-info rounded-pill" style="width: 30%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+        <div class="mt-4 p-3 rounded-3" style="background-color: #f8f9fa; border-left: 4px solid #e63946;">
+            <h6 class="fw-bold text-muted small text-uppercase mb-2">Pengaruh Riwayat Kesehatan Mental</h6>
+            <div class="d-flex align-items-center">
+                <i class="fas fa-heartbeat text-danger fa-2x me-3"></i>
+                <p class="m-0 small text-muted"><?= esc($dashboardData['mental_health_history_effect']  ?? 'Tidak ada data') ?></p>
+            </div>
         </div>
     </div>
-</div>
-<?= $this->endSection() ?>
+    <?= $this->endSection() ?>
+
+    <?= $this->section('js') ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="<?= base_url('assets/js/admin.js') ?>"></script>
+    <?= $this->endSection() ?>

@@ -6,18 +6,18 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index');
-$routes->group('auth', function($routes) {
+$routes->group('auth', function ($routes) {
     $routes->get('login', 'Auth::login');               // Buka halaman form
     $routes->post('loginProcess', 'Auth::loginProcess'); // Menangkap submit login
     $routes->post('registerProcess', 'Auth::registerProcess'); // Menangkap submit register
     $routes->get('logout', 'Auth::logout');             // Proses logout
     $routes->get('adminLogin', 'Auth::adminLogin');             // Login Admin
     $routes->post('adminLoginProcess', 'Auth::adminLoginProcess'); // Proses Login Admin
-    
+
     $routes->get('logout', 'Auth::logout');                 // Logout Global
 });
 
-$routes->group('mahasiswa', function($routes) {
+$routes->group('mahasiswa', function ($routes) {
     $routes->get('/', 'Mahasiswa::index');              // Mengarah ke Dashboard
     $routes->get('tugas', 'Mahasiswa::tugas');          // Mengarah ke Daftar Tugas
     $routes->post('simpanTugas', 'Mahasiswa::simpanTugas'); // Menangkap submit tambah tugas
@@ -30,17 +30,18 @@ $routes->group('mahasiswa', function($routes) {
     $routes->post('resumePomodoro/(:any)', 'Mahasiswa::resumePomodoro/$1');
     $routes->post('completePomodoro/(:any)', 'Mahasiswa::completePomodoro/$1');
     $routes->get('report', 'Mahasiswa::report');        // Mengarah ke Report AI
-    $routes->get('pengaturan', 'Mahasiswa::pengaturan');// Mengarah ke Pengaturan
+    $routes->get('pengaturan', 'Mahasiswa::pengaturan'); // Mengarah ke Pengaturan
     $routes->post('pengaturan/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI
     $routes->post('saveCheckin', 'Mahasiswa::saveCheckin'); // Menangkap submit check-in harian
     $routes->get('stress-trend', 'Mahasiswa::getStressTrend'); // Mengambil data tren stres
 });
 
-$routes->group('admin', function($routes) {
+$routes->group('admin', function ($routes) {
     // Menu Admin Biasa
     $routes->get('/', 'Admin::index');
     $routes->get('stress-analysis/(:any)', 'Admin::stressAnalysis/$1');
     $routes->get('stress', 'Admin::stress');
+    $routes->get('stress-trend', 'Admin::stressTrend');
     $routes->get('alert', 'Admin::alert');
     $routes->post('store-mahasiswa', 'Admin::storeMahasiswa');
 

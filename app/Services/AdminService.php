@@ -47,4 +47,25 @@ class AdminService
             ]
         ]);
     }
+
+    public function getDashboardData()
+    {
+        return $this->client->get('admin/dashboard', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+    }
+
+    public function getStressTrendData($period)
+    {
+        return $this->client->get('admin/dashboard/stress-trend', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ],
+            'query' => [
+                'period' => $period
+            ]
+        ]);
+    }
 }

@@ -55,8 +55,34 @@ class Admin extends BaseController
         $role = session()->get('role');
         if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
 
-        $data = ['title' => 'Pantau Stres Global', 'role' => $role];
+        $response = $this->adminService->getDashboardData();
+        $dashboardData = [];
+        if ($response->getStatusCode() === 200) {
+            $dashboardData = json_decode($response->getBody(), true);
+        }
+
+        $data = [
+            'title' => 'Pantau Stres Global',
+            'role' => $role,
+            'dashboardData' => $dashboardData
+        ];
         return view('admin/stress', $data);
+    }
+
+    public function stressTrend()
+    {
+        $role = session()->get('role');
+        if ($role !== 'admin' && $role !== 'superadmin') {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $period = $this->request->getGet('period') ?? 'this_month';
+        $response = $this->adminService->getStressTrendData($period);
+
+        return $this->response->setJSON([
+            'status'  => $response->getStatusCode(),
+            'data'    => json_decode($response->getBody(), true),
+        ])->setStatusCode($response->getStatusCode());
     }
 
     public function stressAnalysis($userId)

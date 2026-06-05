@@ -304,3 +304,120 @@ function simpanConfig() {
         }
     });
 }
+
+// ==========================================
+// GRAFIK TREN STRES ADMIN
+// ==========================================
+let stressChartInstance = null;
+
+async function initStressTrendChart(period = 'this_month') {
+    const canvas = document.getElementById('stressTrendChart');
+    const loadingIndicator = document.getElementById('chartLoadingIndicator');
+
+    if (!canvas) return; // not on stress page
+
+    loadingIndicator.style.display = 'block';
+    canvas.style.display = 'none';
+
+    try {
+        const res = await fetch(`/admin/stress-trend?period=${period}`);
+        const json = await res.json();
+
+        if (json.status === 200 && json.data) {
+            const data = json.data;
+            console.log(data);
+            const items = data.items || [];
+
+            const labels = items.map(i => i.label).reverse();
+            const modes = items.map(i => i.mode_stress).reverse();
+
+            // Map stress mode to numeric value for charting
+            // Rendah: 1, Sedang: 2, Tinggi: 3
+            const numericData = modes.map(m => {
+                if (m === 'Tinggi') return 3;
+                if (m === 'Sedang') return 2;
+                if (m === 'Rendah') return 1;
+                return 0; // null/empty
+            });
+
+            const pointColors = modes.map(m => {
+                if (m === 'Tinggi') return '#e63946'; // danger
+                if (m === 'Sedang') return '#ffca28'; // warning
+                if (m === 'Rendah') return '#2a9d8f'; // success
+                return '#cbd5e1';
+            });
+
+            if (stressChartInstance) {
+                stressChartInstance.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            stressChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Mode Stress Level',
+                        data: numericData,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: pointColors,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 3.5,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function (value) {
+                                    if (value === 3) return 'Tinggi';
+                                    if (value === 2) return 'Sedang';
+                                    if (value === 1) return 'Rendah';
+                                    if (value === 0) return 'Data Kosong';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const idx = context.dataIndex;
+                                    return 'Stress Level: ' + modes[idx];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            loadingIndicator.style.display = 'none';
+            canvas.style.display = 'block';
+        }
+    } catch (e) {
+        console.error('Error fetching chart data:', e);
+        loadingIndicator.innerHTML = '<span class="text-danger small fw-semibold">Gagal memuat data grafik.</span>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const trendSelect = document.getElementById('trendPeriodSelect');
+    if (trendSelect) {
+        trendSelect.addEventListener('change', function (e) {
+            initStressTrendChart(e.target.value);
+        });
+
+        // init default
+        initStressTrendChart(trendSelect.value);
+    }
+});
