@@ -117,7 +117,7 @@ class Auth extends BaseController
         }
 
         if (session()->get('role') === 'superadmin') {
-            return redirect()->to(base_url('admin/roles'))->with('success', [
+            return redirect()->to(base_url('admin/admin-management'))->with('success', [
                 'title' => 'Login Berhasil!',
                 'message' => 'Selamat Datang Super Admin!'
             ]);
