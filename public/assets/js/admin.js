@@ -2,6 +2,7 @@
 // LOGIKA JAVASCRIPT KHUSUS DASHBOARD ADMIN
 // ==========================================
 let modalDetailInstance = null;
+let modalEditAdminInstance = null;
 let namaMahasiswaAktif = "";
 let userIdAktif = null;
 let halamanAktif = 1;
@@ -9,10 +10,14 @@ let totalHalaman = 1;
 const ukuranHalaman = 5;
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Inisialisasi Modal secara aman jika elemennya ada di halaman
-    const modalEl = document.getElementById('modalDetailMahasiswa');
-    if (modalEl) {
-        modalDetailInstance = new bootstrap.Modal(modalEl);
+    const modalDetail = document.getElementById('modalDetailMahasiswa');
+    if (modalDetail) {
+        modalDetailInstance = new bootstrap.Modal(modalDetail);
+    }
+
+    const modalEdit = document.getElementById('modalEditAdmin');
+    if (modalEdit) {
+        modalEditAdminInstance = new bootstrap.Modal(modalEdit);
     }
 });
 
@@ -244,6 +249,173 @@ async function simpanUserBaru() {
                 icon: 'error',
                 title: 'Gagal',
                 text: 'Terjadi kesalahan saat menambahkan pengguna.',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            });
+        }
+    } catch {
+        Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Tidak dapat terhubung ke server.',
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+}
+
+// ==========================================
+// FUNGSI TAMBAH / EDIT ADMIN (SUPER ADMIN)
+// ==========================================
+
+async function simpanAdminBaru() {
+    const fullname = document.getElementById('inputNama').value.trim();
+    const username = document.getElementById('inputUsername').value.trim();
+    const password = document.getElementById('inputPassword').value.trim();
+
+    const errors = [];
+    if (!fullname) errors.push('Nama admin wajib diisi');
+    if (!username) errors.push('Username wajib diisi');
+    if (!password) errors.push('Password wajib diisi');
+    if (password && password.length < 8) errors.push('Password minimal 8 karakter');
+
+    if (errors.length > 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Validasi Gagal',
+            html: errors.map(e => `<div class="text-start">${e}</div>`).join(''),
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+        return;
+    }
+
+    const btn = document.getElementById('btnSimpanUser');
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Menyimpan...';
+
+    try {
+        const res = await fetch('/admin/store-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fullname, username, password })
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+            const modalEl = document.getElementById('modalTambahAdmin');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
+            Swal.fire({
+                title: 'Berhasil!',
+                text: `Admin "${fullname}" berhasil ditambahkan.`,
+                icon: 'success',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            }).then(() => {
+                document.getElementById('formTambahAdmin').reset();
+                location.reload();
+            });
+        } else {
+            const detail = json.detail || json.error || 'Terjadi kesalahan.';
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: typeof detail === 'string' ? detail : JSON.stringify(detail),
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            });
+        }
+    } catch {
+        Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Tidak dapat terhubung ke server.',
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+}
+
+function editAdmin(btn) {
+    document.getElementById('editAdminId').value = btn.dataset.id;
+    document.getElementById('editNama').value = btn.dataset.nama;
+    document.getElementById('editUsername').value = btn.dataset.username;
+    document.getElementById('editPassword').value = '';
+
+    if (modalEditAdminInstance) {
+        modalEditAdminInstance.show();
+    }
+}
+
+async function simpanEditAdmin() {
+    const adminId = document.getElementById('editAdminId').value.trim();
+    const fullname = document.getElementById('editNama').value.trim();
+    const username = document.getElementById('editUsername').value.trim();
+    const password = document.getElementById('editPassword').value.trim();
+
+    const errors = [];
+    if (!fullname) errors.push('Nama admin wajib diisi');
+    if (!username) errors.push('Username wajib diisi');
+    if (password && password.length < 8) errors.push('Password minimal 8 karakter');
+
+    if (errors.length > 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Validasi Gagal',
+            html: errors.map(e => `<div class="text-start">${e}</div>`).join(''),
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+        return;
+    }
+
+    const btn = document.getElementById('btnSimpanEditAdmin');
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Menyimpan...';
+
+    try {
+        const body = { admin_id: adminId, fullname, username };
+        if (password) body.password = password;
+
+        const res = await fetch('/admin/update-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+            const modalEl = document.getElementById('modalEditAdmin');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
+            Swal.fire({
+                title: 'Berhasil!',
+                text: `Data admin "${fullname}" berhasil diperbarui.`,
+                icon: 'success',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            const detail = json.detail || json.error || 'Terjadi kesalahan.';
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: typeof detail === 'string' ? detail : JSON.stringify(detail),
                 confirmButtonColor: '#6366f1',
                 customClass: { popup: 'rounded-4' }
             });

@@ -193,11 +193,71 @@ class Admin extends BaseController
     {
         if (session()->get('role') !== 'superadmin') return redirect()->to(base_url('admin'));
 
+        $response = $this->superAdminService->getAdmins();
+        $admins = [];
+
+        if ($response->getStatusCode() === 200) {
+            $admins = json_decode($response->getBody(), true) ?? [];
+        } else {
+            log_message('error', 'Gagal mengambil data admin: ' . $response->getBody());
+        }
+
         $data = [
             'title' => 'Admin Management',
-            'role'  => 'superadmin'
+            'role'  => 'superadmin',
+            'admins' => $admins,
         ];
         return view('admin/admin_management', $data);
+    }
+
+    public function storeAdmin()
+    {
+        if (session()->get('role') !== 'superadmin') {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $json = $this->request->getJSON();
+
+        $data = [
+            'fullname' => $json->fullname ?? '',
+            'username' => $json->username ?? '',
+            'password' => $json->password ?? '',
+        ];
+
+        $response = $this->superAdminService->createAdmin($data);
+        $statusCode = $response->getStatusCode();
+        $body = json_decode($response->getBody(), true);
+
+        return $this->response->setJSON($body)->setStatusCode($statusCode);
+    }
+
+    public function updateAdmin()
+    {
+        if (session()->get('role') !== 'superadmin') {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $json = $this->request->getJSON();
+
+        $adminId = $json->admin_id ?? '';
+        if (empty($adminId)) {
+            return $this->response->setJSON(['error' => 'admin_id is required'])->setStatusCode(400);
+        }
+
+        $data = [
+            'fullname' => $json->fullname ?? '',
+            'username' => $json->username ?? '',
+        ];
+
+        if (!empty($json->password)) {
+            $data['password'] = $json->password;
+        }
+
+        $response = $this->superAdminService->updateAdmin($adminId, $data);
+        $statusCode = $response->getStatusCode();
+        $body = json_decode($response->getBody(), true);
+
+        return $this->response->setJSON($body)->setStatusCode($statusCode);
     }
 
     public function config()
