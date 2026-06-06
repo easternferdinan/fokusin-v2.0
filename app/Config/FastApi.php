@@ -10,7 +10,14 @@ class FastApi extends BaseConfig
 
     public function __construct()
     {
-        $this->baseUrl = env('API_URL');
+        $json = file_get_contents(APPPATH . 'Config/FastApi.json');
+        $data = json_decode($json, true);
+
+        if ($data['api_base_url'] == '') {
+            $this->baseUrl = env('API_URL');
+        } else {
+            $this->baseUrl = $data['api_base_url'];
+        }
     }
 
     public function getBaseUrl(): string
@@ -18,8 +25,12 @@ class FastApi extends BaseConfig
         return $this->baseUrl;
     }
 
-    public function setBaseUrl(string $baseUrl): void
+    public function setBaseUrl(string $newBaseUrl): void
     {
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = $newBaseUrl;
+        $json = file_get_contents(APPPATH . 'Config/FastApi.json');
+        $data = json_decode($json, true);
+        $data['api_base_url'] = $newBaseUrl;
+        file_put_contents(APPPATH . 'Config/FastApi.json', json_encode($data));
     }
 }

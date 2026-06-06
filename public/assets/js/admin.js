@@ -287,9 +287,10 @@ function cariPengguna() {
     });
 }
 
-function simpanConfig() {
-    // Logika untuk menangkap nilai checkbox dan input
-    // Kita gunakan SweetAlert agar terlihat profesional
+function simpanConfig(event) {
+    event.preventDefault();
+    const form = document.getElementById('formConfig');
+
     Swal.fire({
         title: 'Simpan Konfigurasi?',
         text: "Pengaturan notifikasi baru akan segera diterapkan ke sistem.",
@@ -299,8 +300,7 @@ function simpanConfig() {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Di sini nanti kamu tambahkan AJAX untuk kirim data ke controller
-            Swal.fire('Tersimpan!', 'Konfigurasi berhasil diperbarui.', 'success');
+            form.submit();
         }
     });
 }

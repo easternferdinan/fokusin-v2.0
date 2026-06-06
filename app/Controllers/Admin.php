@@ -3,15 +3,18 @@
 namespace App\Controllers;
 
 use App\Services\AdminService;
+use App\Services\SuperAdminService;
 
 class Admin extends BaseController
 {
     protected $adminService;
+    protected $superAdminService;
 
     public function __construct()
     {
         helper('auth');
         $this->adminService = new AdminService();
+        $this->superAdminService = new SuperAdminService();
     }
 
     // ==================================================================
@@ -159,11 +162,65 @@ class Admin extends BaseController
     {
         if (session()->get('role') !== 'superadmin') return redirect()->to(base_url('admin'));
 
+        $response = $this->superAdminService->getConfig();
+
+        if ($response->getStatusCode() !== 200) {
+            return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
+
+        $configData = json_decode($response->getBody(), true);
+
         $data = [
             'title' => 'Konfigurasi Sistem',
-            'role'  => 'superadmin'
+            'role'  => 'superadmin',
+            'config' => $configData
         ];
+
         return view('admin/config', $data);
+    }
+
+    public function updateConfig()
+    {
+        $role = session()->get('role');
+        if ($role !== 'superadmin') {
+            return redirect()->to(base_url('auth/adminLogin'))->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Anda tidak memiliki akses ke halaman ini.',
+            ]);
+        }
+
+        $api_base_url = $this->request->getPost('api_base_url');
+        $stress_threshold = $this->request->getPost('stress_threshold');
+        $stress_threshold_frequency = $this->request->getPost('stress_threshold_frequency');
+
+        $data = [
+            'api_base_url' => $api_base_url,
+            'stress_threshold' => $stress_threshold,
+            'stress_threshold_frequency' => $stress_threshold_frequency,
+        ];
+
+        $response = $this->superAdminService->updateConfig($data);
+        $statusCode = $response->getStatusCode();
+
+        $body = json_decode($response->getBody(), true);
+
+        if ($statusCode === 200) {
+            $this->superAdminService->updateBaseUrl($data['api_base_url']);
+            return redirect()->back()->with('success', [
+                'title' => 'Berhasil!',
+                'message' => 'Konfigurasi berhasil diperbarui.',
+            ]);
+        }
+
+        return redirect()->back()->with('error', [
+            'title' => 'Gagal!',
+            'message' => 'Gagal memperbarui konfigurasi.',
+            'detail' => $body
+        ]);
     }
 
     public function audit()
