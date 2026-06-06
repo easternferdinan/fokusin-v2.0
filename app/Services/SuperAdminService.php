@@ -73,6 +73,15 @@ class SuperAdminService
         ]);
     }
 
+    public function getLogs()
+    {
+        return $this->client->get('logs/', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token'),
+            ],
+        ]);
+    }
+
     public function exportDatabase()
     {
         return $this->client->get('super-admin/export-db', [

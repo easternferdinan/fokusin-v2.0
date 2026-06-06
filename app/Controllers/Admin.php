@@ -377,9 +377,19 @@ class Admin extends BaseController
     {
         if (session()->get('role') !== 'superadmin') return redirect()->to(base_url('admin'));
 
+        $response = $this->superAdminService->getLogs();
+        $logs = [];
+
+        if ($response->getStatusCode() === 200) {
+            $logs = json_decode($response->getBody(), true) ?? [];
+        } else {
+            log_message('error', 'Gagal mengambil data log: ' . $response->getBody());
+        }
+
         $data = [
             'title' => 'Audit Log Sistem',
-            'role'  => 'superadmin'
+            'role'  => 'superadmin',
+            'logs'  => $logs
         ];
         return view('admin/audit', $data);
     }
