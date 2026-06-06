@@ -60,6 +60,16 @@
             </button>
         </div>
     </form>
+
+    <div class="mt-4 pt-4 border-top">
+        <h6 class="fw-bold text-muted mb-3"><i class="fas fa-database me-2"></i>Backup Database</h6>
+        <div class="p-3 bg-light rounded-3">
+            <p class="small text-muted mb-3">Download seluruh data dalam format CSV yang dikompres dalam file ZIP.</p>
+            <a href="<?= base_url('admin/export-database') ?>" class="btn btn-success rounded-pill px-4 shadow-sm">
+                <i class="fas fa-file-archive me-2"></i>Download Backup Database
+            </a>
+        </div>
+    </div>
 </div>
 <?= $this->endSection() ?>
 

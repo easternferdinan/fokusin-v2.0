@@ -348,6 +348,31 @@ class Admin extends BaseController
         ]);
     }
 
+    public function exportDatabase()
+    {
+        if (session()->get('role') !== 'superadmin') {
+            return redirect()->to(base_url('admin'));
+        }
+
+        $response = $this->superAdminService->exportDatabase();
+
+        if ($response->getStatusCode() !== 200) {
+            return redirect()->back()->with('error', [
+                'title' => 'Gagal!',
+                'message' => 'Gagal mengekspor database.',
+                'detail' => $response->getBody()
+            ]);
+        }
+
+        $filename = 'database-export-' . date('Y-m-d') . '.zip';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/zip')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->setHeader('Content-Length', strlen($response->getBody()))
+            ->setBody($response->getBody());
+    }
+
     public function audit()
     {
         if (session()->get('role') !== 'superadmin') return redirect()->to(base_url('admin'));

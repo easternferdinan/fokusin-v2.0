@@ -73,6 +73,15 @@ class SuperAdminService
         ]);
     }
 
+    public function exportDatabase()
+    {
+        return $this->client->get('super-admin/export-db', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token'),
+            ],
+        ]);
+    }
+
     public function updateBaseUrl(string $baseUrl)
     {
         $this->client->setBaseUrl($baseUrl);
