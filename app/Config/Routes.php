@@ -54,5 +54,6 @@ $routes->group('admin', function ($routes) {
     $routes->get('config', 'Admin::config');
     $routes->post('update-config', 'Admin::updateConfig');
     $routes->get('audit', 'Admin::audit');
+    $routes->get('audit-logs', 'Admin::auditLogs');
     $routes->get('export-database', 'Admin::exportDatabase');
 });

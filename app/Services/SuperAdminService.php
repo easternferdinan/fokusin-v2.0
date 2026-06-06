@@ -73,12 +73,24 @@ class SuperAdminService
         ]);
     }
 
-    public function getLogs()
+    public function getLogs(?string $level = null, ?string $eventType = null, int $limit = 100, int $skip = 0)
     {
+        $query = [
+            'limit' => $limit,
+            'skip' => $skip,
+        ];
+        if ($level !== null) {
+            $query['level'] = $level;
+        }
+        if ($eventType !== null) {
+            $query['event_type'] = $eventType;
+        }
+
         return $this->client->get('logs/', [
             'headers' => [
                 'Authorization' => 'Bearer ' . session()->get('access_token'),
             ],
+            'query' => $query,
         ]);
     }
 
