@@ -44,6 +44,7 @@ $routes->group('admin', function ($routes) {
     $routes->get('stress-trend', 'Admin::stressTrend');
     $routes->get('alert', 'Admin::alert');
     $routes->post('store-mahasiswa', 'Admin::storeMahasiswa');
+    $routes->post('send-alert', 'Admin::sendAlert');
 
     // Menu Khusus Superadmin
     $routes->get('admin-management', 'Admin::adminManagement');

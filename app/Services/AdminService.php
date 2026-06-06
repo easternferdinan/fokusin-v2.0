@@ -68,4 +68,28 @@ class AdminService
             ]
         ]);
     }
+
+    public function getAlertData()
+    {
+        return $this->client->get('admin/stress-alert', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+    }
+
+    public function sendAlert(string $userId, $threshold, int $frequency)
+    {
+        return $this->client->post('admin/stress-alert', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token'),
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'user_id' => $userId,
+                'stress_threshold' => $threshold,
+                'stress_threshold_frequency' => $frequency,
+            ]
+        ]);
+    }
 }

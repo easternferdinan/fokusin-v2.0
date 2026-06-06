@@ -139,8 +139,50 @@ class Admin extends BaseController
         $role = session()->get('role');
         if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
 
-        $data = ['title' => 'Tindak Lanjut Kritis', 'role' => $role];
+        $response = $this->adminService->getAlertData();
+
+        if ($response->getStatusCode() !== 200) {
+            return redirect()->back()->with('error', [
+                'title' => 'Terjadi Kesalahan!',
+                'message' => 'Coba lagi nanti atau hubungi admin.',
+                'detail' => $response->getBody()
+            ]);
+        }
+
+        $responseData = json_decode($response->getBody(), true);
+
+        $data = [
+            'title' => 'Tindak Lanjut Kritis',
+            'role' => $role,
+            'alertData' => $responseData['alerted_mahasiswa'],
+            'stressThreshold' => $responseData['stress_threshold'],
+            'stressThresholdFrequency' => $responseData['stress_threshold_frequency'],
+        ];
+
         return view('admin/alert', $data);
+    }
+
+    public function sendAlert()
+    {
+        $role = session()->get('role');
+        if ($role !== 'admin' && $role !== 'superadmin') {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $json = $this->request->getJSON(true);
+        $userId = $json['user_id'] ?? '';
+        $threshold = $json['stress_threshold'] ?? '';
+        $frequency = (int) ($json['stress_threshold_frequency'] ?? 0);
+
+        if (empty($userId)) {
+            return $this->response->setJSON(['error' => 'user_id is required'])->setStatusCode(400);
+        }
+
+        $response = $this->adminService->sendAlert($userId, $threshold, $frequency);
+        $statusCode = $response->getStatusCode();
+        $body = json_decode($response->getBody(), true);
+
+        return $this->response->setJSON($body)->setStatusCode($statusCode);
     }
 
     // ==================================================================

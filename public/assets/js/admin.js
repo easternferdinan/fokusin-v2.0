@@ -306,6 +306,69 @@ function simpanConfig(event) {
 }
 
 // ==========================================
+// KIRIM PERINGATAN KE MAHASISWA
+// ==========================================
+async function kirimAlert(userId, threshold, frequency, btn) {
+    const confirm = await Swal.fire({
+        title: 'Kirim Peringatan?',
+        text: 'Notifikasi akan dikirimkan ke mahasiswa terkait.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        confirmButtonText: '<i class="fas fa-paper-plane me-2"></i>Ya, Kirim',
+        cancelButtonText: 'Batal',
+        customClass: { popup: 'rounded-4' }
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Mengirim...';
+
+    try {
+        const res = await fetch('/admin/send-alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, stress_threshold: threshold, stress_threshold_frequency: frequency })
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Peringatan Terkirim!',
+                text: 'Notifikasi peringatan telah dikirim ke mahasiswa.',
+                confirmButtonColor: '#00b894',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Terkirim';
+            btn.classList.replace('btn-danger', 'btn-success');
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: typeof json.detail === 'string' ? json.detail : 'Terjadi kesalahan.',
+                confirmButtonColor: '#ff7675'
+            });
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+        }
+    } catch {
+        Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Tidak dapat terhubung ke server.',
+            confirmButtonColor: '#ff7675'
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+}
+
+// ==========================================
 // GRAFIK TREN STRES ADMIN
 // ==========================================
 let stressChartInstance = null;
