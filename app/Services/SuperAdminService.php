@@ -64,6 +64,15 @@ class SuperAdminService
         ]);
     }
 
+    public function deleteAdmin(string $id)
+    {
+        return $this->client->delete("super-admin/admins/{$id}", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token'),
+            ],
+        ]);
+    }
+
     public function updateBaseUrl(string $baseUrl)
     {
         $this->client->setBaseUrl($baseUrl);

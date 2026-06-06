@@ -260,6 +260,29 @@ class Admin extends BaseController
         return $this->response->setJSON($body)->setStatusCode($statusCode);
     }
 
+    public function deleteAdmin()
+    {
+        if (session()->get('role') !== 'superadmin') {
+            return $this->response->setJSON(['error' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $json = $this->request->getJSON();
+        $adminId = $json->admin_id ?? '';
+        if (empty($adminId)) {
+            return $this->response->setJSON(['error' => 'admin_id is required'])->setStatusCode(400);
+        }
+
+        $response = $this->superAdminService->deleteAdmin($adminId);
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode === 204) {
+            return $this->response->setJSON(['status' => 'success'])->setStatusCode(200);
+        }
+
+        $body = json_decode($response->getBody(), true);
+        return $this->response->setJSON($body)->setStatusCode($statusCode);
+    }
+
     public function config()
     {
         if (session()->get('role') !== 'superadmin') return redirect()->to(base_url('admin'));

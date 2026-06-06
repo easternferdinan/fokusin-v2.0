@@ -435,6 +435,73 @@ async function simpanEditAdmin() {
 }
 
 // ==========================================
+// HAPUS ADMIN (SUPER ADMIN)
+// ==========================================
+
+async function hapusAdmin(btn) {
+    const adminId = btn.dataset.id;
+    const adminName = btn.dataset.nama;
+
+    const confirm = await Swal.fire({
+        title: 'Hapus Admin?',
+        text: `Admin "${adminName}" akan dihapus secara permanen.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: '<i class="fas fa-trash me-2"></i>Ya, Hapus',
+        cancelButtonText: 'Batal',
+        customClass: { popup: 'rounded-4' }
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Menghapus...';
+
+    try {
+        const res = await fetch('/admin/delete-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ admin_id: adminId })
+        });
+
+        if (res.ok) {
+            Swal.fire({
+                title: 'Berhasil!',
+                text: `Admin "${adminName}" berhasil dihapus.`,
+                icon: 'success',
+                confirmButtonColor: '#6366f1',
+                customClass: { popup: 'rounded-4' }
+            }).then(() => location.reload());
+            return;
+        }
+
+        const json = await res.json();
+        const detail = json.detail || json.error || 'Terjadi kesalahan.';
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: typeof detail === 'string' ? detail : JSON.stringify(detail),
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    } catch {
+        Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Tidak dapat terhubung ke server.',
+            confirmButtonColor: '#6366f1',
+            customClass: { popup: 'rounded-4' }
+        });
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+    }
+}
+
+// ==========================================
 // FUNGSI LIVE SEARCH TABEL PENGGUNA
 // ==========================================
 function cariPengguna() {

@@ -50,6 +50,7 @@ $routes->group('admin', function ($routes) {
     $routes->get('admin-management', 'Admin::adminManagement');
     $routes->post('store-admin', 'Admin::storeAdmin');
     $routes->post('update-admin', 'Admin::updateAdmin');
+    $routes->post('delete-admin', 'Admin::deleteAdmin');
     $routes->get('config', 'Admin::config');
     $routes->post('update-config', 'Admin::updateConfig');
     $routes->get('audit', 'Admin::audit');

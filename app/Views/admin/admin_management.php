@@ -30,7 +30,7 @@
                         </td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary rounded-pill" data-id="<?= esc($admin['user_id']) ?>" data-nama="<?= esc($admin['fullname']) ?>" data-username="<?= esc($admin['username']) ?>" onclick="editAdmin(this)"><i class="fas fa-pen-to-square"></i></button>
-                            <button class="btn btn-sm btn-outline-danger rounded-pill"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-danger rounded-pill" data-id="<?= esc($admin['user_id']) ?>" data-nama="<?= esc($admin['fullname']) ?>" onclick="hapusAdmin(this)"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
