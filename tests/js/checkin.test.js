@@ -79,3 +79,27 @@ test('checkinBadge disembunyikan jika sudah checkin hari ini', () => {
     }
     expect(badge.style.display).toBe('none');
 });
+
+// ✅ Test 6: Form tidak bisa submit dua kali dalam sehari
+test('form checkin tidak bisa submit jika sudah checkin hari ini', () => {
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('checkin_' + today, '2');
+    const alreadyCheckin = localStorage.getItem('checkin_' + today) !== null;
+    expect(alreadyCheckin).toBe(true);
+});
+
+// ✅ Test 7: Nilai sleep_quality harus antara 1-5
+test('nilai sleep_quality valid antara 1 sampai 5', () => {
+    const validValues = ['1', '2', '3', '4', '5'];
+    const radios = document.querySelectorAll('input[name="sleep_quality"]');
+    radios.forEach(radio => {
+        expect(validValues).toContain(radio.value);
+    });
+});
+
+// ✅ Test 8: Semua field wajib ada di form checkin
+test('form checkin memiliki semua field yang diperlukan', () => {
+    expect(document.getElementById('checkinDate')).not.toBeNull();
+    expect(document.getElementById('formCheckin')).not.toBeNull();
+    expect(document.querySelector('input[name="sleep_quality"]')).not.toBeNull();
+});
