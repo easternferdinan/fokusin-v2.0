@@ -80,7 +80,7 @@
                     </div>
                     <div class="form-floating">
                         <input type="email" class="form-control" id="regEmail" name="email" placeholder="Email" required>
-                        <label for="regEmail"><i class="fas fa-envelope me-2"></i>Email Kampus</label>
+                        <label for="regEmail"><i class="fas fa-envelope me-2"></i>Email</label>
                     </div>
                     <div class="form-floating">
                         <input type="password" class="form-control" id="regPassword" name="password" placeholder="Password" required>

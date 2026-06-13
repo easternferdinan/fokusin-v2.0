@@ -122,7 +122,7 @@
                         <input type="text" class="form-control rounded-3" id="inputUsername" placeholder="Masukkan username..." required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">Email Kampus</label>
+                        <label class="form-label text-muted small fw-bold">Email</label>
                         <input type="email" class="form-control rounded-3" id="regEmail" name="email" placeholder="Masukkan email..." required>
                     </div>
                     <div class="mb-3">
