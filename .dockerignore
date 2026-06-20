@@ -1,0 +1,15 @@
+.git/
+.gitignore
+.env
+node_modules/
+tests/
+*.md
+builds
+opencode.json
+AGENTS.md
+jest.config.js
+package.json
+package-lock.json
+phpunit.xml.dist
+preload.php
+
