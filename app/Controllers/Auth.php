@@ -52,10 +52,8 @@ class Auth extends BaseController
         ]);
     }
 
-    // Nanti logika insert ke database ditaruh di sini
     public function registerProcess()
     {
-        // Tangkap semua data dari form registrasi
         $data = [
             'fullname'    => $this->request->getPost('nama_lengkap'),
             'username'    => $this->request->getPost('username'),
@@ -69,13 +67,18 @@ class Auth extends BaseController
         $response = $this->authService->registerUser($data);
 
         if ($response->getStatusCode() == 201) {
-            return redirect()->to(base_url('auth/login'))->with('success', [
-                'title' => 'Akun Berhasil Dibuat!',
-                'message' => 'Silakan login menggunakan username dan password yang baru dibuat.'
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Akun Berhasil Dibuat! Silakan login menggunakan username dan password yang baru dibuat.'
             ]);
         }
 
-        return redirect()->back()->with('error', $response->getBody());
+        $body = json_decode($response->getBody(), true);
+
+        return $this->response->setStatusCode($response->getStatusCode())->setJSON([
+            'success' => false,
+            'message' => $body['detail'] ?? 'Gagal mendaftar. Silakan coba lagi nanti.'
+        ]);
     }
 
     public function adminLogin()

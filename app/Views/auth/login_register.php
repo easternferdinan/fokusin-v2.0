@@ -169,6 +169,7 @@
             const form = document.getElementById('registerForm');
             const pass = document.getElementById('regPassword').value;
             const confirmPass = document.getElementById('regConfirmPass').value;
+            const submitBtn = form.querySelector('button[type="submit"]');
 
             if (pass !== confirmPass) {
                 Swal.fire({
@@ -188,7 +189,45 @@
                 return false;
             }
 
-            form.submit();
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Mendaftarkan...';
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(res => res.json().then(body => ({ status: res.status, body })))
+            .then(({ status, body }) => {
+                if (body.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Akun Berhasil Dibuat!',
+                        text: body.message,
+                        confirmButtonColor: '#00b894'
+                    }).then(() => {
+                        window.location.href = '<?= base_url('auth/login') ?>';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registrasi Gagal',
+                        text: body.message,
+                        confirmButtonColor: '#ff7675'
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: 'Tidak dapat terhubung ke server. Silakan coba lagi.',
+                    confirmButtonColor: '#ff7675'
+                });
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Daftar Akun';
+            });
         }
 
         function showAlertInfo(msg) {
