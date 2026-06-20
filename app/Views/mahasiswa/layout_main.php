@@ -82,17 +82,22 @@
             <h5 class="offcanvas-title fw-bold">Pilih Tugas</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-3">
-            <!-- Nanti diganti dengan foreach PHP -->
-            <div class="mini-task-item d-flex justify-content-between align-items-center" onclick="pickTaskFromOffcanvas('Revisi Makalah PPL')">
-                <div>
-                    <div class="fw-semibold">Revisi Makalah PPL</div><small class="text-danger">Besok</small>
-                </div><i class="fas fa-arrow-right text-muted"></i>
-            </div>
-            <div class="mini-task-item d-flex justify-content-between align-items-center" onclick="pickTaskFromOffcanvas('Tugas Logika Matematika')">
-                <div>
-                    <div class="fw-semibold">Tugas Logika Matematika</div><small class="text-muted">1 Minggu lagi</small>
-                </div><i class="fas fa-arrow-right text-muted"></i>
-            </div>
+            <?php if (isset($tasks) && count($tasks) > 0): ?>
+                <?php foreach ($tasks as $task): ?>
+                <div class="mini-task-item d-flex justify-content-between align-items-center" onclick="pickTaskFromOffcanvas('<?= esc($task->title) ?>')">
+                    <div>
+                        <div class="fw-semibold"><?= esc($task->title) ?></div>
+                        <small class="badge bg-secondary-subtle text-secondary mt-1"><?= esc($task->category) ?></small>
+                    </div>
+                    <i class="fas fa-arrow-right text-muted"></i>
+                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="text-muted text-center py-5">
+                    <i class="fas fa-check-circle fa-2x mb-2 d-block"></i>
+                    Semua tugas sudah selesai!
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 

@@ -225,10 +225,19 @@ class Mahasiswa extends BaseController
         $this->cacheCheckinStatus();
 
         $data = [
-            // Jika login, ambil nama dari session. Jika tidak, beri nama 'Guest'
             'namaMahasiswa' => session()->get('fullname') ?? 'Guest',
             'hasCheckedIn'  => session()->get('checked_in_today', false),
         ];
+
+        if (session()->get('email')) {
+            $response = $this->mahasiswaService->getTasks();
+            if ($response->getStatusCode() == 200) {
+                $allTasks = json_decode($response->getBody());
+                $data['tasks'] = array_values(array_filter($allTasks, fn($t) => !$t->completed));
+            } else {
+                $data['tasks'] = [];
+            }
+        }
         
         return view('mahasiswa/pomodoro', $data);
     }
