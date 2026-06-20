@@ -345,6 +345,18 @@ class Mahasiswa extends BaseController
         return $this->response->setJSON(json_decode($response->getBody()));
     }
 
+    public function checkTodayCheckin()
+    {
+        $response = $this->mahasiswaService->checkAnalysisRequirementsStatus();
+        if ($response->getStatusCode() !== 200) {
+            return $this->response->setJSON(['checked_in' => false]);
+        }
+        $data = json_decode($response->getBody(), true);
+        return $this->response->setJSON([
+            'checked_in' => (bool)($data['stress_assesment_done_today'] ?? false)
+        ]);
+    }
+
     public function saveCheckin()
     {
         // Tangkap data dari JS

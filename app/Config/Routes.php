@@ -34,6 +34,7 @@ $routes->group('mahasiswa', function ($routes) {
     $routes->post('pengaturan/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI
     $routes->post('saveCheckin', 'Mahasiswa::saveCheckin'); // Menangkap submit check-in harian
     $routes->get('stress-trend', 'Mahasiswa::getStressTrend'); // Mengambil data tren stres
+    $routes->get('check-checkin', 'Mahasiswa::checkTodayCheckin'); // Cek apakah sudah check-in hari ini
 });
 
 $routes->group('admin', function ($routes) {

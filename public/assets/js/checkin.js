@@ -6,11 +6,23 @@ window.addEventListener("DOMContentLoaded", function () {
     const dateInput = document.getElementById('checkinDate');
     if (dateInput) dateInput.value = today;
 
-    // Jika sudah checkin hari ini, sembunyikan tanda seru (!)
-    if (localStorage.getItem('checkin_' + today)) {
-        const badge = document.getElementById('checkinBadge');
-        if (badge) badge.style.display = 'none';
-    }
+    // Cek ke server apakah sudah check-in hari ini
+    fetch('/mahasiswa/check-checkin')
+        .then(res => res.json())
+        .then(data => {
+            if (data.checked_in) {
+                const fab = document.getElementById('fabCheckin');
+                if (fab) fab.style.display = 'none';
+                localStorage.setItem('checkin_' + today, '1');
+            }
+        })
+        .catch(() => {
+            // Fallback ke localStorage jika server tidak terjangkau
+            if (localStorage.getItem('checkin_' + today)) {
+                const fab = document.getElementById('fabCheckin');
+                if (fab) fab.style.display = 'none';
+            }
+        });
 });
 
 // 2. Fungsi memproses form checkin
