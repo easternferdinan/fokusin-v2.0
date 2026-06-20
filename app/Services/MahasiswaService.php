@@ -172,6 +172,32 @@ class MahasiswaService
         return $response;
     }
 
+    public function getNotifications()
+    {
+        $response = $this->client->get('notifications/', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function markNotificationRead(string $notificationId, string $message)
+    {
+        $response = $this->client->put('notifications/' . $notificationId, [
+            'json' => [
+                'message' => $message,
+                'is_read' => true
+            ],
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
     public function getStressTrend(string $period)
     {
         $response = $this->client->get('report/stress-trend', [

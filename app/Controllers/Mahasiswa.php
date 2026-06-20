@@ -52,6 +52,19 @@ class Mahasiswa extends BaseController
                     'tugasMendesak' => $dashboardData->deadline_is_tomorrow_tasks,
                     'namaMahasiswa' => session()->get('fullname')
                 ];
+
+                $notifResponse = $this->mahasiswaService->getNotifications();
+                if ($notifResponse->getStatusCode() === 200) {
+                    $notifications = json_decode($notifResponse->getBody(), true);
+                    foreach ($notifications as $notif) {
+                        if (!$notif['is_read']) {
+                            $this->mahasiswaService->markNotificationRead($notif['notification_id'], $notif['message']);
+                            $data['notification'] = $notif;
+                            break;
+                        }
+                    }
+                }
+
                 return view('mahasiswa/dashboard', $data);
         } else {
             return redirect()->to(base_url('auth/login'))->with('error', [

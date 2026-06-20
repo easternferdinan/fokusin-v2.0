@@ -101,4 +101,18 @@
     </div>
 </div>
 
+<?= $this->section('js') ?>
+<?php if (isset($notification)): ?>
+<script>
+Swal.fire({
+    icon: 'info',
+    title: 'Pemberitahuan',
+    text: <?= json_encode($notification['message']) ?>,
+    confirmButtonColor: '#6c5ce7',
+    customClass: { popup: 'rounded-4' }
+});
+</script>
+<?php endif; ?>
+<?= $this->endSection() ?>
+
 <?= $this->endSection() ?>
