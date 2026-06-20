@@ -27,7 +27,10 @@ class Admin extends BaseController
         // Cek Keamanan: Jika tidak ada session login atau bukan admin, tendang ke login admin
         $role = session()->get('role');
         if (($role !== 'admin' && $role !== 'superadmin')) {
-            return redirect()->to(base_url('auth/adminLogin'));
+            return redirect()->to(base_url('auth/adminLogin'))->with('error', [
+                'title'   => 'Akses Ditolak',
+                'message' => 'Silakan login terlebih dahulu.'
+            ]);
         }
 
         $response = $this->adminService->getMahasiswaData();
@@ -56,7 +59,10 @@ class Admin extends BaseController
     public function stress()
     {
         $role = session()->get('role');
-        if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
+        if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'))->with('error', [
+            'title'   => 'Akses Ditolak',
+            'message' => 'Silakan login terlebih dahulu.'
+        ]);
 
         $response = $this->adminService->getDashboardData();
         $dashboardData = [];
@@ -137,7 +143,10 @@ class Admin extends BaseController
     public function alert()
     {
         $role = session()->get('role');
-        if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'));
+        if (($role !== 'admin' && $role !== 'superadmin')) return redirect()->to(base_url('auth/adminLogin'))->with('error', [
+            'title'   => 'Akses Ditolak',
+            'message' => 'Silakan login terlebih dahulu.'
+        ]);
 
         $response = $this->adminService->getAlertData();
 
