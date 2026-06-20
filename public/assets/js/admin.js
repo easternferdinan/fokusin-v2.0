@@ -627,11 +627,10 @@ async function initStressTrendChart(period = 'this_month') {
 
         if (json.status === 200 && json.data) {
             const data = json.data;
-            console.log(data);
             const items = data.items || [];
 
-            const labels = items.map(i => i.label).reverse();
-            const modes = items.map(i => i.mode_stress).reverse();
+            const labels = items.map(i => i.label);
+            const modes = items.map(i => i.mode_stress);
 
             // Map stress mode to numeric value for charting
             // Rendah: 1, Sedang: 2, Tinggi: 3
