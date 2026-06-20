@@ -6,21 +6,19 @@ window.addEventListener("DOMContentLoaded", function () {
     const dateInput = document.getElementById('checkinDate');
     if (dateInput) dateInput.value = today;
 
-    // Cek ke server apakah sudah check-in hari ini
+    // Safety net: jika FAB ada di DOM (server belum render-nya),
+    // lakukan pengecekan ulang via AJAX untuk antisipasi data basi
+    const fab = document.getElementById('fabCheckin');
+    if (!fab) return;
+
     fetch('/mahasiswa/check-checkin')
         .then(res => res.json())
         .then(data => {
-            if (data.checked_in) {
-                const fab = document.getElementById('fabCheckin');
-                if (fab) fab.style.display = 'none';
-                localStorage.setItem('checkin_' + today, '1');
-            }
+            if (data.checked_in) fab.style.display = 'none';
         })
         .catch(() => {
-            // Fallback ke localStorage jika server tidak terjangkau
             if (localStorage.getItem('checkin_' + today)) {
-                const fab = document.getElementById('fabCheckin');
-                if (fab) fab.style.display = 'none';
+                fab.style.display = 'none';
             }
         });
 });

@@ -25,6 +25,8 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function index()
     {
+        $this->cacheCheckinStatus();
+
         $response = $this->mahasiswaService->getDashboardData();
                     
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
@@ -50,7 +52,8 @@ class Mahasiswa extends BaseController
                     'deadlineBesok' => $dashboardData->deadline_is_tomorrow_tasks_count,
                     'waktuFokus'    => $waktuFokus,
                     'tugasMendesak' => $dashboardData->deadline_is_tomorrow_tasks,
-                    'namaMahasiswa' => session()->get('fullname')
+                    'namaMahasiswa' => session()->get('fullname'),
+                    'hasCheckedIn'  => session()->get('checked_in_today', false),
                 ];
 
                 $notifResponse = $this->mahasiswaService->getNotifications();
@@ -80,6 +83,8 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function tugas()
     {
+        $this->cacheCheckinStatus();
+
         $response = $this->mahasiswaService->getTasks();
 
         if (session()->get('email') == null || $response->getStatusCode() == 401) {
@@ -91,7 +96,8 @@ class Mahasiswa extends BaseController
 
             $data = [
                 'tasks' => $tasks,
-                'namaMahasiswa' => session()->get('fullname')
+                'namaMahasiswa' => session()->get('fullname'),
+                'hasCheckedIn'  => session()->get('checked_in_today', false),
             ];
 
             return view('mahasiswa/daftar_tugas', $data);
@@ -216,9 +222,12 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function pomodoro()
     {
+        $this->cacheCheckinStatus();
+
         $data = [
             // Jika login, ambil nama dari session. Jika tidak, beri nama 'Guest'
             'namaMahasiswa' => session()->get('fullname') ?? 'Guest',
+            'hasCheckedIn'  => session()->get('checked_in_today', false),
         ];
         
         return view('mahasiswa/pomodoro', $data);
@@ -307,10 +316,9 @@ class Mahasiswa extends BaseController
         $analysisRequirements = json_decode($requirementsResponse->getBody(), true);
         $reportData = json_decode($reportResponse->getBody(), true);
 
-        // TODO: Add option for user to retake the stress assesment, if already taken.
-        // TODO: Add update stress analysis endpoint (in case user wants to retake the stress analysis)
-
-        // TODO: Add recommendation algorithm based on user's data (tasks, pomodoro, sleep quality, etc.)
+        // Cache check-in status so the layout can conditionally render the FAB
+        session()->set('checked_in_date', date('Y-m-d'));
+        session()->set('checked_in_today', (bool)($analysisRequirements['stress_assesment_done_today'] ?? false));
 
         $data = [
             'title'           => 'Report AI',
@@ -318,8 +326,9 @@ class Mahasiswa extends BaseController
             'hasTasks'        => $analysisRequirements['task_done_today'],
             'hasPomodoro'     => $analysisRequirements['pomodoro_done_today'],
             'hasFilledInputs' => $analysisRequirements['stress_assesment_done_today'],
+            'hasCheckedIn'    => session()->get('checked_in_today', false),
             'latestAnalysis'  => $reportData['all_stress_analysis'][0] ?? null,
-            'stressCategory'  => $reportData['all_stress_analysis'][0]['stress_level'] ?? null, // Give latest stress level analysis to be presented
+            'stressCategory'  => $reportData['all_stress_analysis'][0]['stress_level'] ?? null,
             'potentialStressFactors' => $reportData['potential_stress_factors'] ?? null,
             'recommendations' => $reportData['recommendations'] ?? null,
             'allStressData'   => $reportData['all_stress_analysis'] ?? null,
@@ -343,6 +352,21 @@ class Mahasiswa extends BaseController
         }
 
         return $this->response->setJSON(json_decode($response->getBody()));
+    }
+
+    private function cacheCheckinStatus(): void
+    {
+        $session = session();
+        $today = date('Y-m-d');
+
+        if ($session->get('checked_in_date') !== $today) {
+            $response = $this->mahasiswaService->checkAnalysisRequirementsStatus();
+            if ($response->getStatusCode() === 200) {
+                $data = json_decode($response->getBody(), true);
+                $session->set('checked_in_date', $today);
+                $session->set('checked_in_today', (bool)($data['stress_assesment_done_today'] ?? false));
+            }
+        }
     }
 
     public function checkTodayCheckin()
@@ -388,7 +412,10 @@ class Mahasiswa extends BaseController
             ]);
         }
 
-        // Beri balasan ke JS bahwa data sudah aman
+        // Cache check-in status immediately so FAB is hidden on redirect
+        session()->set('checked_in_today', true);
+        session()->set('checked_in_date', date('Y-m-d'));
+
         return redirect()->to(base_url('mahasiswa/report'));
     }
 
@@ -397,7 +424,12 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function pengaturan()
     {
-        $data = ['namaMahasiswa' => session()->get('fullname')];
+        $this->cacheCheckinStatus();
+
+        $data = [
+            'namaMahasiswa' => session()->get('fullname'),
+            'hasCheckedIn'  => session()->get('checked_in_today', false),
+        ];
         return view('mahasiswa/pengaturan', $data);
     }
 
