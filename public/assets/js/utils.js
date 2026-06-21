@@ -179,6 +179,26 @@ function confirmLogout(event) {
     }); 
 }
 
+// ==========================================
+// SEARCH TUGAS
+// ==========================================
+function cariTugas() {
+    const keyword = document.getElementById('searchTugas').value.toLowerCase();
+    const tasks = document.querySelectorAll('.task-item');
+
+    tasks.forEach(function (task) {
+        const title = task.querySelector('.task-title')?.textContent.toLowerCase() || '';
+        const category = task.querySelector('.badge')?.textContent.toLowerCase() || '';
+        const description = task.querySelector('p.text-muted')?.textContent.toLowerCase() || '';
+
+        if (title.includes(keyword) || category.includes(keyword) || description.includes(keyword)) {
+            task.style.display = '';
+        } else {
+            task.style.display = 'none';
+        }
+    });
+}
+
 // function submitCheckin(event) { 
 //     event.preventDefault(); 
     

@@ -94,6 +94,15 @@ class Mahasiswa extends BaseController
         if ($response->getStatusCode() == 200) {
             $tasks = json_decode($response->getBody());
 
+            usort($tasks, function ($a, $b) {
+                $dA = strtotime($a->deadline);
+                $dB = strtotime($b->deadline);
+                if ($dA != $dB) return ($dA ?: 0) - ($dB ?: 0);
+
+                $map = ['Tinggi' => 3, 'Sedang' => 2, 'Rendah' => 1];
+                return ($map[$b->priority] ?? 0) - ($map[$a->priority] ?? 0);
+            });
+
             $data = [
                 'tasks' => $tasks,
                 'namaMahasiswa' => session()->get('fullname'),

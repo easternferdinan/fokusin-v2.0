@@ -14,9 +14,8 @@
     <div class="row mb-4">
         <div class="col-12 col-lg-6 mb-3 mb-lg-0">
             <div class="position-relative">
-                <!-- TODO: Implement search functionality -->
                 <i class="fas fa-search position-absolute" style="left: 20px; top: 50%; transform: translateY(-50%); color: #b2bec3;"></i>
-                <input type="text" class="form-control form-control-lg rounded-pill search-bar ps-5" placeholder="Cari nama tugas...">
+                <input type="text" id="searchTugas" class="form-control form-control-lg rounded-pill search-bar ps-5" placeholder="Cari nama tugas..." onkeyup="cariTugas()">
             </div>
         </div>
         <div class="col-12 col-lg-6 d-flex justify-content-lg-end align-items-center gap-2">
@@ -37,9 +36,6 @@
                     <span class="badge bg-secondary-subtle text-secondary small px-2" style="font-size: 0.65rem;"><?= $task->category ?></span>
                 </div>
                 <div class="d-flex flex-wrap gap-3 task-meta">
-                    <!-- PROTOTYPE -->
-                    <!-- TODO: Move to helper function -->
-                    <!-- TODO: Handle sorting (by deadline then priority) -->
                     <?php
                         $deadlineDt = new \DateTime($task->deadline);
                         $deadlineDtYmd = $deadlineDt->format('Y-m-d');
