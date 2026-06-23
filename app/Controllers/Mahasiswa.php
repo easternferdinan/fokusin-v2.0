@@ -449,6 +449,10 @@ class Mahasiswa extends BaseController
     // ====================================================================================================
     public function pengaturan()
     {
+        if (session()->get('email') == null) {
+            return denyAccess();
+        }
+
         $this->cacheCheckinStatus();
 
         $data = [
@@ -460,6 +464,10 @@ class Mahasiswa extends BaseController
 
     public function saveProfileAI()
     {
+        if (session()->get('email') == null) {
+            return denyAccess();
+        }
+
         $data = [
             'fullname' => $this->request->getPost('fullname'),
             'email' => $this->request->getPost('email'),
