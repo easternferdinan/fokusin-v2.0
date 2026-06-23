@@ -63,8 +63,6 @@ Vagrantfile
 /writable/debugbar/*
 !/writable/debugbar/index.html
 
-/writable/fastapi.json
-
 php_errors.log
 
 #-------------------------
