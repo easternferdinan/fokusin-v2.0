@@ -125,12 +125,13 @@
                     ditampilkan.forEach(function(log) {
                         const badgeClass = levelBadge[log.level] || 'bg-secondary';
                         const tgl = log.created_at ?
-                            new Date(log.created_at).toLocaleString('id-ID', {
+                            new Date(log.created_at + 'Z').toLocaleString('id-ID', {
                                 year: 'numeric',
                                 month: '2-digit',
                                 day: '2-digit',
                                 hour: '2-digit',
-                                minute: '2-digit'
+                                minute: '2-digit',
+                                timeZone: 'Asia/Jakarta'
                             }) :
                             '-';
                         const hasExtra = log.extra_data && typeof log.extra_data === 'object' && Object.keys(log.extra_data).length > 0;
