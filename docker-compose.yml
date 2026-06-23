@@ -11,6 +11,7 @@ services:
       - .:/var/www/html
       - /var/www/html/vendor
       - writable_data:/var/www/html/writable
+      - ./writable/FastApi.json:/var/www/html/writable/FastApi.json
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
