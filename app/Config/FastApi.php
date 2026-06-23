@@ -8,12 +8,13 @@ class FastApi extends BaseConfig
 {
     private string $baseUrl;
 
+    private const WRITABLE_FILE = 'fastapi.json';
+
     public function __construct()
     {
-        $json = file_get_contents(APPPATH . 'Config/FastApi.json');
-        $data = json_decode($json, true);
+        $data = $this->readConfig();
 
-        if ($data['api_base_url'] == '') {
+        if ($data['api_base_url'] === '') {
             $this->baseUrl = env('API_URL');
         } else {
             $this->baseUrl = $data['api_base_url'];
@@ -28,9 +29,19 @@ class FastApi extends BaseConfig
     public function setBaseUrl(string $newBaseUrl): void
     {
         $this->baseUrl = $newBaseUrl;
-        $json = file_get_contents(APPPATH . 'Config/FastApi.json');
-        $data = json_decode($json, true);
+        $data = $this->readConfig();
         $data['api_base_url'] = $newBaseUrl;
-        file_put_contents(APPPATH . 'Config/FastApi.json', json_encode($data));
+        file_put_contents(WRITEPATH . self::WRITABLE_FILE, json_encode($data));
+    }
+
+    private function readConfig(): array
+    {
+        $writableFile = WRITEPATH . self::WRITABLE_FILE;
+
+        if (is_file($writableFile)) {
+            return json_decode(file_get_contents($writableFile), true);
+        }
+
+        return json_decode(file_get_contents(APPPATH . 'Config/FastApi.json'), true);
     }
 }
