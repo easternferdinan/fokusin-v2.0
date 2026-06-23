@@ -378,6 +378,13 @@ class Mahasiswa extends BaseController
         $today = date('Y-m-d');
 
         if ($session->get('checked_in_date') !== $today) {
+            // Guests can't check in — hide FAB without an API call
+            if ($session->get('email') === null) {
+                $session->set('checked_in_date', $today);
+                $session->set('checked_in_today', true);
+                return;
+            }
+
             $response = $this->mahasiswaService->checkAnalysisRequirementsStatus();
             if ($response->getStatusCode() === 200) {
                 $data = json_decode($response->getBody(), true);
