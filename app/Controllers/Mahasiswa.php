@@ -300,6 +300,50 @@ class Mahasiswa extends BaseController
         return $response;
     }
 
+    public function getPomodoros()
+    {
+        $response = $this->mahasiswaService->getPomodoros();
+
+        if ($response->getStatusCode() !== 200) {
+            return $this->response->setStatusCode(500)->setJSON(['error' => 'Failed to fetch pomodoros']);
+        }
+
+        return $this->response->setJSON(json_decode($response->getBody()));
+    }
+
+    public function getActivePomodoro()
+    {
+        $response = $this->mahasiswaService->getPomodoros();
+
+        if ($response->getStatusCode() !== 200) {
+            return $this->response->setJSON(['active_session' => null]);
+        }
+
+        $pomodoros = json_decode($response->getBody());
+
+        $activeSession = null;
+        foreach ($pomodoros as $p) {
+            if ($p->status === 'active' || $p->status === 'paused') {
+                $activeSession = $p;
+                break;
+            }
+        }
+
+        return $this->response->setJSON(['active_session' => $activeSession]);
+    }
+
+    public function updatePomodoro($id = null)
+    {
+        $body = $this->request->getJSON(true);
+        $response = $this->mahasiswaService->updatePomodoro($id, $body);
+
+        if ($response->getStatusCode() !== 200) {
+            log_message('error', 'Error API Pomodoro: ' . $response->getBody());
+        }
+
+        return $response;
+    }
+
     // ====================================================================================================
     // REPORT
     // ====================================================================================================

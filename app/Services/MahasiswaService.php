@@ -82,6 +82,40 @@ class MahasiswaService
         return $response;
     }
 
+    public function getPomodoros()
+    {
+        $response = $this->client->get('pomodoro/', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function getPomodoro($id)
+    {
+        $response = $this->client->get('pomodoro/' . $id, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
+    public function updatePomodoro($id, array $pomodoroData)
+    {
+        $response = $this->client->put('pomodoro/' . $id, [
+            'json' => $pomodoroData,
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
+        return $response;
+    }
+
     public function createPomodoro(array $pomodoroData)
     {
         $response = $this->client->post('pomodoro/', [

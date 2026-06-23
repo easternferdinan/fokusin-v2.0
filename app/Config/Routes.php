@@ -29,6 +29,9 @@ $routes->group('mahasiswa', function ($routes) {
     $routes->post('pausePomodoro/(:any)', 'Mahasiswa::pausePomodoro/$1');
     $routes->post('resumePomodoro/(:any)', 'Mahasiswa::resumePomodoro/$1');
     $routes->post('completePomodoro/(:any)', 'Mahasiswa::completePomodoro/$1');
+    $routes->post('getPomodoros', 'Mahasiswa::getPomodoros');
+    $routes->post('getActivePomodoro', 'Mahasiswa::getActivePomodoro');
+    $routes->post('updatePomodoro/(:any)', 'Mahasiswa::updatePomodoro/$1');
     $routes->get('report', 'Mahasiswa::report');        // Mengarah ke Report AI
     $routes->get('pengaturan', 'Mahasiswa::pengaturan'); // Mengarah ke Pengaturan
     $routes->post('pengaturan/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI

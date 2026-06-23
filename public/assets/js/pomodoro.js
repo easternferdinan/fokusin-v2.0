@@ -1,6 +1,3 @@
-// ==========================================
-// LOGIKA UTAMA TIMER POMODORO
-// ==========================================
 let timerInterval;
 let totalSeconds = 30 * 60;
 let remainingSeconds = totalSeconds;
@@ -10,7 +7,46 @@ let isWorkMode = true;
 let workTime = 30;
 let restTime = 5;
 let cycles = 0;
+let pomodoroId = localStorage.getItem('pomodoro_id') || null;
 const circumference = 2 * Math.PI * 90;
+
+// TODO: Improve pomodoro state sync with backend
+// - Add a `remaining_seconds` field to the backend API so timer state
+//   survives localStorage clears and cross-device usage
+// - Replace timezone-sensitive `created_at` comparison with server-side
+//   "today" filter in getActivePomodoro controller
+// - Track per-session elapsed focus time server-side instead of computing
+//   wall-clock delta on completion (paused time inflates metrics)
+// - Replace client-side break timer with a backend state (status=rest)
+//   so break progress survives page reload
+function isLoggedIn() {
+    return !document.getElementById('guestSisaSesi');
+}
+
+async function apiPost(url, body = null) {
+    const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+    };
+    if (body) options.body = JSON.stringify(body);
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error('API request failed');
+    return response.json();
+}
+
+function savePomodoroState() {
+    if (pomodoroId) {
+        localStorage.setItem('pomodoro_remaining_' + pomodoroId, remainingSeconds);
+    }
+}
+
+function clearPomodoroState() {
+    if (pomodoroId) {
+        localStorage.removeItem('pomodoro_remaining_' + pomodoroId);
+    }
+    localStorage.removeItem('pomodoro_id');
+    pomodoroId = null;
+}
 
 function updateDisplay() {
     const m = Math.floor(remainingSeconds / 60);
@@ -37,11 +73,65 @@ function updateDisplay() {
     }
 }
 
+function tick() {
+    remainingSeconds--;
+    updateDisplay();
+
+    if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        handleTimerComplete();
+    }
+}
+
+function handleTimerComplete() {
+    const guestIndicator = document.getElementById('guestSisaSesi');
+
+    if (!guestIndicator && pomodoroId) {
+        apiPost('/mahasiswa/completePomodoro/' + pomodoroId)
+            .then(() => { isPaused = false; })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: 'Gagal menyelesaikan sesi pomodoro.',
+                    icon: 'error',
+                    confirmButtonColor: '#ff7675',
+                    customClass: { popup: 'rounded-4' }
+                });
+            });
+    }
+
+    clearPomodoroState();
+
+    if (isWorkMode) {
+        cycles++;
+        document.getElementById('cycleCount').innerText = cycles;
+
+        if (guestIndicator) {
+            let count = parseInt(localStorage.getItem('guestPomodoroCount') || 0);
+            count++;
+            localStorage.setItem('guestPomodoroCount', count);
+
+            let sisa = 3 - count;
+            guestIndicator.innerText = sisa > 0 ? sisa : 0;
+
+            if (sisa <= 0) {
+                kunciTimerGuest();
+                return;
+            }
+        }
+
+        switchMode(false);
+    } else {
+        switchMode(true);
+    }
+}
+
 function startTimer() {
-    // MODIFIKASI: Input tidak lagi wajib diisi (Bebas)
     const taskInput = document.getElementById('taskInput');
     if (!taskInput.value.trim()) {
-        taskInput.value = "Sesi Fokus Mandiri"; // Beri default value jika kosong
+        taskInput.value = "Sesi Fokus Mandiri";
     }
 
     if (remainingSeconds === 0) {
@@ -56,22 +146,35 @@ function startTimer() {
     document.getElementById('btnSkip').classList.remove('d-none');
     document.getElementById('taskInput').disabled = true;
 
-    // TODO: Refactor this spaghetti.
     const guestIndicator = document.getElementById('guestSisaSesi');
-    if (!guestIndicator && !isPaused) {
-        fetch('/mahasiswa/createPomodoro', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+    if (!guestIndicator) {
+        if (isPaused && pomodoroId) {
+            apiPost('/mahasiswa/resumePomodoro/' + pomodoroId)
+                .then(() => {
+                    isPaused = false;
+                    timerInterval = setInterval(tick, 1000);
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: 'Gagal melanjutkan sesi pomodoro.',
+                        icon: 'error',
+                        confirmButtonColor: '#ff7675',
+                        customClass: { popup: 'rounded-4' }
+                    });
+                });
+        } else if (!pomodoroId) {
+            apiPost('/mahasiswa/createPomodoro', {
                 title: taskInput.value,
                 status: 'active',
                 duration: workTime,
                 break_duration: restTime
-            })
-        }).then(response => {
-            if (!response.ok) {
+            }).then(data => {
+                pomodoroId = data.pomodoro_id;
+                localStorage.setItem('pomodoro_id', pomodoroId);
+            }).catch(err => {
+                console.error(err);
                 Swal.fire({
                     title: 'Gagal!',
                     text: 'Gagal menyimpan sesi pomodoro.',
@@ -79,61 +182,9 @@ function startTimer() {
                     confirmButtonColor: '#ff7675',
                     customClass: { popup: 'rounded-4' }
                 });
-            } else {
-                response.json().then(data => {
-                    console.log(data);
-                    localStorage.setItem('pomodoro_id', data.pomodoro_id);
-                }).catch(error => {
-                    console.error(error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Terjadi error saat mengakses id sesi pomodoro.',
-                        icon: 'error',
-                        confirmButtonColor: '#ff7675',
-                        customClass: { popup: 'rounded-4' }
-                    });
-                })
-            }
-        }).catch(error => {
-            console.error(error);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Terjadi error saat menyimpan sesi pomodoro.',
-                icon: 'error',
-                confirmButtonColor: '#ff7675',
-                customClass: { popup: 'rounded-4' }
             });
-        });
-    } else if (!guestIndicator && isPaused) {
-        const pomodoroId = localStorage.getItem('pomodoro_id');
-
-        fetch(`/mahasiswa/resumePomodoro/${pomodoroId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        }).then(response => {
-            if (!response.ok) {
-                Swal.fire({
-                    title: 'Gagal!',
-                    text: 'Gagal melanjutkan sesi pomodoro.',
-                    icon: 'error',
-                    confirmButtonColor: '#ff7675',
-                    customClass: { popup: 'rounded-4' }
-                });
-            } else {
-                isPaused = false;
-            }
-        }).catch(error => {
-            console.error(error);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Terjadi error saat menyimpan sesi pomodoro.',
-                icon: 'error',
-                confirmButtonColor: '#ff7675',
-                customClass: { popup: 'rounded-4' }
-            });
-        });
+            timerInterval = setInterval(tick, 1000);
+        }
     } else {
         Swal.fire({
             title: 'Peringatan',
@@ -143,74 +194,6 @@ function startTimer() {
             customClass: { popup: 'rounded-4' }
         });
     }
-
-    timerInterval = setInterval(() => {
-        remainingSeconds--;
-        updateDisplay();
-
-        if (remainingSeconds === 0) {
-            clearInterval(timerInterval);
-            isRunning = false;
-
-            const pomodoroId = localStorage.getItem('pomodoro_id');
-            const guestIndicator = document.getElementById('guestSisaSesi');
-            if (!guestIndicator && pomodoroId) {
-                fetch(`/mahasiswa/completePomodoro/${pomodoroId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                }).then(response => {
-                    if (!response.ok) {
-                        Swal.fire({
-                            title: 'Gagal!',
-                            text: 'Gagal menyelesaikan sesi pomodoro.',
-                            icon: 'error',
-                            confirmButtonColor: '#ff7675',
-                            customClass: { popup: 'rounded-4' }
-                        });
-                    } else {
-                        isPaused = false;
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Terjadi error saat menyimpan sesi pomodoro.',
-                        icon: 'error',
-                        confirmButtonColor: '#ff7675',
-                        customClass: { popup: 'rounded-4' }
-                    });
-                });
-            }
-
-            if (isWorkMode) {
-                cycles++;
-                document.getElementById('cycleCount').innerText = cycles;
-
-                // --- LOGIKA GUEST TRIAL (Dijalankan tiap 1 siklus kerja selesai) ---
-                const guestIndicator = document.getElementById('guestSisaSesi');
-                if (guestIndicator) {
-                    let count = parseInt(localStorage.getItem('guestPomodoroCount') || 0);
-                    count++;
-                    localStorage.setItem('guestPomodoroCount', count);
-
-                    let sisa = 3 - count;
-                    guestIndicator.innerText = sisa > 0 ? sisa : 0;
-
-                    if (sisa <= 0) {
-                        kunciTimerGuest();
-                        return; // Hentikan eksekusi, biarkan popup muncul
-                    }
-                }
-                // -------------------------------------------------------------------
-
-                switchMode(false);
-            } else {
-                switchMode(true);
-            }
-        }
-    }, 1000);
 }
 
 function pauseTimer() {
@@ -221,34 +204,20 @@ function pauseTimer() {
     document.getElementById('btnPause').classList.add('d-none');
 
     const guestIndicator = document.getElementById('guestSisaSesi');
-    const pomodoroId = localStorage.getItem('pomodoro_id');
     if (!guestIndicator && pomodoroId) {
+        savePomodoroState();
         isPaused = true;
-        fetch(`/mahasiswa/pausePomodoro/${pomodoroId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        }).then(response => {
-            if (!response.ok) {
+        apiPost('/mahasiswa/pausePomodoro/' + pomodoroId)
+            .catch(err => {
+                console.error(err);
                 Swal.fire({
                     title: 'Gagal!',
-                    text: 'Gagal menyimpan sesi pomodoro.',
+                    text: 'Gagal menjeda sesi pomodoro.',
                     icon: 'error',
                     confirmButtonColor: '#ff7675',
                     customClass: { popup: 'rounded-4' }
                 });
-            }
-        }).catch(error => {
-            console.error(error);
-            Swal.fire({
-                title: 'Error!',
-                text: 'Terjadi error saat menyimpan sesi pomodoro.',
-                icon: 'error',
-                confirmButtonColor: '#ff7675',
-                customClass: { popup: 'rounded-4' }
             });
-        });
     }
 }
 
@@ -266,41 +235,16 @@ function stopTimer() {
     }).then((result) => {
         if (result.isConfirmed) {
 
-            const guestIndicator = document.getElementById('guestSisaSesi');
-            const pomodoroId = localStorage.getItem('pomodoro_id');
-            if (!guestIndicator && pomodoroId) {
-                fetch(`/mahasiswa/completePomodoro/${pomodoroId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                }).then(response => {
-                    if (!response.ok) {
-                        Swal.fire({
-                            title: 'Gagal!',
-                            text: 'Gagal menyimpan sesi pomodoro.',
-                            icon: 'error',
-                            confirmButtonColor: '#ff7675',
-                            customClass: { popup: 'rounded-4' }
-                        });
-                    }
-                }).catch(error => {
-                    console.error(error);
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Terjadi error saat menyimpan sesi pomodoro.',
-                        icon: 'error',
-                        confirmButtonColor: '#ff7675',
-                        customClass: { popup: 'rounded-4' }
-                    });
-                });
+            if (!document.getElementById('guestSisaSesi') && pomodoroId) {
+                apiPost('/mahasiswa/updatePomodoro/' + pomodoroId, {status: 'stopped', completed: false})
+                    .catch(err => console.error(err));
             }
 
             clearInterval(timerInterval);
             isRunning = false;
+            clearPomodoroState();
             switchMode(true);
             document.getElementById('taskInput').disabled = false;
-            // document.getElementById('taskInput').value = ''; // Opsional: Hapus komentar ini jika ingin mereset text input
             resetControlButtons();
             updateDisplay();
         }
@@ -321,7 +265,7 @@ function switchMode(toWork) {
 
     if (!toWork) {
         Swal.fire({
-            title: 'Waktu Istirahat! ☕',
+            title: 'Waktu Istirahat!',
             text: 'Berdiri, minum air, atau stretching sebentar ya.',
             icon: 'success',
             allowOutsideClick: false,
@@ -331,7 +275,7 @@ function switchMode(toWork) {
         });
     } else {
         Swal.fire({
-            title: 'Istirahat Selesai! 💪',
+            title: 'Istirahat Selesai!',
             text: 'Siap lanjut fokus?',
             icon: 'info',
             confirmButtonColor: '#74b9ff',
@@ -354,11 +298,11 @@ function resetControlButtons() {
 
 function adjustTime(type, amount) {
     if (isRunning) {
-        Swal.fire({ title: 'Tunggu Dulu ⏳', text: 'Timer sedang berjalan.', icon: 'warning', confirmButtonColor: '#ff7675', customClass: { popup: 'rounded-4' } });
+        Swal.fire({ title: 'Tunggu Dulu', text: 'Timer sedang berjalan.', icon: 'warning', confirmButtonColor: '#ff7675', customClass: { popup: 'rounded-4' } });
         return;
     }
     if (!isWorkMode && type === 'rest') {
-        Swal.fire({ title: 'Tunggu Dulu ⏳', text: 'Sedang istirahat.', icon: 'info', confirmButtonColor: '#74b9ff', customClass: { popup: 'rounded-4' } });
+        Swal.fire({ title: 'Tunggu Dulu', text: 'Sedang istirahat.', icon: 'info', confirmButtonColor: '#74b9ff', customClass: { popup: 'rounded-4' } });
         return;
     }
 
@@ -374,15 +318,10 @@ function adjustTime(type, amount) {
     updateDisplay();
 }
 
-// ==========================================
-// FUNGSI KHUSUS GUEST (TRIAL LOCK)
-// ==========================================
 function kunciTimerGuest() {
-    // 1. Reset tampilan timer dan matikan semua fungsi
     switchMode(true);
     document.getElementById('taskInput').disabled = true;
 
-    // 2. Kunci Tombol Start secara visual
     const btnStart = document.getElementById('btnStart');
     if (btnStart) {
         btnStart.disabled = true;
@@ -390,10 +329,9 @@ function kunciTimerGuest() {
         btnStart.innerHTML = '<i class="fas fa-lock me-2"></i>Terkunci';
     }
 
-    // 3. Tampilkan Pop-Up Rayuan Mendaftar
     Swal.fire({
         icon: 'success',
-        title: 'Fokus yang Luar Biasa! 🎉',
+        title: 'Fokus yang Luar Biasa!',
         text: 'Kamu telah menyelesaikan 3 sesi uji coba gratis. Untuk memutar timer tanpa batas, menyimpan riwayat belajarmu, dan melihat Prediksi AI, yuk buat akun gratismu sekarang!',
         confirmButtonText: 'Daftar & Masuk',
         showCancelButton: true,
@@ -407,12 +345,9 @@ function kunciTimerGuest() {
     });
 }
 
-// ==========================================
-// INISIALISASI SAAT HALAMAN DIBUKA
-// ==========================================
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. Cek Mode Guest
     const guestIndicator = document.getElementById('guestSisaSesi');
+
     if (guestIndicator) {
         let count = parseInt(localStorage.getItem('guestPomodoroCount') || 0);
         let sisa = 3 - count;
@@ -423,9 +358,11 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             guestIndicator.innerText = sisa;
         }
+    } else {
+        restoreActiveSession();
+        fetchTodayCycles();
     }
 
-    // 2. Cek Parameter URL (Untuk pengisian tugas dari halaman lain)
     const urlParams = new URLSearchParams(window.location.search);
     const taskFromUrl = urlParams.get('task');
     if (taskFromUrl) {
@@ -436,5 +373,92 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Jalankan setelan layar pertama kali
+function restoreActiveSession() {
+    fetch('/mahasiswa/getActivePomodoro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.active_session) return;
+
+            const session = data.active_session;
+
+            pomodoroId = session.pomodoro_id;
+            localStorage.setItem('pomodoro_id', pomodoroId);
+
+            isWorkMode = session.status !== 'rest';
+            const durationSec = session.duration * 60;
+
+            if (session.status === 'paused') {
+                const saved = localStorage.getItem('pomodoro_remaining_' + pomodoroId);
+                if (saved) {
+                    remainingSeconds = parseInt(saved);
+                } else {
+                    const startTime = new Date(session.session_start).getTime();
+                    const pauseTime = new Date(session.updated_at).getTime();
+                    const elapsed = Math.floor((pauseTime - startTime) / 1000);
+                    remainingSeconds = Math.max(0, durationSec - elapsed);
+                    remainingSeconds = Math.min(remainingSeconds, durationSec);
+                }
+                isPaused = true;
+            } else if (session.status === 'active') {
+                const startTime = new Date(session.session_start).getTime();
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                remainingSeconds = Math.max(0, durationSec - elapsed);
+                remainingSeconds = Math.min(remainingSeconds, durationSec);
+
+                if (remainingSeconds > 0) {
+                    isRunning = true;
+                } else {
+                    apiPost('/mahasiswa/completePomodoro/' + pomodoroId).catch(err => console.error(err));
+                    clearPomodoroState();
+                    return;
+                }
+            } else {
+                return;
+            }
+
+            totalSeconds = durationSec;
+
+            document.getElementById('taskInput').value = session.title || '';
+            document.getElementById('taskInput').disabled = true;
+            document.getElementById('btnStart').classList.add('d-none');
+
+            if (isPaused) {
+                document.getElementById('btnStart').classList.remove('d-none');
+                document.getElementById('btnStart').innerHTML = '<i class="fas fa-play me-2"></i>Lanjut';
+            } else if (isRunning) {
+                document.getElementById('btnPause').classList.remove('d-none');
+            }
+            document.getElementById('btnStop').classList.remove('d-none');
+            document.getElementById('btnSkip').classList.remove('d-none');
+            updateDisplay();
+
+            if (isRunning) {
+                timerInterval = setInterval(tick, 1000);
+            }
+        })
+        .catch(err => console.error('Gagal merestorasi sesi pomodoro:', err));
+}
+
+function fetchTodayCycles() {
+    fetch('/mahasiswa/getPomodoros', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(r => r.json())
+        .then(pomodoros => {
+            const today = new Date();
+            const todayStr = today.toDateString();
+            const completedToday = pomodoros.filter(p => {
+                const created = new Date(p.created_at);
+                return p.completed && created.toDateString() === todayStr;
+            });
+            cycles = completedToday.length;
+            document.getElementById('cycleCount').innerText = cycles;
+        })
+        .catch(err => console.error('Gagal memuat siklus pomodoro:', err));
+}
+
 updateDisplay();
