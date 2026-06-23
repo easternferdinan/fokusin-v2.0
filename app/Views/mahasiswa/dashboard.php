@@ -77,7 +77,7 @@
         <!-- MENGGUNAKAN VARIABEL DARI CONTROLLER -->
         <div class="col-6 col-md-3"><div class="card p-3 text-center"><h2 class="text-primary fw-bold"><?= $totalTugas ?></h2><span class="text-muted small" style="font-size:0.8rem; font-weight:600; text-transform:uppercase;">Total Tugas</span></div></div>
         <div class="col-6 col-md-3"><div class="card p-3 text-center"><h2 class="text-warning fw-bold"><?= $highPriority ?></h2><span class="text-muted small" style="font-size:0.8rem; font-weight:600; text-transform:uppercase;">Tugas High Priority</span></div></div>
-        <div class="col-6 col-md-3"><div class="card p-3 text-center"><h2 class="text-danger fw-bold"><?= $deadlineBesok ?></h2><span class="text-muted small" style="font-size:0.8rem; font-weight:600; text-transform:uppercase;">Deadline Besok</span></div></div>
+        <div class="col-6 col-md-3"><div class="card p-3 text-center"><h2 class="text-danger fw-bold"><?= $deadlineMendesak ?></h2><span class="text-muted small" style="font-size:0.8rem; font-weight:600; text-transform:uppercase;">Deadline Mendesak</span></div></div>
         <div class="col-6 col-md-3"><div class="card p-3 text-center"><h2 class="text-success fw-bold"><?= $waktuFokus ?></h2><span class="text-muted small" style="font-size:0.8rem; font-weight:600; text-transform:uppercase;">Waktu Fokus</span></div></div>
     </div>
     <div class="card p-4">
@@ -86,14 +86,35 @@
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-                <thead class="table-light"><tr><th>Judul Tugas</th><th>Prioritas</th><th>Aksi</th></tr></thead>
+                <thead class="table-light"><tr><th>Judul Tugas</th><th>Prioritas</th><th>Deadline</th><th>Aksi</th></tr></thead>
                 <tbody>
                     <?php if ($tugasMendesak) { ?>
-                        <?php foreach ($tugasMendesak as $key => $value) { ?>
-                            <tr><td class="fw-semibold"><?= $value->title ?></td><td><span class="badge bg-<?php if(strtolower($value->priority) == 'rendah') {echo 'success';} elseif(strtolower($value->priority) == 'sedang') {echo 'warning';} elseif(strtolower($value->priority) == 'tinggi') {echo 'danger';} ?>"><?= strtoupper($value->priority) ?></span></td><td><button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="goToPomodoro('<?= $value->title ?>')"><i class="fas fa-play"></i> Fokus</button></td></tr>
+                        <?php foreach ($tugasMendesak as $key => $value) {
+                            $deadline = new DateTime($value->deadline);
+                            $today = new DateTime('today');
+                            $diff = $today->diff($deadline)->days;
+                            $isOverdue = $deadline < $today;
+                            $isToday = $deadline->format('Y-m-d') === $today->format('Y-m-d');
+                            if ($isOverdue) {
+                                $deadlineClass = 'text-danger';
+                                $deadlineLabel = $deadline->format('d M Y') . ' (Terlewat)';
+                            } elseif ($isToday) {
+                                $deadlineClass = 'text-warning fw-bold';
+                                $deadlineLabel = 'Hari Ini';
+                            } else {
+                                $deadlineClass = 'text-muted';
+                                $deadlineLabel = $deadline->format('d M Y');
+                            }
+                        ?>
+                            <tr>
+                                <td class="fw-semibold"><?= $value->title ?></td>
+                                <td><span class="badge bg-<?php if(strtolower($value->priority) == 'rendah') {echo 'success';} elseif(strtolower($value->priority) == 'sedang') {echo 'warning';} elseif(strtolower($value->priority) == 'tinggi') {echo 'danger';} ?>"><?= strtoupper($value->priority) ?></span></td>
+                                <td class="<?= $deadlineClass ?>"><?= $deadlineLabel ?></td>
+                                <td><button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="goToPomodoro('<?= $value->title ?>')"><i class="fas fa-play"></i> Fokus</button></td>
+                            </tr>
                         <?php } ?>
                     <?php } else { ?>
-                        <tr><td class="text-center py-5" colspan="3">Tidak ada tugas mendesak</td></tr>
+                        <tr><td class="text-center py-5" colspan="4">Tidak ada tugas mendesak</td></tr>
                     <?php } ?>
                 </tbody>
             </table>

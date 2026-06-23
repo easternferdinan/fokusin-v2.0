@@ -61,8 +61,8 @@ final class MahasiswaControllerTest extends CIUnitTestCase
             'latest_burnout_prediction'        => 'Rendah',
             'incomplete_tasks_count'           => 3,
             'high_priority_tasks_count'        => 1,
-            'deadline_is_tomorrow_tasks_count' => 0,
-            'deadline_is_tomorrow_tasks'       => [],
+            'deadline_urgent_tasks_count'      => 0,
+            'deadline_urgent_tasks'            => [],
         ];
         $dashboardRes = new Response(new App());
         $dashboardRes->setStatusCode(200);

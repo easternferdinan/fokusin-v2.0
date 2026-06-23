@@ -46,14 +46,14 @@ class Mahasiswa extends BaseController
             }
     
             $data = [
-                    'statusBurnout' => $dashboardData->latest_burnout_prediction,
-                    'totalTugas'    => $dashboardData->incomplete_tasks_count,
-                    'highPriority'  => $dashboardData->high_priority_tasks_count,
-                    'deadlineBesok' => $dashboardData->deadline_is_tomorrow_tasks_count,
-                    'waktuFokus'    => $waktuFokus,
-                    'tugasMendesak' => $dashboardData->deadline_is_tomorrow_tasks,
-                    'namaMahasiswa' => session()->get('fullname'),
-                    'hasCheckedIn'  => session()->get('checked_in_today', false),
+                    'statusBurnout'    => $dashboardData->latest_burnout_prediction,
+                    'totalTugas'       => $dashboardData->incomplete_tasks_count,
+                    'highPriority'     => $dashboardData->high_priority_tasks_count,
+                    'deadlineMendesak' => $dashboardData->deadline_urgent_tasks_count,
+                    'waktuFokus'       => $waktuFokus,
+                    'tugasMendesak'    => $dashboardData->deadline_urgent_tasks,
+                    'namaMahasiswa'    => session()->get('fullname'),
+                    'hasCheckedIn'     => session()->get('checked_in_today', false),
                 ];
 
                 $notifResponse = $this->mahasiswaService->getNotifications();
