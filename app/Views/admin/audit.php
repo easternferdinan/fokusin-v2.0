@@ -37,11 +37,11 @@
 </div>
 
 <div class="d-flex justify-content-between align-items-center mt-3">
-    <button id="btnPrev" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="gantiHalaman(-1)" disabled>
+    <button id="btnPrev" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="gantiHalaman(1)" disabled>
         <i class="fas fa-chevron-left me-1"></i>Sebelumnya
     </button>
     <span id="infoHalaman" class="text-muted small">—</span>
-    <button id="btnNext" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="gantiHalaman(1)" disabled>
+    <button id="btnNext" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="gantiHalaman(-1)" disabled>
         Selanjutnya<i class="fas fa-chevron-right ms-1"></i>
     </button>
 </div>
@@ -153,8 +153,8 @@
                 }
 
                 document.getElementById('infoHalaman').innerText = 'Halaman ' + halamanAktif;
-                document.getElementById('btnPrev').disabled = halamanAktif <= 1;
-                document.getElementById('btnNext').disabled = !adaHalamanBerikut;
+                document.getElementById('btnPrev').disabled = !adaHalamanBerikut;
+                document.getElementById('btnNext').disabled = halamanAktif <= 1;
             } else {
                 tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-muted">Gagal memuat data log.</td></tr>';
             }
