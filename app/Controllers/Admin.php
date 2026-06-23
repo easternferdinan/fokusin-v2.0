@@ -344,7 +344,7 @@ class Admin extends BaseController
 
         if ($statusCode === 200) {
             $this->superAdminService->updateBaseUrl($data['api_base_url']);
-            return redirect()->back()->with('success', [
+            return redirect()->to(base_url('admin/config'))->with('success', [
                 'title' => 'Berhasil!',
                 'message' => 'Konfigurasi berhasil diperbarui.',
             ]);
