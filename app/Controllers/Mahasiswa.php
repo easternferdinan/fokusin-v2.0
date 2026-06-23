@@ -199,6 +199,9 @@ class Mahasiswa extends BaseController
         if ($response->getStatusCode() !== 200) {
             log_message('error', 'Error API Tugas: ' . $response->getBody());
         }
+
+        // Invalidate cached requirements so FAB visibility refreshes on next page load
+        session()->remove('checked_in_date');
         
         return $response;
     }
@@ -296,6 +299,9 @@ class Mahasiswa extends BaseController
         if ($response->getStatusCode() !== 200) {
             log_message('error', 'Error API Pomodoro: ' . $response->getBody());
         }
+
+        // Invalidate cached requirements so FAB visibility refreshes on next page load
+        session()->remove('checked_in_date');
 
         return $response;
     }
@@ -426,6 +432,8 @@ class Mahasiswa extends BaseController
             if ($session->get('email') === null) {
                 $session->set('checked_in_date', $today);
                 $session->set('checked_in_today', true);
+                $session->set('has_tasks_today', false);
+                $session->set('has_pomodoro_today', false);
                 return;
             }
 
@@ -434,6 +442,8 @@ class Mahasiswa extends BaseController
                 $data = json_decode($response->getBody(), true);
                 $session->set('checked_in_date', $today);
                 $session->set('checked_in_today', (bool)($data['stress_assesment_done_today'] ?? false));
+                $session->set('has_tasks_today', (bool)($data['task_done_today'] ?? false));
+                $session->set('has_pomodoro_today', (bool)($data['pomodoro_done_today'] ?? false));
             }
         }
     }
@@ -442,11 +452,17 @@ class Mahasiswa extends BaseController
     {
         $response = $this->mahasiswaService->checkAnalysisRequirementsStatus();
         if ($response->getStatusCode() !== 200) {
-            return $this->response->setJSON(['checked_in' => false]);
+            return $this->response->setJSON([
+                'checked_in'  => false,
+                'hasTasks'    => false,
+                'hasPomodoro' => false,
+            ]);
         }
         $data = json_decode($response->getBody(), true);
         return $this->response->setJSON([
-            'checked_in' => (bool)($data['stress_assesment_done_today'] ?? false)
+            'checked_in'  => (bool)($data['stress_assesment_done_today'] ?? false),
+            'hasTasks'    => (bool)($data['task_done_today'] ?? false),
+            'hasPomodoro' => (bool)($data['pomodoro_done_today'] ?? false),
         ]);
     }
 
@@ -460,6 +476,7 @@ class Mahasiswa extends BaseController
 
         // (Proses simpan ke database di sini...)
 
+        // TODO: Add server-side validation for stress analysis (prerequisite checks & input sanitisation)
         $selfEsteemScore = $this->assesmentDataConverter->convertSelfEsteem($esteem);
         $depressionScore = $this->assesmentDataConverter->convertDepression($depression);
 

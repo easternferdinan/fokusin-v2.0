@@ -1,26 +1,26 @@
 // LOGIC DAILY CHECK-IN + AJAX CI4
 
-// 1. Saat halaman dimuat, cek apakah hari ini sudah check-in
-window.addEventListener("DOMContentLoaded", function () {
-    const today = new Date().toISOString().split('T')[0];
-    const dateInput = document.getElementById('checkinDate');
-    if (dateInput) dateInput.value = today;
-
-    // Safety net: jika FAB ada di DOM (server belum render-nya),
-    // lakukan pengecekan ulang via AJAX untuk antisipasi data basi
+// 0. Helper: cek prasyarat via API lalu show/sembunyikan FAB
+function refreshFabVisibility() {
     const fab = document.getElementById('fabCheckin');
     if (!fab) return;
 
     fetch('/mahasiswa/check-checkin')
         .then(res => res.json())
         .then(data => {
-            if (data.checked_in) fab.style.display = 'none';
+            const show = !data.checked_in && data.hasTasks && data.hasPomodoro;
+            fab.classList.toggle('d-none', !show);
         })
-        .catch(() => {
-            if (localStorage.getItem('checkin_' + today)) {
-                fab.style.display = 'none';
-            }
-        });
+        .catch(() => {});
+}
+
+// 1. Saat halaman dimuat, set tanggal & cek prasyarat
+window.addEventListener("DOMContentLoaded", function () {
+    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('checkinDate');
+    if (dateInput) dateInput.value = today;
+
+    refreshFabVisibility();
 });
 
 // 2. Fungsi memproses form checkin

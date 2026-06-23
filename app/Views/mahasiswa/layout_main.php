@@ -161,14 +161,12 @@
     </div>
 
     <!-- FAB CHECK-IN & MODAL CHECK-IN -->
-    <?php if (!($hasCheckedIn ?? false)): ?>
-    <div id="fabCheckin" class="position-fixed bottom-0 end-0 p-4" style="z-index: 1040;">
+    <div id="fabCheckin" class="position-fixed bottom-0 end-0 p-4 d-none" style="z-index: 1040;">
         <button class="btn btn-primary shadow-lg rounded-circle position-relative" data-bs-toggle="modal" data-bs-target="#modalCheckin" style="width: 65px; height: 65px; background: linear-gradient(135deg, #6c5ce7, #a29bfe); border: none;">
             <i class="fas fa-moon fs-4"></i>
             <span id="checkinBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" style="font-size: 0.6rem;">!</span>
         </button>
     </div>
-    <?php endif; ?>
 
     <div class="modal fade" id="modalCheckin" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

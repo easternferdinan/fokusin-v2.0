@@ -89,7 +89,10 @@ function handleTimerComplete() {
 
     if (!guestIndicator && pomodoroId) {
         apiPost('/mahasiswa/completePomodoro/' + pomodoroId)
-            .then(() => { isPaused = false; })
+            .then(() => {
+                isPaused = false;
+                if (typeof refreshFabVisibility === 'function') refreshFabVisibility();
+            })
             .catch(err => {
                 console.error(err);
                 Swal.fire({

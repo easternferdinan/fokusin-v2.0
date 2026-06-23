@@ -113,7 +113,10 @@ function toggleComplete(id, name) {
         }
     }).then(response => {
         if (response.ok) {
-            if(isDone) Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'success', title: `"${name}" selesai ✅` }); 
+            if(isDone) {
+                Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'success', title: `"${name}" selesai ✅` });
+                if (typeof refreshFabVisibility === 'function') refreshFabVisibility();
+            }
         } else {
             Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }).fire({ icon: 'error', title: `"${name}" gagal diselesaikan` });
         }
