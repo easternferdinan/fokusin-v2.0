@@ -16,7 +16,7 @@
     <?= $this->renderSection('custom_css') ?>
 </head>
 
-<body>
+<body data-force-password="<?= session()->get('must_change_password') ? 'true' : 'false' ?>">
 
     <div class="overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
 
@@ -240,6 +240,9 @@
     </div>
     </div>
 
+    <!-- MODAL: CHANGE PASSWORD -->
+    <?= view('components/modal_password') ?>
+
     <!-- VENDORS JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -247,6 +250,7 @@
     <!-- CUSTOM ASSETS JS -->
     <script src="<?= base_url('assets/js/utils.js') ?>"></script>
     <script src="<?= base_url('assets/js/checkin.js') ?>"></script>
+    <script src="<?= base_url('assets/js/password.js') ?>"></script>
 
     <script>
         <?php $successFlash = session()->getFlashdata('success'); ?>

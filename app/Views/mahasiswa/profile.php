@@ -31,7 +31,10 @@
                         <label class="form-label fw-semibold">Dukungan Sosial</label>
                         <select name="social_support" class="form-select rounded-3"><option value="1" <?= session()->get('social_support') == 1 ? 'selected' : '' ?>>1 - Rendah</option><option value="2" <?= session()->get('social_support') == 2 ? 'selected' : '' ?>>2 - Cukup</option><option value="3" <?= session()->get('social_support') == 3 ? 'selected' : '' ?>>3 - Tinggi</option></select>
                     </div>
-                    <div class="col-12 mt-4"><button type="submit" class="btn btn-primary rounded-3 px-4"><i class="fas fa-save me-2"></i> Simpan Semua Perubahan</button></div>
+                    <div class="col-12 mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary rounded-3 px-4"><i class="fas fa-save me-2"></i> Simpan Semua Perubahan</button>
+                        <button type="button" class="btn btn-outline-primary rounded-3 px-4" onclick="showPasswordModal('change')"><i class="fas fa-key me-2"></i> Ubah Password</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -40,7 +43,6 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('js') ?>
-<!-- Tidak perlu load JS khusus untuk halaman ini karena hanya fungsi alert statis -->
 <script>
     if ('<?= session()->getFlashdata('success') !== null ?>') {
         const success = JSON.parse('<?= json_encode(session()->getFlashdata('success')) ?>');

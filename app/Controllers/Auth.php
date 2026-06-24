@@ -133,6 +133,25 @@ class Auth extends BaseController
         ]);
     }
 
+    public function forgotPassword()
+    {
+        $json = $this->request->getJSON(true);
+        $username = $json['username'] ?? '';
+
+        if (empty($username)) {
+            return $this->response->setJSON(['detail' => 'Username wajib diisi'])->setStatusCode(400);
+        }
+
+        $response = $this->authService->forgotPassword($username);
+        $body = json_decode($response->getBody(), true);
+
+        if ($response->getStatusCode() == 200) {
+            return $this->response->setJSON($body);
+        }
+
+        return $this->response->setJSON($body)->setStatusCode($response->getStatusCode());
+    }
+
     public function logout()
     {
         // Cek dulu siapa yang logout untuk menentukan arah redirect

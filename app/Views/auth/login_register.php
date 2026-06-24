@@ -52,7 +52,7 @@
                             <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
                             <label class="form-check-label small text-muted" for="rememberMe">Ingat saya</label>
                         </div>
-                        <a href="#" class="small text-muted" onclick="showAlertInfo('Fitur reset password akan diarahkan ke CI4.')" style="text-decoration:none;">Lupa Password?</a>
+                        <a href="#" class="small text-muted" onclick="showForgotPasswordModal()" style="text-decoration:none;">Lupa Password?</a>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-auth w-100 mb-3 shadow-sm">
@@ -141,6 +141,31 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- MODAL: LUPA PASSWORD -->
+    <div class="modal fade" id="modalForgotPassword" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Lupa Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4">
+                    <p class="text-muted small mb-3">Masukkan username kamu. Password akan di-reset ke email yang terdaftar.</p>
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="forgotUsername" placeholder="Username" autocomplete="username">
+                        <label for="forgotUsername"><i class="fas fa-user me-2"></i>Username</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary rounded-3 px-4 shadow-sm" id="btnForgotPassword" onclick="submitForgotPassword()">
+                        <i class="fas fa-key me-2"></i>Reset Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function toggleForm(target) {
             const formLogin = document.getElementById('form-login');
@@ -230,13 +255,63 @@
             });
         }
 
-        function showAlertInfo(msg) {
-            Swal.fire({
-                title: 'Info',
-                text: msg,
-                icon: 'info',
-                confirmButtonColor: '#74b9ff'
-            });
+        let forgotPasswordModal = null;
+        document.addEventListener('DOMContentLoaded', function () {
+            const el = document.getElementById('modalForgotPassword');
+            if (el) forgotPasswordModal = new bootstrap.Modal(el);
+        });
+
+        function showForgotPasswordModal() {
+            document.getElementById('forgotUsername').value = '';
+            if (forgotPasswordModal) forgotPasswordModal.show();
+        }
+
+        async function submitForgotPassword() {
+            const username = document.getElementById('forgotUsername').value.trim();
+            if (!username) {
+                Swal.fire({ icon: 'warning', title: 'Username wajib diisi', confirmButtonColor: '#ffeaa7' });
+                return;
+            }
+
+            const btn = document.getElementById('btnForgotPassword');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Mereset...';
+
+            try {
+                const res = await fetch('<?= base_url('auth/forgot-password') ?>', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const json = await res.json();
+                if (res.ok) {
+                    if (forgotPasswordModal) forgotPasswordModal.hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Password Direset!',
+                        text: json.message || 'Password di-reset menjadi email yang terdaftar. Hubungi admin jika lupa.',
+                        confirmButtonColor: '#00b894'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: json.detail || 'Terjadi kesalahan',
+                        confirmButtonColor: '#ff7675'
+                    });
+                }
+            } catch {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kesalahan Jaringan',
+                    text: 'Tidak dapat terhubung ke server.',
+                    confirmButtonColor: '#ff7675'
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            }
         }
 
         <?php $successFlash = session()->getFlashdata('success'); ?>

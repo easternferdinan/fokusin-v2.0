@@ -41,8 +41,28 @@ class AuthService
             'academic_performance' => $responseData['academic_performance'],
             'social_support' => $responseData['social_support'],
             'access_token' => $responseData['access_token'] ?? null,
-            'role' => $responseData['role']
+            'role' => $responseData['role'],
+            'must_change_password' => $responseData['must_change_password'] ?? false,
         ]);
+        return $response;
+    }
+
+    public function forgotPassword(string $username)
+    {
+        return $this->client->post('auth/forgot-password', [
+            'json' => ['username' => $username]
+        ]);
+    }
+
+    public function changePassword(array $data)
+    {
+        $response = $this->client->post('auth/change-password', [
+            'json' => $data,
+            'headers' => [
+                'Authorization' => 'Bearer ' . session()->get('access_token')
+            ]
+        ]);
+
         return $response;
     }
 

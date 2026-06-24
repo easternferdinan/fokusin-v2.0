@@ -548,4 +548,54 @@ class Mahasiswa extends BaseController
 
         return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profile. Silahkan coba lagi.<br>' . $response->getBody());
     }
+
+    // ====================================================================================================
+    // CHANGE PASSWORD
+    // ====================================================================================================
+    public function changePassword()
+    {
+        if (session()->get('email') == null) {
+            return $this->response->setJSON(['detail' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $json = $this->request->getJSON(true);
+        $response = $this->authService->changePassword($json);
+        $body = json_decode($response->getBody(), true);
+
+        if ($response->getStatusCode() == 200) {
+            return $this->response->setJSON([
+                'message' => 'Password berhasil diubah'
+            ]);
+        }
+
+        return $this->response->setJSON($body)->setStatusCode($response->getStatusCode());
+    }
+
+    public function changePasswordForce()
+    {
+        if (session()->get('email') == null) {
+            return $this->response->setJSON(['detail' => 'Unauthorized'])->setStatusCode(401);
+        }
+
+        $json = $this->request->getJSON(true);
+        $password = $json['password'] ?? '';
+
+        if (strlen($password) < 8) {
+            return $this->response->setJSON([
+                'detail' => 'Password minimal 8 karakter'
+            ])->setStatusCode(400);
+        }
+
+        $response = $this->authService->updateProfile(['password' => $password]);
+        $body = json_decode($response->getBody(), true);
+
+        if ($response->getStatusCode() == 200) {
+            session()->remove('must_change_password');
+            return $this->response->setJSON([
+                'message' => 'Password berhasil diubah'
+            ]);
+        }
+
+        return $this->response->setJSON($body)->setStatusCode($response->getStatusCode());
+    }
 }

@@ -10,6 +10,7 @@ $routes->group('auth', function ($routes) {
     $routes->get('login', 'Auth::login');               // Buka halaman form
     $routes->post('loginProcess', 'Auth::loginProcess'); // Menangkap submit login
     $routes->post('registerProcess', 'Auth::registerProcess'); // Menangkap submit register
+    $routes->post('forgot-password', 'Auth::forgotPassword');
     $routes->get('logout', 'Auth::logout');             // Proses logout
     $routes->get('adminLogin', 'Auth::adminLogin');             // Login Admin
     $routes->post('adminLoginProcess', 'Auth::adminLoginProcess'); // Proses Login Admin
@@ -35,6 +36,8 @@ $routes->group('mahasiswa', function ($routes) {
     $routes->get('report', 'Mahasiswa::report');        // Mengarah ke Report AI
     $routes->get('profile', 'Mahasiswa::profile'); // Mengarah ke Profile
     $routes->post('profile/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI
+    $routes->post('profile/change-password', 'Mahasiswa::changePassword');
+    $routes->post('profile/change-password-force', 'Mahasiswa::changePasswordForce');
     $routes->post('saveCheckin', 'Mahasiswa::saveCheckin'); // Menangkap submit check-in harian
     $routes->get('stress-trend', 'Mahasiswa::getStressTrend'); // Mengambil data tren stres
     $routes->get('check-checkin', 'Mahasiswa::checkTodayCheckin'); // Cek apakah sudah check-in hari ini
