@@ -10,15 +10,10 @@ let cycles = 0;
 let pomodoroId = localStorage.getItem('pomodoro_id') || null;
 const circumference = 2 * Math.PI * 90;
 
-// TODO: Improve pomodoro state sync with backend
-// - Add a `remaining_seconds` field to the backend API so timer state
-//   survives localStorage clears and cross-device usage
-// - Replace timezone-sensitive `created_at` comparison with server-side
-//   "today" filter in getActivePomodoro controller
-// - Track per-session elapsed focus time server-side instead of computing
-//   wall-clock delta on completion (paused time inflates metrics)
-// - Replace client-side break timer with a backend state (status=rest)
-//   so break progress survives page reload
+// TODO: Change 'elapsed_time' in the db to store in seconds
+// - That is a breaking change!
+// - Ensure study load calculations and other things that depend on elapsed time are updated
+
 function isLoggedIn() {
     return !document.getElementById('guestSisaSesi');
 }
@@ -89,10 +84,7 @@ function handleTimerComplete() {
 
     if (!guestIndicator && pomodoroId) {
         apiPost('/mahasiswa/completePomodoro/' + pomodoroId)
-            .then(() => {
-                isPaused = false;
-                if (typeof refreshFabVisibility === 'function') refreshFabVisibility();
-            })
+            .then(() => { isPaused = false; })
             .catch(err => {
                 console.error(err);
                 Swal.fire({
@@ -167,7 +159,7 @@ function startTimer() {
                         customClass: { popup: 'rounded-4' }
                     });
                 });
-        } else if (!pomodoroId) {
+        } else if (!pomodoroId && isWorkMode) {
             apiPost('/mahasiswa/createPomodoro', {
                 title: taskInput.value,
                 status: 'active',
@@ -186,6 +178,8 @@ function startTimer() {
                     customClass: { popup: 'rounded-4' }
                 });
             });
+            timerInterval = setInterval(tick, 1000);
+        } else if (!pomodoroId && !isWorkMode) {
             timerInterval = setInterval(tick, 1000);
         }
     } else {
@@ -257,6 +251,13 @@ function stopTimer() {
 function skipTimer() {
     clearInterval(timerInterval);
     isRunning = false;
+
+    if (isWorkMode && pomodoroId && !document.getElementById('guestSisaSesi')) {
+        apiPost('/mahasiswa/updatePomodoro/' + pomodoroId, {status: 'stopped', completed: false})
+            .catch(err => console.error(err));
+        clearPomodoroState();
+    }
+
     switchMode(!isWorkMode);
 }
 
@@ -355,6 +356,9 @@ document.addEventListener("DOMContentLoaded", function () {
         let count = parseInt(localStorage.getItem('guestPomodoroCount') || 0);
         let sisa = 3 - count;
 
+        cycles = count;
+        document.getElementById('cycleCount').innerText = cycles;
+
         if (sisa <= 0) {
             guestIndicator.innerText = "0";
             kunciTimerGuest();
@@ -386,11 +390,15 @@ function restoreActiveSession() {
             if (!data.active_session) return;
 
             const session = data.active_session;
+            const createdDate = new Date(session.created_at);
+            const today = new Date();
+
+            if (createdDate.toDateString() !== today.toDateString()) return;
 
             pomodoroId = session.pomodoro_id;
             localStorage.setItem('pomodoro_id', pomodoroId);
 
-            isWorkMode = session.status !== 'rest';
+            isWorkMode = true;
             const durationSec = session.duration * 60;
 
             if (session.status === 'paused') {
@@ -431,7 +439,9 @@ function restoreActiveSession() {
             if (isPaused) {
                 document.getElementById('btnStart').classList.remove('d-none');
                 document.getElementById('btnStart').innerHTML = '<i class="fas fa-play me-2"></i>Lanjut';
-            } else if (isRunning) {
+            }
+
+            if (!isPaused) {
                 document.getElementById('btnPause').classList.remove('d-none');
             }
             document.getElementById('btnStop').classList.remove('d-none');
