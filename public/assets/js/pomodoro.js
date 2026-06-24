@@ -10,6 +10,15 @@ let cycles = 0;
 let pomodoroId = localStorage.getItem('pomodoro_id') || null;
 const circumference = 2 * Math.PI * 90;
 
+function playNotificationSound(isWork) {
+    try {
+        const file = isWork ? 'work-complete.mp3' : 'rest-complete.mp3';
+        new Audio('/assets/audio/' + file).play().catch(() => {});
+    } catch (e) {
+        console.warn('Sound notification gagal:', e);
+    }
+}
+
 // TODO: Change 'elapsed_time' in the db to store in seconds
 // - That is a breaking change!
 // - Ensure study load calculations and other things that depend on elapsed time are updated
@@ -80,6 +89,7 @@ function tick() {
 }
 
 function handleTimerComplete() {
+    playNotificationSound(isWorkMode);
     const guestIndicator = document.getElementById('guestSisaSesi');
 
     if (!guestIndicator && pomodoroId) {
