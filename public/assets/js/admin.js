@@ -22,11 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Fungsi untuk mengubah isi modal sesuai mahasiswa yang diklik
-function lihatDetail(userId, nama, username, status) {
+function lihatDetail(userId, nama, username, email, status) {
     namaMahasiswaAktif = nama;
 
     document.getElementById('detailNama').innerText = nama;
     document.getElementById('detailUsername').innerText = username;
+    document.getElementById('detailEmail').innerText = email;
 
     let avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&color=fff&size=50`;
     let badgeEl = document.getElementById('detailBadge');

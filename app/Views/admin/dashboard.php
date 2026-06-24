@@ -60,7 +60,7 @@
                         <span class="badge <?= $color ?> text-white rounded-pill px-3 py-2"><i class="fas fa-<?= $icon ?> me-1"></i> <?= $mahasiswa['latest_stress_level'] ?? 'Belum ada' ?></span>
                     </td>
                     <td class="px-4 text-center">
-                        <button class="btn btn-sm btn-info text-white rounded-3 px-3 shadow-sm" onclick="lihatDetail('<?= $mahasiswa['user_id'] ?>','<?= $mahasiswa['fullname'] ?>', '<?= $mahasiswa['username'] ?>', '<?= $mahasiswa['latest_stress_level'] ?? 'Belum ada' ?>')">
+                        <button class="btn btn-sm btn-info text-white rounded-3 px-3 shadow-sm" onclick="lihatDetail('<?= $mahasiswa['user_id'] ?>','<?= $mahasiswa['fullname'] ?>', '<?= $mahasiswa['username'] ?>', '<?= $mahasiswa['email'] ?>', '<?= $mahasiswa['latest_stress_level'] ?? 'Belum ada' ?>')">
                             <i class="fas fa-eye me-1"></i> Detail
                         </button>
                     </td>
@@ -191,7 +191,7 @@
                     <img id="detailAvatar" src="" class="rounded-circle shadow-sm" alt="Avatar" width="50" height="50">
                     <div>
                         <h6 class="mb-0 fw-bold" id="detailNama">Nama Mahasiswa</h6>
-                        <small class="text-muted"><span id="detailUsername">username</span> | Status Saat Ini: <span id="detailBadge" class="badge">Status</span></small>
+                        <small class="text-muted"><span id="detailUsername">username</span> | <span id="detailEmail">email</span> | Status Saat Ini: <span id="detailBadge" class="badge">Status</span></small>
                     </div>
                 </div>
 
