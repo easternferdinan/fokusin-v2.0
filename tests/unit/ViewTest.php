@@ -73,15 +73,15 @@ class ViewTest extends CIUnitTestCase
         $result->assertStatus(200);
     }
 
-    // ✅ Test 4: Pengaturan (tidak butuh backend, langsung return view)
-    public function testPengaturanPageLoads()
+    // ✅ Test 4: Profile (tidak butuh backend, langsung return view)
+    public function testProfilePageLoads()
     {
         $result = $this->withSession([
             'fullname'     => 'Test User',
             'email'        => 'test@test.com',
             'role'         => 'mahasiswa',
             'access_token' => 'fake-token',
-        ])->get('mahasiswa/pengaturan');
+        ])->get('mahasiswa/profile');
 
         $result->assertStatus(200);
     }

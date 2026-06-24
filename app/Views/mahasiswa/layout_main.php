@@ -34,12 +34,12 @@
             <a href="<?= base_url('mahasiswa/report') ?>" class="menu-link"><i class="fas fa-chart-line"></i> Report AI</a>
 
             <div class="mt-auto border-top border-secondary pt-3">
-                <a href="<?= base_url('mahasiswa/pengaturan') ?>" class="menu-link"><i class="fas fa-cog"></i> Pengaturan</a>
+                <a href="<?= base_url('mahasiswa/profile') ?>" class="menu-link"><i class="fas fa-user-circle"></i> Profile</a>
                 <a href="<?= base_url('auth/logout') ?>" class="menu-link text-danger" onclick="confirmLogout(event)"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </nav>
         <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="<?= base_url('mahasiswa/pengaturan') ?>"><i class="fas fa-user-circle me-2 text-primary"></i> Profile</a></li>
+            <li><a class="dropdown-item" href="<?= base_url('mahasiswa/profile') ?>"><i class="fas fa-user-circle me-2 text-primary"></i> Profile</a></li>
             <li>
                 <hr class="dropdown-divider">
             </li>
@@ -62,7 +62,7 @@
                         <span class="d-none d-md-block ms-2 fw-semibold text-dark"><?= $namaMahasiswa ?></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="<?= base_url('mahasiswa/pengaturan') ?>"><i class="fas fa-user-circle me-2 text-primary"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="<?= base_url('mahasiswa/profile') ?>"><i class="fas fa-user-circle me-2 text-primary"></i> Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

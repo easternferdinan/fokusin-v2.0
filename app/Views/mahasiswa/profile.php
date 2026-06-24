@@ -1,12 +1,11 @@
 <?= $this->extend('mahasiswa/layout_main') ?>
 
-<?= $this->section('title') ?>Pengaturan<?= $this->endSection() ?>
-<?= $this->section('page_title') ?>Pengaturan ⚙️<?= $this->endSection() ?>
+<?= $this->section('title') ?>Profile<?= $this->endSection() ?>
+<?= $this->section('page_title') ?>Profile<?= $this->endSection() ?>
 <?= $this->section('page_sub') ?>Update informasi profile kamu<?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 
-<h4 class="fw-bold mb-4">Pengaturan Akun & Data AI ⚙️</h4>
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card p-4">
@@ -15,7 +14,7 @@
                 <h5 class="fw-bold"><?= session()->get('fullname') ?></h5>
                 <span class="badge bg-primary bg-opacity-10 text-primary">Mahasiswa</span>
             </div>
-            <form id="formProfile" action="pengaturan/save" method="POST">
+            <form id="formProfile" action="profile/save" method="POST">
                 <div class="row g-3">
                     <div class="col-md-6"><label class="form-label fw-semibold">Nama Lengkap</label><input type="text" name="fullname" class="form-control rounded-3" value="<?= session()->get('fullname') ?>"></div>
                     <div class="col-md-6"><label class="form-label fw-semibold">Email</label><input type="email" name="email" class="form-control rounded-3" value="<?= session()->get('email') ?>"></div>

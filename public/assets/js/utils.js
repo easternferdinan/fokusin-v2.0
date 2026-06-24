@@ -3,7 +3,7 @@ const titles = {
     'section-tugas': ['Daftar Tugas', 'Kelola semua tugas kuliah dan proyekmu'],
     'section-pomodoro': ['Timer Pomodoro', 'Tetap fokus, Raih mimpimu!'],
     'section-report': ['Report AI', 'Hasil pemrosesan data oleh microservice'],
-    'section-pengaturan': ['Pengaturan', 'Update informasi profile kamu']
+    'section-profile': ['Profile', 'Update informasi profile kamu']
 };
 
 function toggleSidebar() { 

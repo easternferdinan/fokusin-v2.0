@@ -506,9 +506,9 @@ class Mahasiswa extends BaseController
     }
 
     // ====================================================================================================
-    // PENGATURAN
+    // PROFILE
     // ====================================================================================================
-    public function pengaturan()
+    public function profile()
     {
         if (session()->get('email') == null) {
             return denyAccess();
@@ -520,7 +520,7 @@ class Mahasiswa extends BaseController
             'namaMahasiswa' => session()->get('fullname'),
             'hasCheckedIn'  => session()->get('checked_in_today', false),
         ];
-        return view('mahasiswa/pengaturan', $data);
+        return view('mahasiswa/profile', $data);
     }
 
     public function saveProfileAI()
@@ -540,7 +540,7 @@ class Mahasiswa extends BaseController
         $response = $this->authService->updateProfile($data);
 
         if ($response->getStatusCode() == 200) {
-            return redirect()->to(base_url('mahasiswa/pengaturan'))->with('success', [
+            return redirect()->to(base_url('mahasiswa/profile'))->with('success', [
                 'title' => 'Profile Berhasil Diupdate!',
                 'message' => 'Profile Anda telah berhasil diperbarui.'
             ]);

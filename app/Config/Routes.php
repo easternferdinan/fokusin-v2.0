@@ -33,8 +33,8 @@ $routes->group('mahasiswa', function ($routes) {
     $routes->post('getActivePomodoro', 'Mahasiswa::getActivePomodoro');
     $routes->post('updatePomodoro/(:any)', 'Mahasiswa::updatePomodoro/$1');
     $routes->get('report', 'Mahasiswa::report');        // Mengarah ke Report AI
-    $routes->get('pengaturan', 'Mahasiswa::pengaturan'); // Mengarah ke Pengaturan
-    $routes->post('pengaturan/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI
+    $routes->get('profile', 'Mahasiswa::profile'); // Mengarah ke Profile
+    $routes->post('profile/save', 'Mahasiswa::saveProfileAI'); // Menangkap submit profile AI
     $routes->post('saveCheckin', 'Mahasiswa::saveCheckin'); // Menangkap submit check-in harian
     $routes->get('stress-trend', 'Mahasiswa::getStressTrend'); // Mengambil data tren stres
     $routes->get('check-checkin', 'Mahasiswa::checkTodayCheckin'); // Cek apakah sudah check-in hari ini
