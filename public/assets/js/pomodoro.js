@@ -94,9 +94,13 @@ function handleTimerComplete() {
 
     if (!guestIndicator && pomodoroId) {
         apiPost('/mahasiswa/completePomodoro/' + pomodoroId)
-            .then(() => { isPaused = false; })
+            .then(() => {
+                isPaused = false;
+                clearPomodoroState();
+            })
             .catch(err => {
                 console.error(err);
+                clearPomodoroState();
                 Swal.fire({
                     title: 'Gagal!',
                     text: 'Gagal menyelesaikan sesi pomodoro.',
@@ -105,9 +109,9 @@ function handleTimerComplete() {
                     customClass: { popup: 'rounded-4' }
                 });
             });
+    } else {
+        clearPomodoroState();
     }
-
-    clearPomodoroState();
 
     if (isWorkMode) {
         cycles++;
@@ -157,7 +161,9 @@ function startTimer() {
             apiPost('/mahasiswa/resumePomodoro/' + pomodoroId)
                 .then(() => {
                     isPaused = false;
-                    timerInterval = setInterval(tick, 1000);
+                    if (isRunning) {
+                        timerInterval = setInterval(tick, 1000);
+                    }
                 })
                 .catch(err => {
                     console.error(err);
@@ -178,6 +184,7 @@ function startTimer() {
             }).then(data => {
                 pomodoroId = data.pomodoro_id;
                 localStorage.setItem('pomodoro_id', pomodoroId);
+                timerInterval = setInterval(tick, 1000);
             }).catch(err => {
                 console.error(err);
                 Swal.fire({
@@ -188,11 +195,12 @@ function startTimer() {
                     customClass: { popup: 'rounded-4' }
                 });
             });
-            timerInterval = setInterval(tick, 1000);
         } else if (!pomodoroId && !isWorkMode) {
             timerInterval = setInterval(tick, 1000);
         }
     } else {
+        isPaused = false;
+        timerInterval = setInterval(tick, 1000);
         Swal.fire({
             title: 'Peringatan',
             text: 'Pomodoro dimulai sebagai guest. Daftar untuk sesi tak terbatas!',
@@ -217,6 +225,7 @@ function pauseTimer() {
         apiPost('/mahasiswa/pausePomodoro/' + pomodoroId)
             .catch(err => {
                 console.error(err);
+                isPaused = false;
                 Swal.fire({
                     title: 'Gagal!',
                     text: 'Gagal menjeda sesi pomodoro.',
@@ -432,8 +441,12 @@ function restoreActiveSession() {
                 if (remainingSeconds > 0) {
                     isRunning = true;
                 } else {
-                    apiPost('/mahasiswa/completePomodoro/' + pomodoroId).catch(err => console.error(err));
-                    clearPomodoroState();
+                    apiPost('/mahasiswa/completePomodoro/' + pomodoroId)
+                        .then(() => clearPomodoroState())
+                        .catch(err => {
+                            console.error(err);
+                            clearPomodoroState();
+                        });
                     return;
                 }
             } else {
